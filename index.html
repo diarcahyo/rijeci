@@ -3,70 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catatan Keuangan PWA</title>
-    <!-- Tailwind CSS for styling -->
+    <title>Rekap Palet PWA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Manifest PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#10b981">
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
-        <!-- Header -->
-        <header class="bg-blue-500 text-white p-6 rounded-b-3xl">
-            <h1 class="text-2xl font-bold">Dompet Saku</h1>
-            <p class="text-blue-100">Pantau pengeluaran harianmu</p>
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg p-6">
+        <header class="mb-8">
+            <h1 class="text-2xl font-bold text-emerald-600">Rekapitulasi Palet</h1>
+            <p class="text-gray-500 text-sm">Input data palet per PO</p>
         </header>
 
-        <!-- Balance Section -->
-        <section class="p-6">
-            <div class="bg-gray-800 text-white p-6 rounded-2xl">
-                <p class="text-sm text-gray-400">Total Saldo</p>
-                <h2 class="text-3xl font-bold" id="total-saldo">Rp 0</h2>
+        <form id="rekap-form" class="space-y-4 mb-8">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nomor PO</label>
+                <input type="text" id="po-number" placeholder="Masukkan Nomor PO" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
             </div>
-        </section>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
+                <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition">Simpan Rekap</button>
+        </form>
 
-        <!-- Input Form -->
-        <section class="p-6 pt-0">
-            <form id="transaksi-form" class="space-y-4">
-                <input type="text" id="keterangan" placeholder="Keterangan (contoh: Makan siang)" class="w-full p-3 border rounded-xl" required>
-                <input type="number" id="jumlah" placeholder="Jumlah (Rp)" class="w-full p-3 border rounded-xl" required>
-                <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-xl font-bold">Tambah Transaksi</button>
-            </form>
-        </section>
-
-        <!-- List Transaksi -->
-        <section class="p-6 pt-0">
-            <h3 class="font-bold text-lg mb-4">Riwayat</h3>
-            <ul id="daftar-transaksi" class="space-y-3">
-                <!-- Data akan masuk ke sini via JS -->
-            </ul>
+        <section>
+            <h2 class="text-lg font-bold mb-4">Daftar Rekap</h2>
+            <div id="daftar-rekap" class="space-y-3">
+                <!-- Data akan muncul di sini -->
+            </div>
+            <div class="mt-6 p-4 bg-emerald-50 rounded-lg flex justify-between items-center">
+                <span class="font-bold text-emerald-800">Total Keseluruhan</span>
+                <span id="total-qty" class="text-xl font-bold text-emerald-600">0</span>
+            </div>
         </section>
     </div>
 
     <script>
-        // Service Worker Registration for PWA
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW failed', err));
-            });
+            navigator.serviceWorker.register('/sw.js');
         }
 
-        // Logika Sederhana Aplikasi
-        const form = document.getElementById('transaksi-form');
+        let total = 0;
+        const form = document.getElementById('rekap-form');
+        const daftarRekap = document.getElementById('daftar-rekap');
+        const totalQty = document.getElementById('total-qty');
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const ket = document.getElementById('keterangan').value;
-            const jum = document.getElementById('jumlah').value;
+            const po = document.getElementById('po-number').value;
+            const qty = parseInt(document.getElementById('quantity').value);
             
-            const li = document.createElement('li');
-            li.className = "flex justify-between bg-white p-4 border rounded-xl shadow-sm";
-            li.innerHTML = `<span>${ket}</span><span class="font-bold">Rp ${jum}</span>`;
+            total += qty;
+            totalQty.innerText = total;
             
-            document.getElementById('daftar-transaksi').appendChild(li);
+            const card = document.createElement('div');
+            card.className = "flex justify-between p-4 border border-gray-200 rounded-lg bg-white shadow-sm";
+            card.innerHTML = `<div><p class="text-xs text-gray-400">PO Number</p><p class="font-bold">${po}</p></div>
+                              <div class="text-right"><p class="text-xs text-gray-400">Qty</p><p class="font-bold text-emerald-600">${qty} Palet</p></div>`;
+            
+            daftarRekap.prepend(card);
             form.reset();
         });
     </script>
