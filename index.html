@@ -17,10 +17,17 @@
         </header>
 
         <form id="rekap-form" class="space-y-4 mb-8">
+            <!-- Input Tanggal -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal</label>
+                <input type="date" id="tanggal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+            </div>
+            <!-- Input PO -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Nomor PO</label>
                 <input type="text" id="po-number" placeholder="Masukkan Nomor PO" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
             </div>
+            <!-- Input Quantity -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
                 <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
@@ -41,6 +48,9 @@
     </div>
 
     <script>
+        // Set tanggal otomatis hari ini
+        document.getElementById('tanggal').valueAsDate = new Date();
+
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js');
@@ -53,6 +63,7 @@
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            const tgl = document.getElementById('tanggal').value;
             const po = document.getElementById('po-number').value;
             const qty = parseInt(document.getElementById('quantity').value);
             
@@ -61,11 +72,19 @@
             
             const card = document.createElement('div');
             card.className = "flex justify-between p-4 border border-gray-200 rounded-lg bg-white shadow-sm";
-            card.innerHTML = `<div><p class="text-xs text-gray-400">PO Number</p><p class="font-bold">${po}</p></div>
-                              <div class="text-right"><p class="text-xs text-gray-400">Qty</p><p class="font-bold text-emerald-600">${qty} Palet</p></div>`;
+            card.innerHTML = `
+                <div>
+                    <p class="text-[10px] text-gray-400 uppercase">${tgl}</p>
+                    <p class="font-bold text-sm">PO: ${po}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-emerald-600">${qty} Palet</p>
+                </div>`;
             
             daftarRekap.prepend(card);
             form.reset();
+            // Reset tanggal ke hari ini setelah submit
+            document.getElementById('tanggal').valueAsDate = new Date();
         });
     </script>
 </body>
