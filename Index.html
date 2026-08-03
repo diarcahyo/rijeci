@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuangan PWA</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
+        <!-- Header -->
+        <header class="bg-blue-500 text-white p-6 rounded-b-3xl">
+            <h1 class="text-2xl font-bold">Dompet Saku</h1>
+            <p class="text-blue-100">Pantau pengeluaran harianmu</p>
+        </header>
+
+        <!-- Balance Section -->
+        <section class="p-6">
+            <div class="bg-gray-800 text-white p-6 rounded-2xl">
+                <p class="text-sm text-gray-400">Total Saldo</p>
+                <h2 class="text-3xl font-bold" id="total-saldo">Rp 0</h2>
+            </div>
+        </section>
+
+        <!-- Input Form -->
+        <section class="p-6 pt-0">
+            <form id="transaksi-form" class="space-y-4">
+                <input type="text" id="keterangan" placeholder="Keterangan (contoh: Makan siang)" class="w-full p-3 border rounded-xl" required>
+                <input type="number" id="jumlah" placeholder="Jumlah (Rp)" class="w-full p-3 border rounded-xl" required>
+                <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-xl font-bold">Tambah Transaksi</button>
+            </form>
+        </section>
+
+        <!-- List Transaksi -->
+        <section class="p-6 pt-0">
+            <h3 class="font-bold text-lg mb-4">Riwayat</h3>
+            <ul id="daftar-transaksi" class="space-y-3">
+                <!-- Data akan masuk ke sini via JS -->
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
+
+        // Logika Sederhana Aplikasi
+        const form = document.getElementById('transaksi-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const ket = document.getElementById('keterangan').value;
+            const jum = document.getElementById('jumlah').value;
+            
+            const li = document.createElement('li');
+            li.className = "flex justify-between bg-white p-4 border rounded-xl shadow-sm";
+            li.innerHTML = `<span>${ket}</span><span class="font-bold">Rp ${jum}</span>`;
+            
+            document.getElementById('daftar-transaksi').appendChild(li);
+            form.reset();
+        });
+    </script>
+</body>
+</html>
