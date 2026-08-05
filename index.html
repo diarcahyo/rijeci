@@ -10,41 +10,62 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg p-6">
-        <header class="mb-8">
-            <h1 class="text-2xl font-bold text-emerald-600">Rekapitulasi Palet</h1>
-            <p class="text-gray-500 text-sm">Input data palet per PO</p>
-        </header>
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg p-6 flex flex-col justify-between">
+        <div>
+            <!-- Header -->
+            <header class="mb-6 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-emerald-600">Rekapitulasi Palet</h1>
+                    <p class="text-gray-500 text-sm">Input data palet per PO</p>
+                </div>
+            </header>
 
-        <form id="rekap-form" class="space-y-4 mb-8">
-            <!-- Input Tanggal -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700">TanggalKedatangan</label>
-                <input type="date" id="tanggal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+            <!-- Navigasi Menu / Tab -->
+            <div class="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <button id="tab-input" onclick="switchTab('input')" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition">Input Data</button>
+                <button id="tab-rekap" onclick="switchTab('rekap')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Lihat Rekapan</button>
             </div>
-            <!-- Input PO -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Nomor PO Pallet</label>
-                <input type="text" id="po-number" placeholder="Masukkan Nomor PO" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
-            </div>
-            <!-- Input Quantity -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
-                <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
-            </div>
-            <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition">Simpan Rekap</button>
-        </form>
 
-        <section>
-            <h2 class="text-lg font-bold mb-4">Daftar Rekap</h2>
-            <div id="daftar-rekap" class="space-y-3">
-                <!-- Data akan muncul di sini -->
+            <!-- Bagian 1: Form Input -->
+            <div id="section-input">
+                <form id="rekap-form" class="space-y-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tanggal Kedatangan</label>
+                        <input type="date" id="tanggal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nomor PO Pallet</label>
+                        <input type="text" id="po-number" placeholder="Masukkan Nomor PO" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
+                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Simpan Rekap</button>
+                </form>
             </div>
-            <div class="mt-6 p-4 bg-emerald-50 rounded-lg flex justify-between items-center">
-                <span class="font-bold text-emerald-800">Total Keseluruhan</span>
-                <span id="total-qty" class="text-xl font-bold text-emerald-600">0</span>
+
+            <!-- Bagian 2: Daftar Rekap (Tersembunyi Awalnya, Muncul Jika Diklik) -->
+            <div id="section-rekap" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">Daftar Rekap Masuk</h2>
+                    <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Data</button>
+                </div>
+                
+                <div id="daftar-rekap" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                    <!-- Data akan dimuat secara dinamis -->
+                </div>
+
+                <div class="mt-6 p-4 bg-emerald-50 rounded-lg flex justify-between items-center border border-emerald-100 shadow-sm">
+                    <span class="font-bold text-emerald-800">Total Keseluruhan</span>
+                    <span id="total-qty" class="text-xl font-bold text-emerald-600">0</span>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <footer class="mt-8 text-center text-xs text-gray-400">
+            &copy; 2026 Rekap Palet PWA
+        </footer>
     </div>
 
     <script>
@@ -53,38 +74,105 @@
 
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
+            });
         }
 
-        let total = 0;
+        let rekapData = JSON.parse(localStorage.getItem('rekap_palet')) || [];
+
         const form = document.getElementById('rekap-form');
         const daftarRekap = document.getElementById('daftar-rekap');
         const totalQty = document.getElementById('total-qty');
+        const btnReset = document.getElementById('btn-reset');
+        
+        const sectionInput = document.getElementById('section-input');
+        const sectionRekap = document.getElementById('section-rekap');
+        const tabInput = document.getElementById('tab-input');
+        const tabRekap = document.getElementById('tab-rekap');
 
+        // Fungsi Navigasi Tab / Menu
+        window.switchTab = function(target) {
+            if (target === 'input') {
+                sectionInput.classList.remove('hidden');
+                sectionRekap.classList.add('hidden');
+                tabInput.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabRekap.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            } else {
+                sectionInput.classList.add('hidden');
+                sectionRekap.classList.remove('hidden');
+                tabRekap.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabInput.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+                renderData(); // Render ulang saat tab rekap dibuka
+            }
+        }
+
+        // Fungsi Render Data ke HTML
+        function renderData() {
+            daftarRekap.innerHTML = '';
+            let total = 0;
+
+            if (rekapData.length === 0) {
+                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data rekapitulasi.</p>`;
+                totalQty.innerText = '0';
+                return;
+            }
+
+            rekapData.forEach((item, index) => {
+                total += item.qty;
+
+                const card = document.createElement('div');
+                card.className = "flex justify-between items-center p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:border-emerald-200 transition";
+                card.innerHTML = `
+                    <div>
+                        <p class="text-[10px] font-semibold text-gray-400 uppercase">${item.tgl}</p>
+                        <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
+                    </div>
+                    <div class="text-right flex items-center gap-3">
+                        <span class="font-bold text-emerald-600 text-base">${item.qty} Palet</span>
+                        <button onclick="hapusItem(${index})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
+                    </div>`;
+                daftarRekap.appendChild(card);
+            });
+
+            totalQty.innerText = total;
+        }
+
+        // Event Listener Submit Form
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const tgl = document.getElementById('tanggal').value;
-            const po = document.getElementById('po-number').value;
+            const po = document.getElementById('po-number').value.trim();
             const qty = parseInt(document.getElementById('quantity').value);
             
-            total += qty;
-            totalQty.innerText = total;
+            const newData = { tgl, po, qty };
+            rekapData.unshift(newData);
             
-            const card = document.createElement('div');
-            card.className = "flex justify-between p-4 border border-gray-200 rounded-lg bg-white shadow-sm";
-            card.innerHTML = `
-                <div>
-                    <p class="text-[10px] text-gray-400 uppercase">${tgl}</p>
-                    <p class="font-bold text-sm">PO: ${po}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold text-emerald-600">${qty} Palet</p>
-                </div>`;
+            localStorage.setItem('rekap_palet', JSON.stringify(rekapData));
             
-            daftarRekap.prepend(card);
             form.reset();
-            // Reset tanggal ke hari ini setelah submit
             document.getElementById('tanggal').valueAsDate = new Date();
+            
+            alert('Data rekap berhasil disimpan!');
+            switchTab('rekap'); // Otomatis pindah ke menu rekap untuk melihat hasil
+        });
+
+        // Fungsi Hapus Satuan
+        window.hapusItem = function(index) {
+            if(confirm('Yakin ingin menghapus rekap PO ini?')) {
+                rekapData.splice(index, 1);
+                localStorage.setItem('rekap_palet', JSON.stringify(rekapData));
+                renderData();
+            }
+        }
+
+        // Tombol Reset Semua Data
+        btnReset.addEventListener('click', () => {
+            if(rekapData.length > 0 && confirm('Hapus seluruh riwayat rekap palet?')) {
+                rekapData = [];
+                localStorage.removeItem('rekap_palet');
+                renderData();
+            }
         });
     </script>
 </body>
