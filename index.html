@@ -103,7 +103,16 @@
                     <form id="rekap-form" class="space-y-3">
                         <input type="hidden" id="tipe-transaksi">
                         
-                        <!-- Field Tanggal Umum / Standar -->
+                        <!-- Khusus Form RECEIPT (Tgl & Jam Aktual Otomatis) -->
+                        <div id="wrapper-receipt-fields" class="space-y-3 hidden">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Kedatangan Pallet (PO)</label>
+                                <input type="text" id="receipt-tanggal-jam" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-medium text-sm" readonly>
+                                <p class="text-[10px] text-blue-600 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
+                            </div>
+                        </div>
+
+                        <!-- Field Tanggal Umum / Standar (Untuk Beginning & Issue) -->
                         <div id="wrapper-tanggal">
                             <label class="block text-xs font-medium text-gray-700">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
@@ -207,6 +216,7 @@
         const formTitleLabel = document.getElementById('form-title-label');
         
         const wrapperTanggal = document.getElementById('wrapper-tanggal');
+        const wrapperReceiptFields = document.getElementById('wrapper-receipt-fields');
         const wrapperOrderFields = document.getElementById('wrapper-order-fields');
         const wrapperStandardDesc = document.getElementById('wrapper-standard-desc');
 
@@ -265,23 +275,40 @@
             form.reset();
             document.getElementById('tanggal').valueAsDate = new Date();
 
+            const now = new Date();
+            const formattedNow = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
             if(tipe === 'ORDER') {
                 formTitleLabel.innerText = "Input Order Pallet";
+                wrapperReceiptFields.classList.add('hidden');
                 wrapperTanggal.classList.add('hidden');
                 wrapperStandardDesc.classList.add('hidden');
                 wrapperOrderFields.classList.remove('hidden');
                 
-                // Ambil format waktu aktual secara lokal / zona perangkat saat ini
-                const now = new Date();
-                const formattedNow = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 document.getElementById('order-tanggal-jam').value = formattedNow;
 
                 document.getElementById('order-po').required = true;
                 document.getElementById('order-vendor').required = true;
                 document.getElementById('po-number').required = false;
                 document.getElementById('tanggal').required = false;
+            } else if(tipe === 'RECEIPT') {
+                formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
+                wrapperOrderFields.classList.add('hidden');
+                wrapperTanggal.classList.add('hidden');
+                wrapperReceiptFields.classList.remove('hidden');
+                wrapperStandardDesc.classList.remove('hidden');
+                
+                document.getElementById('receipt-tanggal-jam').value = formattedNow;
+                document.getElementById('label-po-desc').innerText = "Nomor PO Pallet Masuk";
+                document.getElementById('po-number').placeholder = "Cth: PO-PALLET-9982";
+
+                document.getElementById('order-po').required = false;
+                document.getElementById('order-vendor').required = false;
+                document.getElementById('po-number').required = true;
+                document.getElementById('tanggal').required = false;
             } else {
                 wrapperOrderFields.classList.add('hidden');
+                wrapperReceiptFields.classList.add('hidden');
                 wrapperTanggal.classList.remove('hidden');
                 wrapperStandardDesc.classList.remove('hidden');
                 
@@ -294,10 +321,6 @@
                     formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
                     document.getElementById('label-po-desc').innerText = "Keterangan / Catatan";
                     document.getElementById('po-number').placeholder = "Cth: Saldo Awal Gudang";
-                } else if(tipe === 'RECEIPT') {
-                    formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
-                    document.getElementById('label-po-desc').innerText = "Nomor PO Pallet Masuk";
-                    document.getElementById('po-number').placeholder = "Cth: PO-PALLET-9982";
                 } else if(tipe === 'ISSUE') {
                     formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
                     document.getElementById('label-po-desc').innerText = "Tujuan / No. DO Pengeluaran";
@@ -404,12 +427,16 @@
             let tgl, po, vendor = "";
             const now = new Date();
 
-            if (tipe === 'ORDER') {
+            if (tipe === 'ORDER' || tipe === 'RECEIPT') {
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-                po = document.getElementById('order-po').value.trim();
-                vendor = document.getElementById('order-vendor').value.trim();
+                
+                if (tipe === 'ORDER') {
+                    po = document.getElementById('order-po').value.trim();
+                    vendor = document.getElementById('order-vendor').value.trim();
+                } else {
+                    po = document.getElementById('po-number').value.trim();
+                }
             } else {
-                // Ambil tanggal yang dipilih user, lalu gabungkan dengan jam aktual saat tombol Simpan ditekan
                 const inputDateVal = document.getElementById('tanggal').value;
                 const dateObj = inputDateVal ? new Date(inputDateVal) : now;
                 
