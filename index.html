@@ -34,14 +34,12 @@
 
             <!-- 1. DASHBOARD STOCK -->
             <div id="section-home" class="space-y-4">
-                <!-- Ending Balance (Stock Akhir - Utama) -->
                 <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md">
                     <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
                     <h2 id="db-ending" class="text-3xl font-extrabold mt-1">0</h2>
                     <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
                 </div>
 
-                <!-- Grid Informasi Stock -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm">
                         <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
@@ -73,7 +71,7 @@
                 </div>
             </div>
 
-            <!-- 2. INPUT TRANSAKSI MENU (Dengan Sub-Menu Terpisah) -->
+            <!-- 2. INPUT TRANSAKSI MENU -->
             <div id="section-input" class="hidden space-y-4">
                 <h2 class="text-base font-bold text-gray-800">Pilih Jenis Transaksi Input</h2>
                 
@@ -104,31 +102,53 @@
 
                     <form id="rekap-form" class="space-y-3">
                         <input type="hidden" id="tipe-transaksi">
-                        <div>
+                        
+                        <!-- Field Tanggal Umum / Standar -->
+                        <div id="wrapper-tanggal">
                             <label class="block text-xs font-medium text-gray-700">Tanggal</label>
-                            <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                            <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
                         </div>
-                        <div>
+
+                        <!-- Khusus Form ORDER PALLET (Tgl Pengajuan dari jam sistem/google, No PO, Nama Vendor) -->
+                        <div id="wrapper-order-fields" class="space-y-3 hidden">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Tanggal Pengajuan PO Pallet</label>
+                                <input type="date" id="order-tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-gray-50">
+                                <p class="text-[10px] text-emerald-600 mt-0.5">📅 Otomatis mengikuti tanggal sistem perangkat saat ini.</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Nomor PO (Acuan)</label>
+                                <input type="text" id="order-po" placeholder="Cth: PO/2026/08/001" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Nama Vendor</label>
+                                <input type="text" id="order-vendor" placeholder="Cth: PT Pallet Mandiri Sejahtera" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Field Standar untuk Non-Order -->
+                        <div id="wrapper-standard-desc">
                             <label id="label-po-desc" class="block text-xs font-medium text-gray-700">Keterangan / Nomor PO</label>
-                            <input type="text" id="po-number" placeholder="Masukkan keterangan..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                            <input type="text" id="po-number" placeholder="Masukkan keterangan..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
                         </div>
+
                         <div>
                             <label class="block text-xs font-medium text-gray-700">Jumlah Quantity (Palet)</label>
                             <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
                         </div>
+                        
                         <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-700 transition shadow-sm text-sm mt-2">Simpan Transaksi</button>
                     </form>
                 </div>
             </div>
 
-            <!-- 3. DAFTAR RIWAYAT MENU (Dengan Tab Kategori Terpisah) -->
+            <!-- 3. DAFTAR RIWAYAT MENU -->
             <div id="section-rekap" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-base font-bold text-gray-800">Riwayat Transaksi</h2>
                     <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Semua</button>
                 </div>
 
-                <!-- Sub-Tab Kategori Riwayat -->
                 <div class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-xl text-center">
                     <button onclick="switchRiwayatTab('RECEIPT')" id="r-tab-receipt" class="py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition">Receipt</button>
                     <button onclick="switchRiwayatTab('BEGINNING')" id="r-tab-begin" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Beginning</button>
@@ -136,7 +156,6 @@
                     <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Issue</button>
                 </div>
                 
-                <!-- Kontainer Daftar Data Sesuai Kategori -->
                 <div id="daftar-rekap" class="space-y-3 max-h-[45vh] overflow-y-auto pr-1">
                     <!-- Data dinamis dimuat di sini -->
                 </div>
@@ -162,7 +181,7 @@
         }
 
         let rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
-        let currentRiwayatCategory = 'RECEIPT'; // Default kategori riwayat yang ditampilkan
+        let currentRiwayatCategory = 'RECEIPT';
 
         const form = document.getElementById('rekap-form');
         const daftarRekap = document.getElementById('daftar-rekap');
@@ -185,7 +204,10 @@
         const formContainer = document.getElementById('form-container');
         const tipeInputHidden = document.getElementById('tipe-transaksi');
         const formTitleLabel = document.getElementById('form-title-label');
-        const labelPoDesc = document.getElementById('label-po-desc');
+        
+        const wrapperTanggal = document.getElementById('wrapper-tanggal');
+        const wrapperOrderFields = document.getElementById('wrapper-order-fields');
+        const wrapperStandardDesc = document.getElementById('wrapper-standard-desc');
 
         // Navigasi Tab Utama
         window.switchTab = function(target) {
@@ -208,7 +230,7 @@
             } else if (target === 'rekap') {
                 sectionRekap.classList.remove('hidden');
                 tabRekap.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
-                switchRiwayatTab('RECEIPT'); // Selalu reset ke tab Receipt saat menu riwayat dibuka
+                switchRiwayatTab('RECEIPT');
             }
         }
 
@@ -216,13 +238,11 @@
         window.switchRiwayatTab = function(category) {
             currentRiwayatCategory = category;
 
-            // Reset gaya tombol sub-tab
             document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
             document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
             document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
             document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
 
-            // Aktifkan gaya tombol yang dipilih
             if (category === 'RECEIPT') {
                 document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition";
             } else if (category === 'BEGINNING') {
@@ -241,22 +261,45 @@
             formContainer.classList.remove('hidden');
             tipeInputHidden.value = tipe;
             
-            if(tipe === 'BEGINNING') {
-                formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
-                labelPoDesc.innerText = "Keterangan / Catatan";
-                document.getElementById('po-number').placeholder = "Cth: Saldo Awal Gudang";
-            } else if(tipe === 'ORDER') {
+            // Reset nilai inputan form
+            form.reset();
+            document.getElementById('tanggal').valueAsDate = new Date();
+
+            if(tipe === 'ORDER') {
                 formTitleLabel.innerText = "Input Order Pallet";
-                labelPoDesc.innerText = "Nomor Order / Referensi";
-                document.getElementById('po-number').placeholder = "Cth: ORD-00123";
-            } else if(tipe === 'RECEIPT') {
-                formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
-                labelPoDesc.innerText = "Nomor PO Pallet Masuk";
-                document.getElementById('po-number').placeholder = "Cth: PO-PALLET-9982";
-            } else if(tipe === 'ISSUE') {
-                formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
-                labelPoDesc.innerText = "Tujuan / No. DO Pengeluaran";
-                document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
+                wrapperTanggal.classList.add('hidden');
+                wrapperStandardDesc.classList.add('hidden');
+                wrapperOrderFields.classList.remove('hidden');
+                
+                // Set tanggal otomatis dari jam sistem/google perangkat saat ini
+                document.getElementById('order-tanggal').valueAsDate = new Date();
+                document.getElementById('order-po').required = true;
+                document.getElementById('order-vendor').required = true;
+                document.getElementById('po-number').required = false;
+                document.getElementById('tanggal').required = false;
+            } else {
+                wrapperOrderFields.classList.add('hidden');
+                wrapperTanggal.classList.remove('hidden');
+                wrapperStandardDesc.classList.remove('hidden');
+                
+                document.getElementById('order-po').required = false;
+                document.getElementById('order-vendor').required = false;
+                document.getElementById('po-number').required = true;
+                document.getElementById('tanggal').required = true;
+
+                if(tipe === 'BEGINNING') {
+                    formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
+                    document.getElementById('label-po-desc').innerText = "Keterangan / Catatan";
+                    document.getElementById('po-number').placeholder = "Cth: Saldo Awal Gudang";
+                } else if(tipe === 'RECEIPT') {
+                    formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
+                    document.getElementById('label-po-desc').innerText = "Nomor PO Pallet Masuk";
+                    document.getElementById('po-number').placeholder = "Cth: PO-PALLET-9982";
+                } else if(tipe === 'ISSUE') {
+                    formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
+                    document.getElementById('label-po-desc').innerText = "Tujuan / No. DO Pengeluaran";
+                    document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
+                }
             }
 
             formContainer.scrollIntoView({ behavior: 'smooth' });
@@ -295,7 +338,6 @@
         function renderData() {
             daftarRekap.innerHTML = '';
 
-            // Filter data sesuai kategori yang sedang dipilih di sub-tab riwayat
             const filteredData = rekapData.filter(item => item.tipe === currentRiwayatCategory);
 
             if (filteredData.length === 0) {
@@ -304,15 +346,31 @@
             }
 
             filteredData.forEach((item) => {
-                // Cari index asli di array rekapData untuk keperluan hapus data
                 const originalIndex = rekapData.indexOf(item);
 
                 let badgeColor = "bg-gray-100 text-gray-700";
                 let sign = "";
-                if(item.tipe === 'BEGINNING') { badgeColor = "bg-gray-100 text-gray-800"; }
-                else if(item.tipe === 'ORDER') { badgeColor = "bg-amber-100 text-amber-800"; }
-                else if(item.tipe === 'RECEIPT') { badgeColor = "bg-blue-100 text-blue-800"; sign = "+"; }
-                else if(item.tipe === 'ISSUE') { badgeColor = "bg-red-100 text-red-800"; sign = "-"; }
+                let detailsHTML = `<p class="font-bold text-sm text-gray-800">${item.po}</p>`;
+
+                if(item.tipe === 'BEGINNING') { 
+                    badgeColor = "bg-gray-100 text-gray-800"; 
+                }
+                else if(item.tipe === 'ORDER') { 
+                    badgeColor = "bg-amber-100 text-amber-800";
+                    // Tampilkan format khusus untuk Order (No PO & Vendor)
+                    detailsHTML = `
+                        <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
+                        <p class="text-[11px] text-gray-500">Vendor: <span class="font-medium text-gray-700">${item.vendor}</span></p>
+                    `;
+                }
+                else if(item.tipe === 'RECEIPT') { 
+                    badgeColor = "bg-blue-100 text-blue-800"; 
+                    sign = "+"; 
+                }
+                else if(item.tipe === 'ISSUE') { 
+                    badgeColor = "bg-red-100 text-red-800"; 
+                    sign = "-"; 
+                }
 
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3.5 border border-gray-200 rounded-lg bg-white shadow-sm";
@@ -322,7 +380,7 @@
                             <span class="text-[10px] px-2 py-0.5 rounded font-bold ${badgeColor}">${item.tipe}</span>
                             <span class="text-[10px] text-gray-400">${item.tgl}</span>
                         </div>
-                        <p class="font-bold text-sm text-gray-800">${item.po}</p>
+                        ${detailsHTML}
                     </div>
                     <div class="text-right flex items-center gap-3">
                         <span class="font-bold text-base ${item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'}">${sign}${item.qty}</span>
@@ -335,12 +393,21 @@
         // Submit Form Transaksi
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const tgl = document.getElementById('tanggal').value;
             const tipe = document.getElementById('tipe-transaksi').value;
-            const po = document.getElementById('po-number').value.trim();
             const qty = parseInt(document.getElementById('quantity').value);
             
-            const newData = { tgl, tipe, po, qty };
+            let tgl, po, vendor = "";
+
+            if (tipe === 'ORDER') {
+                tgl = document.getElementById('order-tanggal').value;
+                po = document.getElementById('order-po').value.trim();
+                vendor = document.getElementById('order-vendor').value.trim();
+            } else {
+                tgl = document.getElementById('tanggal').value;
+                po = document.getElementById('po-number').value.trim();
+            }
+            
+            const newData = { tgl, tipe, po, vendor, qty };
             rekapData.unshift(newData);
             
             localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
