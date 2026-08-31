@@ -105,8 +105,9 @@
                         
                         <!-- Field Tanggal Umum / Standar -->
                         <div id="wrapper-tanggal">
-                            <label class="block text-xs font-medium text-gray-700">Tanggal</label>
+                            <label class="block text-xs font-medium text-gray-700">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Jam aktual (WIB) akan otomatis dicatat saat disimpan.</p>
                         </div>
 
                         <!-- Khusus Form ORDER PALLET (Tgl & Jam Otomatis, No PO, Nama Vendor) -->
@@ -359,7 +360,6 @@
                 }
                 else if(item.tipe === 'ORDER') { 
                     badgeColor = "bg-amber-100 text-amber-800";
-                    // Tampilkan format khusus untuk Order dengan Status "Waiting" (Belum Datang)
                     detailsHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
                             <span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Waiting</span>
@@ -402,14 +402,21 @@
             const qty = parseInt(document.getElementById('quantity').value);
             
             let tgl, po, vendor = "";
+            const now = new Date();
 
             if (tipe === 'ORDER') {
-                const now = new Date();
-                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 po = document.getElementById('order-po').value.trim();
                 vendor = document.getElementById('order-vendor').value.trim();
             } else {
-                tgl = document.getElementById('tanggal').value;
+                // Ambil tanggal yang dipilih user, lalu gabungkan dengan jam aktual saat tombol Simpan ditekan
+                const inputDateVal = document.getElementById('tanggal').value;
+                const dateObj = inputDateVal ? new Date(inputDateVal) : now;
+                
+                const formattedDateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                const formattedTimeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                tgl = `${formattedDateStr} ${formattedTimeStr} WIB`;
                 po = document.getElementById('po-number').value.trim();
             }
             
