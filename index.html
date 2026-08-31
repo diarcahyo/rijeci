@@ -15,10 +15,14 @@
         
         <!-- Header & Navigasi Utama -->
         <div class="p-4 sm:p-6 pb-3 border-b border-gray-100 bg-white">
-            <header class="mb-3 flex justify-between items-center">
+            <header class="mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-emerald-600">Pallet Inventory</h1>
                     <p class="text-gray-500 text-xs sm:text-sm">Dashboard Rekapitulasi & Stok Lanskap</p>
+                </div>
+                <!-- Indikator Waktu Aktual Real-Time -->
+                <div id="live-clock" class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 self-stretch sm:self-auto justify-center">
+                    <span>🕒</span> <span id="current-time-text">Memuat Waktu...</span>
                 </div>
             </header>
 
@@ -120,7 +124,7 @@
                         <div id="wrapper-tanggal">
                             <label class="block text-xs font-medium text-gray-700">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
-                            <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Jam aktual (WIB) akan otomatis dicatat saat disimpan.</p>
+                            <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Jam aktual sistem akan otomatis dicatat saat disimpan.</p>
                         </div>
 
                         <!-- Khusus Form ORDER PALLET -->
@@ -193,6 +197,19 @@
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
             });
         }
+
+        // Fungsi Jam Real-Time Berjalan
+        function updateLiveClock() {
+            const now = new Date();
+            const optionsDate = { day: '2-digit', month: 'short', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', optionsDate);
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            document.getElementById('current-time-text').innerText = `${dateStr} - ${timeStr} WIB`;
+        }
+
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
 
         let rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
         let currentRiwayatCategory = 'RECEIPT';
@@ -351,7 +368,6 @@
                 if (item.tipe === 'RECEIPT') {
                     totalReceipt += item.qty;
                     totalBegin += item.qty;
-                    // Sesuai permintaan: jumlah order (in) akan berkurang sesuai dengan yang diinput pada menu receipt (PO)
                     totalOrder -= item.qty;
                 }
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
