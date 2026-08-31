@@ -3,67 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Palet PWA</title>
+    <title>Dashboard Stock Pallet PWA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg p-6 flex flex-col justify-between">
-        <div>
-            <!-- Header -->
-            <header class="mb-6 flex justify-between items-center">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col justify-between">
+        
+        <!-- Header & Navigasi -->
+        <div class="p-6 pb-2">
+            <header class="mb-5 flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold text-emerald-600">Rekapitulasi Palet</h1>
-                    <p class="text-gray-500 text-sm">Input data palet per PO</p>
+                    <h1 class="text-2xl font-bold text-emerald-600">Pallet Inventory</h1>
+                    <p class="text-gray-500 text-sm">Dashboard Rekapitulasi & Stok</p>
                 </div>
             </header>
 
-            <!-- Navigasi Menu / Tab -->
-            <div class="flex bg-gray-100 p-1 rounded-xl mb-6">
-                <button id="tab-input" onclick="switchTab('input')" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition">Input Data</button>
-                <button id="tab-rekap" onclick="switchTab('rekap')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Lihat Rekapan</button>
-            </div>
-
-            <!-- Bagian 1: Form Input -->
-            <div id="section-input">
-                <form id="rekap-form" class="space-y-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Tanggal Kedatangan</label>
-                        <input type="date" id="tanggal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nomor PO Pallet</label>
-                        <input type="text" id="po-number" placeholder="Masukkan Nomor PO" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
-                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" required>
-                    </div>
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Simpan Rekap</button>
-                </form>
-            </div>
-
-            <!-- Bagian 2: Daftar Rekap (Tersembunyi Awalnya, Muncul Jika Diklik) -->
-            <div id="section-rekap" class="hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold text-gray-800">Daftar Rekap Masuk</h2>
-                    <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Data</button>
-                </div>
-                
-                <div id="daftar-rekap" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-                    <!-- Data akan dimuat secara dinamis -->
-                </div>
-
-                <div class="mt-6 p-4 bg-emerald-50 rounded-lg flex justify-between items-center border border-emerald-100 shadow-sm">
-                    <span class="font-bold text-emerald-800">Total Keseluruhan</span>
-                    <span id="total-qty" class="text-xl font-bold text-emerald-600">0</span>
-                </div>
+            <!-- Tab Menu Navigasi -->
+            <div class="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-xl mb-4">
+                <button id="tab-home" onclick="switchTab('home')" class="py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition">Dashboard</button>
+                <button id="tab-input" onclick="switchTab('input')" class="py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Input Transaksi</button>
+                <button id="tab-rekap" onclick="switchTab('rekap')" class="py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Riwayat</button>
             </div>
         </div>
 
-        <footer class="mt-8 text-center text-xs text-gray-400">
+        <!-- Konten Halaman (Scrollable Area) -->
+        <div class="px-6 flex-1 overflow-y-auto pb-6">
+
+            <!-- 1. DASHBOARD STOCK -->
+            <div id="section-home" class="space-y-4">
+                <!-- Ending Balance (Stock Akhir - Utama) -->
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md">
+                    <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
+                    <h2 id="db-ending" class="text-3xl font-extrabold mt-1">0</h2>
+                    <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
+                </div>
+
+                <!-- Grid Informasi Stock -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm">
+                        <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
+                        <p id="db-begin" class="text-lg font-bold text-gray-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl shadow-sm">
+                        <p class="text-[11px] text-blue-600 font-semibold uppercase">Receipt (Masuk)</p>
+                        <p id="db-receipt" class="text-lg font-bold text-blue-700 mt-1">+0</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-amber-50 border border-amber-100 p-3.5 rounded-xl shadow-sm">
+                        <p class="text-[11px] text-amber-600 font-semibold uppercase">Order (In)</p>
+                        <p id="db-order" class="text-lg font-bold text-amber-700 mt-1">0</p>
+                    </div>
+                    <div class="bg-red-50 border border-red-100 p-3.5 rounded-xl shadow-sm">
+                        <p class="text-[11px] text-red-600 font-semibold uppercase">Issue (Keluar)</p>
+                        <p id="db-issue" class="text-lg font-bold text-red-700 mt-1">-0</p>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl mt-2">
+                    <h3 class="text-sm font-bold text-emerald-800 mb-2">Aksi Cepat</h3>
+                    <div class="flex gap-2">
+                        <button onclick="switchTab('input')" class="flex-1 bg-emerald-600 text-white text-xs py-2.5 rounded-lg font-bold hover:bg-emerald-700 transition">+ Tambah Transaksi</button>
+                        <button onclick="switchTab('rekap')" class="flex-1 bg-white border border-emerald-300 text-emerald-700 text-xs py-2.5 rounded-lg font-semibold hover:bg-emerald-100 transition">Lihat Riwayat</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. INPUT FORM MENU -->
+            <div id="section-input" class="hidden">
+                <form id="rekap-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tanggal</label>
+                        <input type="date" id="tanggal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Jenis Transaksi</label>
+                        <select id="tipe-transaksi" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-white" required>
+                            <option value="BEGINNING">Beginning Balance (Stok Awal)</option>
+                            <option value="ORDER">Order Pallet (In)</option>
+                            <option value="RECEIPT">Receipt (Kedatangan)</option>
+                            <option value="ISSUE">Issue (Pengeluaran)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Keterangan / Nomor PO</label>
+                        <input type="text" id="po-number" placeholder="Cth: PO-9812 / Penyesuaian" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Jumlah Quantity (Palet)</label>
+                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md text-sm">Simpan Transaksi</button>
+                </form>
+            </div>
+
+            <!-- 3. DAFTAR RIWAYAT MENU -->
+            <div id="section-rekap" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold text-gray-800">Riwayat Transaksi</h2>
+                    <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Semua</button>
+                </div>
+                
+                <div id="daftar-rekap" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                    <!-- Data dinamis dimuat di sini -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-4 text-center text-xs text-gray-400 border-t border-gray-100">
             &copy; 2026 Rekap Palet PWA
         </footer>
     </div>
@@ -79,101 +132,151 @@
             });
         }
 
-        let rekapData = JSON.parse(localStorage.getItem('rekap_palet')) || [];
+        let rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
 
         const form = document.getElementById('rekap-form');
         const daftarRekap = document.getElementById('daftar-rekap');
-        const totalQty = document.getElementById('total-qty');
-        const btnReset = document.getElementById('btn-reset');
         
+        const sectionHome = document.getElementById('section-home');
         const sectionInput = document.getElementById('section-input');
         const sectionRekap = document.getElementById('section-rekap');
+        
+        const tabHome = document.getElementById('tab-home');
         const tabInput = document.getElementById('tab-input');
         const tabRekap = document.getElementById('tab-rekap');
 
-        // Fungsi Navigasi Tab / Menu
+        const dbBegin = document.getElementById('db-begin');
+        const dbOrder = document.getElementById('db-order');
+        const dbReceipt = document.getElementById('db-receipt');
+        const dbIssue = document.getElementById('db-issue');
+        const dbEnding = document.getElementById('db-ending');
+        const btnReset = document.getElementById('btn-reset');
+
+        // Navigasi Tab
         window.switchTab = function(target) {
-            if (target === 'input') {
+            sectionHome.classList.add('hidden');
+            sectionInput.classList.add('hidden');
+            sectionRekap.classList.add('hidden');
+
+            tabHome.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            tabInput.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            tabRekap.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+
+            if (target === 'home') {
+                sectionHome.classList.remove('hidden');
+                tabHome.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                updateDashboardStats();
+            } else if (target === 'input') {
                 sectionInput.classList.remove('hidden');
-                sectionRekap.classList.add('hidden');
-                tabInput.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
-                tabRekap.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            } else {
-                sectionInput.classList.add('hidden');
+                tabInput.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+            } else if (target === 'rekap') {
                 sectionRekap.classList.remove('hidden');
-                tabRekap.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
-                tabInput.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-                renderData(); // Render ulang saat tab rekap dibuka
+                tabRekap.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                renderData();
             }
         }
 
-        // Fungsi Render Data ke HTML
+        // Kalkulasi Statistik Dashboard Stock
+        function updateDashboardStats() {
+            let totalBegin = 0;
+            let totalOrder = 0;
+            let totalReceipt = 0;
+            let totalIssue = 0;
+
+            rekapData.forEach(item => {
+                if (item.tipe === 'BEGINNING') totalBegin += item.qty;
+                if (item.tipe === 'ORDER') totalOrder += item.qty;
+                if (item.tipe === 'RECEIPT') totalReceipt += item.qty;
+                if (item.tipe === 'ISSUE') totalIssue += item.qty;
+            });
+
+            // Ending Balance = Beginning + Order + Receipt - Issue
+            let totalEnding = (totalBegin + totalOrder + totalReceipt) - totalIssue;
+
+            dbBegin.innerText = totalBegin;
+            dbOrder.innerText = totalOrder;
+            dbReceipt.innerText = `+${totalReceipt}`;
+            dbIssue.innerText = `-${totalIssue}`;
+            dbEnding.innerText = totalEnding;
+        }
+
+        // Render Daftar Riwayat
         function renderData() {
             daftarRekap.innerHTML = '';
-            let total = 0;
 
             if (rekapData.length === 0) {
-                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data rekapitulasi.</p>`;
-                totalQty.innerText = '0';
+                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data transaksi.</p>`;
                 return;
             }
 
             rekapData.forEach((item, index) => {
-                total += item.qty;
+                let badgeColor = "bg-gray-100 text-gray-700";
+                let sign = "";
+                if(item.tipe === 'BEGINNING') { badgeColor = "bg-gray-100 text-gray-800"; }
+                else if(item.tipe === 'ORDER') { badgeColor = "bg-amber-100 text-amber-800"; }
+                else if(item.tipe === 'RECEIPT') { badgeColor = "bg-blue-100 text-blue-800"; sign = "+"; }
+                else if(item.tipe === 'ISSUE') { badgeColor = "bg-red-100 text-red-800"; sign = "-"; }
 
                 const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-4 border border-gray-200 rounded-lg bg-white shadow-sm hover:border-emerald-200 transition";
+                card.className = "flex justify-between items-center p-3.5 border border-gray-200 rounded-lg bg-white shadow-sm";
                 card.innerHTML = `
                     <div>
-                        <p class="text-[10px] font-semibold text-gray-400 uppercase">${item.tgl}</p>
-                        <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] px-2 py-0.5 rounded font-bold ${badgeColor}">${item.tipe}</span>
+                            <span class="text-[10px] text-gray-400">${item.tgl}</span>
+                        </div>
+                        <p class="font-bold text-sm text-gray-800">${item.po}</p>
                     </div>
                     <div class="text-right flex items-center gap-3">
-                        <span class="font-bold text-emerald-600 text-base">${item.qty} Palet</span>
+                        <span class="font-bold text-base ${item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'}">${sign}${item.qty}</span>
                         <button onclick="hapusItem(${index})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
             });
-
-            totalQty.innerText = total;
         }
 
-        // Event Listener Submit Form
+        // Submit Form Transaksi
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const tgl = document.getElementById('tanggal').value;
+            const tipe = document.getElementById('tipe-transaksi').value;
             const po = document.getElementById('po-number').value.trim();
             const qty = parseInt(document.getElementById('quantity').value);
             
-            const newData = { tgl, po, qty };
+            const newData = { tgl, tipe, po, qty };
             rekapData.unshift(newData);
             
-            localStorage.setItem('rekap_palet', JSON.stringify(rekapData));
+            localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
             
             form.reset();
             document.getElementById('tanggal').valueAsDate = new Date();
             
-            alert('Data rekap berhasil disimpan!');
-            switchTab('rekap'); // Otomatis pindah ke menu rekap untuk melihat hasil
+            alert('Transaksi berhasil disimpan!');
+            switchTab('home');
         });
 
-        // Fungsi Hapus Satuan
+        // Hapus Item Satuan
         window.hapusItem = function(index) {
-            if(confirm('Yakin ingin menghapus rekap PO ini?')) {
+            if(confirm('Yakin ingin menghapus transaksi ini?')) {
                 rekapData.splice(index, 1);
-                localStorage.setItem('rekap_palet', JSON.stringify(rekapData));
+                localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
                 renderData();
+                updateDashboardStats();
             }
         }
 
-        // Tombol Reset Semua Data
+        // Reset Semua Data
         btnReset.addEventListener('click', () => {
-            if(rekapData.length > 0 && confirm('Hapus seluruh riwayat rekap palet?')) {
+            if(rekapData.length > 0 && confirm('Hapus seluruh riwayat data stok palet?')) {
                 rekapData = [];
-                localStorage.removeItem('rekap_palet');
+                localStorage.removeItem('pallet_stock_data');
                 renderData();
+                updateDashboardStats();
             }
         });
+
+        // Inisialisasi awal
+        updateDashboardStats();
     </script>
 </body>
 </html>
