@@ -109,12 +109,12 @@
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
                         </div>
 
-                        <!-- Khusus Form ORDER PALLET (Tgl Pengajuan dari jam sistem/google, No PO, Nama Vendor) -->
+                        <!-- Khusus Form ORDER PALLET (Tgl Pengajuan otomatis, No PO, Nama Vendor) -->
                         <div id="wrapper-order-fields" class="space-y-3 hidden">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700">Tanggal Pengajuan PO Pallet</label>
-                                <input type="date" id="order-tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-gray-50">
-                                <p class="text-[10px] text-emerald-600 mt-0.5">📅 Otomatis mengikuti tanggal sistem perangkat saat ini.</p>
+                                <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Pengajuan PO Pallet</label>
+                                <input type="text" id="order-tanggal-jam" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-medium text-sm" readonly>
+                                <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-700">Nomor PO (Acuan)</label>
@@ -261,7 +261,6 @@
             formContainer.classList.remove('hidden');
             tipeInputHidden.value = tipe;
             
-            // Reset nilai inputan form
             form.reset();
             document.getElementById('tanggal').valueAsDate = new Date();
 
@@ -271,8 +270,11 @@
                 wrapperStandardDesc.classList.add('hidden');
                 wrapperOrderFields.classList.remove('hidden');
                 
-                // Set tanggal otomatis dari jam sistem/google perangkat saat ini
-                document.getElementById('order-tanggal').valueAsDate = new Date();
+                // Ambil format waktu aktual secara lokal / zona perangkat saat ini
+                const now = new Date();
+                const formattedNow = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                document.getElementById('order-tanggal-jam').value = formattedNow;
+
                 document.getElementById('order-po').required = true;
                 document.getElementById('order-vendor').required = true;
                 document.getElementById('po-number').required = false;
@@ -357,8 +359,11 @@
                 }
                 else if(item.tipe === 'ORDER') { 
                     badgeColor = "bg-amber-100 text-amber-800";
-                    // Tampilkan format khusus untuk Order (No PO & Vendor)
+                    // Tampilkan format khusus untuk Order dengan Status "Waiting"
                     detailsHTML = `
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Waiting</span>
+                        </div>
                         <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
                         <p class="text-[11px] text-gray-500">Vendor: <span class="font-medium text-gray-700">${item.vendor}</span></p>
                     `;
@@ -399,7 +404,8 @@
             let tgl, po, vendor = "";
 
             if (tipe === 'ORDER') {
-                tgl = document.getElementById('order-tanggal').value;
+                const now = new Date();
+                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 po = document.getElementById('order-po').value.trim();
                 vendor = document.getElementById('order-vendor').value.trim();
             } else {
