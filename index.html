@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-2 sm:p-4">
 
-    <!-- Container Utama Diubah Menjadi Mode Lanskap (Lebar Maksimal Diperbesar) -->
+    <!-- Container Utama Mode Lanskap -->
     <div class="w-full max-w-4xl mx-auto bg-white min-h-[90vh] sm:min-h-[600px] shadow-xl rounded-2xl flex flex-col justify-between overflow-hidden border border-gray-100">
         
         <!-- Header & Navigasi Utama -->
@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <!-- Grid Lanskap Menjadi 4 Kolom di Tampilan Lebar -->
+                <!-- Grid Lanskap Menjadi 4 Kolom -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm">
                         <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
@@ -107,7 +107,7 @@
                     <form id="rekap-form" class="space-y-3">
                         <input type="hidden" id="tipe-transaksi">
                         
-                        <!-- Khusus Form RECEIPT (Tgl & Jam Aktual Otomatis) -->
+                        <!-- Khusus Form RECEIPT -->
                         <div id="wrapper-receipt-fields" class="space-y-3 hidden">
                             <div>
                                 <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Kedatangan Pallet (PO)</label>
@@ -116,14 +116,14 @@
                             </div>
                         </div>
 
-                        <!-- Field Tanggal Umum / Standar (Untuk Beginning & Issue) -->
+                        <!-- Field Tanggal Umum -->
                         <div id="wrapper-tanggal">
                             <label class="block text-xs font-medium text-gray-700">Tanggal Transaksi</label>
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
                             <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Jam aktual (WIB) akan otomatis dicatat saat disimpan.</p>
                         </div>
 
-                        <!-- Khusus Form ORDER PALLET (Tgl & Jam Otomatis, No PO, Nama Vendor) -->
+                        <!-- Khusus Form ORDER PALLET -->
                         <div id="wrapper-order-fields" class="space-y-3 hidden">
                             <div>
                                 <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Pengajuan PO Pallet</label>
@@ -142,7 +142,7 @@
                             </div>
                         </div>
 
-                        <!-- Field Standar untuk Non-Order -->
+                        <!-- Field Standar -->
                         <div id="wrapper-standard-desc">
                             <label id="label-po-desc" class="block text-xs font-medium text-gray-700">Keterangan / Nomor PO</label>
                             <input type="text" id="po-number" placeholder="Masukkan keterangan..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
@@ -186,10 +186,8 @@
     </div>
 
     <script>
-        // Set tanggal otomatis hari ini
         document.getElementById('tanggal').valueAsDate = new Date();
 
-        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
@@ -226,7 +224,6 @@
         const wrapperOrderFields = document.getElementById('wrapper-order-fields');
         const wrapperStandardDesc = document.getElementById('wrapper-standard-desc');
 
-        // Navigasi Tab Utama
         window.switchTab = function(target) {
             sectionHome.classList.add('hidden');
             sectionInput.classList.add('hidden');
@@ -251,7 +248,6 @@
             }
         }
 
-        // Navigasi Sub-Tab Kategori Riwayat
         window.switchRiwayatTab = function(category) {
             currentRiwayatCategory = category;
 
@@ -273,7 +269,6 @@
             renderData();
         }
 
-        // Fungsi Memilih Sub Menu Input Transaksi Terpisah
         window.selectSubInput = function(tipe) {
             formContainer.classList.remove('hidden');
             tipeInputHidden.value = tipe;
@@ -352,7 +347,10 @@
 
             rekapData.forEach(item => {
                 if (item.tipe === 'BEGINNING') totalBegin += item.qty;
-                if (item.tipe === 'ORDER') totalOrder += item.qty;
+                if (item.tipe === 'ORDER') {
+                    // Sesuai permintaan: jumlah order (in) akan berkurang apabila menginput order pallet
+                    totalOrder -= item.qty;
+                }
                 if (item.tipe === 'RECEIPT') {
                     totalReceipt += item.qty;
                     totalBegin += item.qty;
@@ -369,7 +367,6 @@
             dbEnding.innerText = totalEnding;
         }
 
-        // Render Daftar Riwayat Berdasarkan Kategori Aktif
         function renderData() {
             daftarRekap.innerHTML = '';
 
@@ -392,6 +389,7 @@
                 }
                 else if(item.tipe === 'ORDER') { 
                     badgeColor = "bg-amber-100 text-amber-800";
+                    sign = "-";
                     detailsHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
                             <span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Waiting</span>
@@ -420,14 +418,13 @@
                         ${detailsHTML}
                     </div>
                     <div class="text-right flex items-center gap-3">
-                        <span class="font-bold text-base ${item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'}">${sign}${item.qty}</span>
+                        <span class="font-bold text-base ${item.tipe === 'RECEIPT' ? 'text-emerald-600' : (item.tipe === 'ORDER' ? 'text-amber-600' : 'text-red-600')}">${sign}${item.qty}</span>
                         <button onclick="hapusItem(${originalIndex})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
             });
         }
 
-        // Submit Form Transaksi
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const tipe = document.getElementById('tipe-transaksi').value;
@@ -468,7 +465,6 @@
             switchTab('home');
         });
 
-        // Hapus Item Satuan
         window.hapusItem = function(index) {
             if(confirm('Yakin ingin menghapus transaksi ini?')) {
                 rekapData.splice(index, 1);
@@ -478,7 +474,6 @@
             }
         }
 
-        // Reset Semua Data
         btnReset.addEventListener('click', () => {
             if(rekapData.length > 0 && confirm('Hapus seluruh riwayat data stok palet?')) {
                 rekapData = [];
@@ -488,7 +483,6 @@
             }
         });
 
-        // Inisialisasi awal
         updateDashboardStats();
     </script>
 </body>
