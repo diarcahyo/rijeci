@@ -109,7 +109,7 @@
                             <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
                         </div>
 
-                        <!-- Khusus Form ORDER PALLET (Tgl Pengajuan otomatis, No PO, Nama Vendor) -->
+                        <!-- Khusus Form ORDER PALLET (Tgl & Jam Otomatis, No PO, Nama Vendor) -->
                         <div id="wrapper-order-fields" class="space-y-3 hidden">
                             <div>
                                 <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Pengajuan PO Pallet</label>
@@ -359,7 +359,7 @@
                 }
                 else if(item.tipe === 'ORDER') { 
                     badgeColor = "bg-amber-100 text-amber-800";
-                    // Tampilkan format khusus untuk Order dengan Status "Waiting"
+                    // Tampilkan format khusus untuk Order dengan Status "Waiting" (Belum Datang)
                     detailsHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
                             <span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Waiting</span>
