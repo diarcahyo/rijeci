@@ -12,6 +12,7 @@
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col justify-between">
         
+        <!-- Header & Navigasi Utama -->
         <div class="p-6 pb-2">
             <header class="mb-4 flex justify-between items-center">
                 <div>
@@ -20,6 +21,7 @@
                 </div>
             </header>
 
+            <!-- Tab Menu Navigasi -->
             <div class="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-xl mb-4">
                 <button id="tab-home" onclick="switchTab('home')" class="py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition">Dashboard</button>
                 <button id="tab-input" onclick="switchTab('input')" class="py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Input Transaksi</button>
@@ -27,15 +29,19 @@
             </div>
         </div>
 
+        <!-- Konten Halaman (Scrollable Area) -->
         <div class="px-6 flex-1 overflow-y-auto pb-6">
 
+            <!-- 1. DASHBOARD STOCK -->
             <div id="section-home" class="space-y-4">
+                <!-- Ending Balance (Stock Akhir - Utama) -->
                 <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md">
                     <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
                     <h2 id="db-ending" class="text-3xl font-extrabold mt-1">0</h2>
                     <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
                 </div>
 
+                <!-- Grid Informasi Stock -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm">
                         <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
@@ -67,6 +73,7 @@
                 </div>
             </div>
 
+            <!-- 2. INPUT TRANSAKSI MENU (Dengan Sub-Menu Terpisah) -->
             <div id="section-input" class="hidden space-y-4">
                 <h2 class="text-base font-bold text-gray-800">Pilih Jenis Transaksi Input</h2>
                 
@@ -114,18 +121,30 @@
                 </div>
             </div>
 
+            <!-- 3. DAFTAR RIWAYAT MENU (Dengan Tab Kategori Terpisah) -->
             <div id="section-rekap" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-base font-bold text-gray-800">Riwayat Transaksi</h2>
                     <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Semua</button>
                 </div>
+
+                <!-- Sub-Tab Kategori Riwayat -->
+                <div class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-xl text-center">
+                    <button onclick="switchRiwayatTab('RECEIPT')" id="r-tab-receipt" class="py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition">Receipt</button>
+                    <button onclick="switchRiwayatTab('BEGINNING')" id="r-tab-begin" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Beginning</button>
+                    <button onclick="switchRiwayatTab('ORDER')" id="r-tab-order" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Order</button>
+                    <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Issue</button>
+                </div>
                 
-                <div id="daftar-rekap" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
-                    </div>
+                <!-- Kontainer Daftar Data Sesuai Kategori -->
+                <div id="daftar-rekap" class="space-y-3 max-h-[45vh] overflow-y-auto pr-1">
+                    <!-- Data dinamis dimuat di sini -->
+                </div>
             </div>
 
         </div>
 
+        <!-- Footer -->
         <footer class="p-4 text-center text-xs text-gray-400 border-t border-gray-100">
             &copy; 2026 Rekap Palet PWA
         </footer>
@@ -143,6 +162,7 @@
         }
 
         let rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
+        let currentRiwayatCategory = 'RECEIPT'; // Default kategori riwayat yang ditampilkan
 
         const form = document.getElementById('rekap-form');
         const daftarRekap = document.getElementById('daftar-rekap');
@@ -184,12 +204,36 @@
             } else if (target === 'input') {
                 sectionInput.classList.remove('hidden');
                 tabInput.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
-                closeSubInput(); // Reset form sub menu saat tab dibuka
+                closeSubInput();
             } else if (target === 'rekap') {
                 sectionRekap.classList.remove('hidden');
                 tabRekap.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
-                renderData();
+                switchRiwayatTab('RECEIPT'); // Selalu reset ke tab Receipt saat menu riwayat dibuka
             }
+        }
+
+        // Navigasi Sub-Tab Kategori Riwayat
+        window.switchRiwayatTab = function(category) {
+            currentRiwayatCategory = category;
+
+            // Reset gaya tombol sub-tab
+            document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+
+            // Aktifkan gaya tombol yang dipilih
+            if (category === 'RECEIPT') {
+                document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition";
+            } else if (category === 'BEGINNING') {
+                document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-gray-800 shadow-sm transition";
+            } else if (category === 'ORDER') {
+                document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-amber-600 shadow-sm transition";
+            } else if (category === 'ISSUE') {
+                document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-red-600 shadow-sm transition";
+            }
+
+            renderData();
         }
 
         // Fungsi Memilih Sub Menu Input Transaksi Terpisah
@@ -197,7 +241,6 @@
             formContainer.classList.remove('hidden');
             tipeInputHidden.value = tipe;
             
-            // Atur Label Dinamis Berdasarkan Tipe
             if(tipe === 'BEGINNING') {
                 formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
                 labelPoDesc.innerText = "Keterangan / Catatan";
@@ -216,7 +259,6 @@
                 document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
             }
 
-            // Scroll otomatis ke bawah agar form terlihat
             formContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -240,7 +282,6 @@
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
             });
 
-            // Ending Balance = Beginning + Order + Receipt - Issue
             let totalEnding = (totalBegin + totalOrder + totalReceipt) - totalIssue;
 
             dbBegin.innerText = totalBegin;
@@ -250,16 +291,22 @@
             dbEnding.innerText = totalEnding;
         }
 
-        // Render Daftar Riwayat
+        // Render Daftar Riwayat Berdasarkan Kategori Aktif
         function renderData() {
             daftarRekap.innerHTML = '';
 
-            if (rekapData.length === 0) {
-                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data transaksi.</p>`;
+            // Filter data sesuai kategori yang sedang dipilih di sub-tab riwayat
+            const filteredData = rekapData.filter(item => item.tipe === currentRiwayatCategory);
+
+            if (filteredData.length === 0) {
+                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data untuk kategori ${currentRiwayatCategory}.</p>`;
                 return;
             }
 
-            rekapData.forEach((item, index) => {
+            filteredData.forEach((item) => {
+                // Cari index asli di array rekapData untuk keperluan hapus data
+                const originalIndex = rekapData.indexOf(item);
+
                 let badgeColor = "bg-gray-100 text-gray-700";
                 let sign = "";
                 if(item.tipe === 'BEGINNING') { badgeColor = "bg-gray-100 text-gray-800"; }
@@ -279,7 +326,7 @@
                     </div>
                     <div class="text-right flex items-center gap-3">
                         <span class="font-bold text-base ${item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'}">${sign}${item.qty}</span>
-                        <button onclick="hapusItem(${index})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
+                        <button onclick="hapusItem(${originalIndex})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
             });
