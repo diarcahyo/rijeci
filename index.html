@@ -45,7 +45,7 @@
                             <span class="text-[10px] bg-emerald-700 bg-opacity-40 text-emerald-100 px-2 py-0.5 rounded font-medium">🕒 Waktu Aktual: <span id="dashboard-live-date">...</span></span>
                         </div>
                         <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
-                        <h2 id="db-ending" class="text-3xl sm:text-4xl font-extrabold mt-1">0</h2>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-1"><span id="db-ending">0</span> <span class="text-lg sm:text-xl font-normal opacity-90">pcs</span></h2>
                         <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
                     </div>
                     <div class="hidden sm:block text-right opacity-80">
@@ -53,23 +53,35 @@
                     </div>
                 </div>
 
-                <!-- Grid Lanskap Menjadi 4 Kolom -->
+                <!-- Grid Lanskap Menjadi 4 Kolom dengan Icon & Satuan Pcs -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm">
-                        <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
-                        <p id="db-begin" class="text-lg sm:text-xl font-bold text-gray-800 mt-1">0</p>
+                    <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
+                            <span class="text-sm bg-gray-100 p-1.5 rounded-lg">📦</span>
+                        </div>
+                        <p class="text-lg sm:text-xl font-bold text-gray-800"><span id="db-begin">0</span> <span class="text-xs font-medium text-gray-500">pcs</span></p>
                     </div>
-                    <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl shadow-sm">
-                        <p class="text-[11px] text-blue-600 font-semibold uppercase">Receipt (Masuk)</p>
-                        <p id="db-receipt" class="text-lg sm:text-xl font-bold text-blue-700 mt-1">+0</p>
+                    <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-[11px] text-blue-600 font-semibold uppercase">Receipt (Masuk)</p>
+                            <span class="text-sm bg-blue-100 p-1.5 rounded-lg">📥</span>
+                        </div>
+                        <p class="text-lg sm:text-xl font-bold text-blue-700"><span id="db-receipt">+0</span> <span class="text-xs font-medium text-blue-500">pcs</span></p>
                     </div>
-                    <div class="bg-amber-50 border border-amber-100 p-3.5 rounded-xl shadow-sm">
-                        <p class="text-[11px] text-amber-600 font-semibold uppercase">Order (In)</p>
-                        <p id="db-order" class="text-lg sm:text-xl font-bold text-amber-700 mt-1">0</p>
+                    <div class="bg-amber-50 border border-amber-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-[11px] text-amber-600 font-semibold uppercase">Order (In)</p>
+                            <span class="text-sm bg-amber-100 p-1.5 rounded-lg">🛒</span>
+                        </div>
+                        <p class="text-lg sm:text-xl font-bold text-amber-700"><span id="db-order">0</span> <span class="text-xs font-medium text-amber-500">pcs</span></p>
                     </div>
-                    <div class="bg-red-50 border border-red-100 p-3.5 rounded-xl shadow-sm">
-                        <p class="text-[11px] text-red-600 font-semibold uppercase">Issue (Keluar)</p>
-                        <p id="db-issue" class="text-lg sm:text-xl font-bold text-red-700 mt-1">-0</p>
+                    <div class="bg-red-50 border border-red-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-[11px] text-red-600 font-semibold uppercase">Issue (Keluar)</p>
+                            <span class="text-sm bg-red-100 p-1.5 rounded-lg">📤</span>
+                        </div>
+                        <p class="text-lg sm:text-xl font-bold text-red-700"><span id="db-issue">-0</span> <span class="text-xs font-medium text-red-500">pcs</span></p>
                     </div>
                 </div>
 
@@ -443,7 +455,7 @@
                         ${detailsHTML}
                     </div>
                     <div class="text-right flex items-center gap-3">
-                        <span class="font-bold text-base ${item.tipe === 'RECEIPT' ? 'text-blue-600' : (item.tipe === 'ORDER' ? 'text-amber-600' : (item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'))}">${sign}${item.qty}</span>
+                        <span class="font-bold text-base ${item.tipe === 'RECEIPT' ? 'text-blue-600' : (item.tipe === 'ORDER' ? 'text-amber-600' : (item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'))}">${sign}${item.qty} pcs</span>
                         <button onclick="hapusItem(${originalIndex})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
