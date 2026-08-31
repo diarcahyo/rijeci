@@ -41,6 +41,9 @@
             <div id="section-home" class="space-y-4">
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md flex justify-between items-center">
                     <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] bg-emerald-700 bg-opacity-40 text-emerald-100 px-2 py-0.5 rounded font-medium">🕒 Waktu Aktual: <span id="dashboard-live-date">...</span></span>
+                        </div>
                         <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
                         <h2 id="db-ending" class="text-3xl sm:text-4xl font-extrabold mt-1">0</h2>
                         <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
@@ -198,14 +201,22 @@
             });
         }
 
-        // Fungsi Jam Real-Time Berjalan
+        // Fungsi Jam Real-Time Berjalan (Menyesuaikan waktu aktual sistem/Google)
         function updateLiveClock() {
             const now = new Date();
-            const optionsDate = { day: '2-digit', month: 'short', year: 'numeric' };
+            const optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
             const dateStr = now.toLocaleDateString('id-ID', optionsDate);
             const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
-            document.getElementById('current-time-text').innerText = `${dateStr} - ${timeStr} WIB`;
+            const fullStr = `${dateStr} - ${timeStr} WIB`;
+            
+            // Update teks pada header atas
+            const headerClock = document.getElementById('current-time-text');
+            if (headerClock) headerClock.innerText = fullStr;
+
+            // Update teks pada card utama dashboard
+            const dashboardClock = document.getElementById('dashboard-live-date');
+            if (dashboardClock) dashboardClock.innerText = fullStr;
         }
 
         setInterval(updateLiveClock, 1000);
