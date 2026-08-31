@@ -208,6 +208,23 @@
         </footer>
     </div>
 
+    <!-- Modal Pop-up Validasi PO -->
+    <div id="validation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 transform transition-all">
+            <div id="modal-icon" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mx-auto"></div>
+            <div class="text-center">
+                <h3 id="modal-title" class="text-lg font-bold text-gray-800"></h3>
+                <p id="modal-message" class="text-sm text-gray-600 mt-2"></p>
+            </div>
+            <div id="modal-details" class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 hidden border border-gray-200 text-left">
+                <!-- Detail order yang sesuai akan muncul di sini -->
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button id="modal-btn-close" onclick="closeModal()" class="w-full py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('tanggal').valueAsDate = new Date();
 
@@ -265,6 +282,14 @@
         const wrapperReceiptFields = document.getElementById('wrapper-receipt-fields');
         const wrapperOrderFields = document.getElementById('wrapper-order-fields');
         const wrapperStandardDesc = document.getElementById('wrapper-standard-desc');
+
+        // Modal Elemen
+        const validationModal = document.getElementById('validation-modal');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalDetails = document.getElementById('modal-details');
+        const modalBtnClose = document.getElementById('modal-btn-close');
 
         window.switchTab = function(target) {
             sectionHome.classList.add('hidden');
@@ -380,6 +405,43 @@
             document.getElementById('tanggal').valueAsDate = new Date();
         }
 
+        window.closeModal = function() {
+            validationModal.classList.add('hidden');
+        }
+
+        function showPopupModal(isSuccess, title, message, detailsObj = null) {
+            if (isSuccess) {
+                modalIcon.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto";
+                modalIcon.innerText = "✓";
+                modalTitle.className = "text-lg font-bold text-emerald-700";
+                modalBtnClose.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition";
+            } else {
+                modalIcon.className = "w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl mx-auto";
+                modalIcon.innerText = "✕";
+                modalTitle.className = "text-lg font-bold text-red-700";
+                modalBtnClose.className = "w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-xs transition";
+            }
+
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+
+            if (detailsObj) {
+                modalDetails.classList.remove('hidden');
+                modalDetails.innerHTML = `
+                    <p class="font-semibold text-gray-700 mb-1">Detail Order Ditemukan:</p>
+                    <p><span class="text-gray-500">No. PO:</span> <span class="font-bold text-gray-800">${detailsObj.po}</span></p>
+                    <p><span class="text-gray-500">Vendor:</span> <span class="font-medium text-gray-700">${detailsObj.vendor}</span></p>
+                    <p><span class="text-gray-500">Quantity:</span> <span class="font-bold text-amber-600">${detailsObj.qty} pcs</span></p>
+                    <p><span class="text-gray-500">Tanggal Order:</span> <span class="text-gray-600">${detailsObj.tgl}</span></p>
+                `;
+            } else {
+                modalDetails.classList.add('hidden');
+                modalDetails.innerHTML = '';
+            }
+
+            validationModal.classList.remove('hidden');
+        }
+
         // Kalkulasi Statistik Dashboard Stock
         function updateDashboardStats() {
             let totalBegin = 0;
@@ -476,16 +538,39 @@
             let tgl, po, vendor, nopol = "";
             const now = new Date();
 
-            if (tipe === 'ORDER' || tipe === 'RECEIPT') {
-                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+            if (tipe === 'RECEIPT') {
+                po = document.getElementById('po-number').value.trim();
                 
-                if (tipe === 'ORDER') {
-                    po = document.getElementById('order-po').value.trim();
-                    vendor = document.getElementById('order-vendor').value.trim();
-                } else {
-                    po = document.getElementById('po-number').value.trim();
-                    nopol = document.getElementById('receipt-nopol').value.trim().toUpperCase();
+                // Validasi pencocokan Nomor PO dengan riwayat ORDER yang ada
+                const matchedOrder = rekapData.find(item => item.tipe === 'ORDER' && item.po.toLowerCase() === po.toLowerCase());
+
+                if (!matchedOrder) {
+                    showPopupModal(false, "Nomor PO Tidak Sesuai", `Nomor PO "${po}" tidak ditemukan pada riwayat Order Pallet. Transaksi Receipt tidak dapat dilakukan.`);
+                    return;
                 }
+
+                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                nopol = document.getElementById('receipt-nopol').value.trim().toUpperCase();
+
+                const newData = { tgl, tipe, po, vendor: matchedOrder.vendor, nopol, qty };
+                rekapData.unshift(newData);
+                localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
+                
+                form.reset();
+                document.getElementById('tanggal').valueAsDate = new Date();
+                
+                showPopupModal(true, "Receipt Berhasil Disimpan", "Data kedatangan palet berhasil diverifikasi dan direkap.", matchedOrder);
+                setTimeout(() => {
+                    closeModal();
+                    switchTab('home');
+                }, 1500);
+                return;
+            }
+
+            if (tipe === 'ORDER') {
+                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                po = document.getElementById('order-po').value.trim();
+                vendor = document.getElementById('order-vendor').value.trim();
             } else {
                 const inputDateVal = document.getElementById('tanggal').value;
                 const dateObj = inputDateVal ? new Date(inputDateVal) : now;
