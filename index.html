@@ -349,14 +349,13 @@
                 if (item.tipe === 'ORDER') totalOrder += item.qty;
                 if (item.tipe === 'RECEIPT') {
                     totalReceipt += item.qty;
-                    // Receipt (PO) juga ditambahkan secara akumulatif ke Beginning Balance
+                    // Setiap input Receipt (PO) otomatis menambahkan jumlah quantity ke Beginning Balance
                     totalBegin += item.qty;
                 }
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
             });
 
-            // Rumus Ending Balance dengan memasukkan akumulasi Receipt ke Beginning Balance:
-            // (Beginning + Receipt + Order + Receipt) - Issue -> karena Receipt sudah masuk ke Beginning, rumusnya menjadi:
+            // Ending Balance dihitung dari (Beginning Balance yang sudah termasuk Receipt + Order) dikurang Issue
             let totalEnding = (totalBegin + totalOrder) - totalIssue;
 
             dbBegin.innerText = totalBegin;
@@ -480,7 +479,7 @@
             if(rekapData.length > 0 && confirm('Hapus seluruh riwayat data stok palet?')) {
                 rekapData = [];
                 localStorage.removeItem('pallet_stock_data');
-5                renderData();
+                renderData();
                 updateDashboardStats();
             }
         });
