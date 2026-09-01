@@ -219,7 +219,8 @@
             <div id="modal-details" class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 hidden border border-gray-200 text-left">
                 <!-- Detail order yang sesuai akan muncul di sini -->
             </div>
-            <div class="flex gap-2 pt-2">
+            <!-- Area Tombol Dinamis (Bisa 1 tombol Tutup atau 2 tombol Pilihan Benar/Salah) -->
+            <div id="modal-footer-buttons" class="flex gap-2 pt-2">
                 <button id="modal-btn-close" onclick="closeModal()" class="w-full py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
             </div>
         </div>
@@ -289,7 +290,7 @@
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
         const modalDetails = document.getElementById('modal-details');
-        const modalBtnClose = document.getElementById('modal-btn-close');
+        const modalFooterButtons = document.getElementById('modal-footer-buttons');
 
         window.switchTab = function(target) {
             sectionHome.classList.add('hidden');
@@ -409,17 +410,16 @@
             validationModal.classList.add('hidden');
         }
 
-        function showPopupModal(isSuccess, title, message, detailsObj = null) {
+        // Fungsi menampilkan Pop-up dengan opsi Benar / Salah (Konfirmasi) atau Tutup (Pemberitahuan)
+        function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null) {
             if (isSuccess) {
                 modalIcon.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto";
                 modalIcon.innerText = "✓";
                 modalTitle.className = "text-lg font-bold text-emerald-700";
-                modalBtnClose.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition";
             } else {
                 modalIcon.className = "w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl mx-auto";
                 modalIcon.innerText = "✕";
                 modalTitle.className = "text-lg font-bold text-red-700";
-                modalBtnClose.className = "w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-xs transition";
             }
 
             modalTitle.innerText = title;
@@ -437,6 +437,25 @@
             } else {
                 modalDetails.classList.add('hidden');
                 modalDetails.innerHTML = '';
+            }
+
+            // Atur tombol di footer modal berdasarkan apakah ini pilihan benar/salah atau sekadar pemberitahuan biasa
+            if (isConfirmation) {
+                modalFooterButtons.innerHTML = `
+                    <button onclick="closeModal()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs transition">Salah (Batal)</button>
+                    <button id="modal-btn-confirm" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition">Benar (Simpan)</button>
+                `;
+                if (onConfirmCallback) {
+                    document.getElementById('modal-btn-confirm').onclick = () => {
+                        closeModal();
+                        onConfirmCallback();
+                    };
+                }
+            } else {
+                let btnColorClass = isSuccess ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700";
+                modalFooterButtons.innerHTML = `
+                    <button id="modal-btn-close" onclick="closeModal()" class="w-full ${btnColorClass} text-white py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
+                `;
             }
 
             validationModal.classList.remove('hidden');
@@ -545,6 +564,7 @@
                 const matchedOrder = rekapData.find(item => item.tipe === 'ORDER' && item.po.toLowerCase() === po.toLowerCase());
 
                 if (!matchedOrder) {
+                    // Jika PO tidak sesuai, tampilkan pop-up pemberitahuan biasa (Tutup)
                     showPopupModal(false, "Nomor PO Tidak Sesuai", `Nomor PO "${po}" tidak ditemukan pada riwayat Order Pallet. Transaksi Receipt tidak dapat dilakukan.`);
                     return;
                 }
@@ -552,18 +572,31 @@
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 nopol = document.getElementById('receipt-nopol').value.trim().toUpperCase();
 
-                const newData = { tgl, tipe, po, vendor: matchedOrder.vendor, nopol, qty };
-                rekapData.unshift(newData);
-                localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
-                
-                form.reset();
-                document.getElementById('tanggal').valueAsDate = new Date();
-                
-                showPopupModal(true, "Receipt Berhasil Disimpan", "Data kedatangan palet berhasil diverifikasi dan direkap.", matchedOrder);
-                setTimeout(() => {
-                    closeModal();
-                    switchTab('home');
-                }, 1500);
+                // Fungsi eksekusi penyimpanan transaksi Receipt setelah tombol "Benar" diklik di pop-up
+                const executeSaveReceipt = () => {
+                    const newData = { tgl, tipe, po, vendor: matchedOrder.vendor, nopol, qty };
+                    rekapData.unshift(newData);
+                    localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
+                    
+                    form.reset();
+                    document.getElementById('tanggal').valueAsDate = new Date();
+                    
+                    showPopupModal(true, "Receipt Berhasil Disimpan", "Data kedatangan palet berhasil diverifikasi dan direkap.", matchedOrder, false);
+                    setTimeout(() => {
+                        closeModal();
+                        switchTab('home');
+                    }, 1500);
+                };
+
+                // Jika PO sesuai, tampilkan pop-up konfirmasi pilihan Benar (Simpan) atau Salah (Batal)
+                showPopupModal(
+                    true, 
+                    "Konfirmasi Data PO", 
+                    "Nomor PO sesuai dengan riwayat order. Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?", 
+                    matchedOrder, 
+                    true, 
+                    executeSaveReceipt
+                );
                 return;
             }
 
