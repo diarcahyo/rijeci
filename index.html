@@ -135,7 +135,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-700">Nomor Polisi (Nopol) Kendaraan</label>
-                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm uppercase">
+                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm uppercase" required>
                             </div>
                         </div>
 
@@ -226,6 +226,20 @@
         </div>
     </div>
 
+    <!-- Modal List Nopol Kendaraan -->
+    <div id="nopol-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-gray-800">Daftar Nopol Pengiriman PO</h3>
+                <button onclick="closeNopolModal()" class="text-gray-400 hover:text-gray-600 text-xs font-bold">✕</button>
+            </div>
+            <div id="nopol-list-content" class="space-y-2 max-h-48 overflow-y-auto text-xs">
+                <!-- List nopol dinamis -->
+            </div>
+            <button onclick="closeNopolModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-xl font-bold text-xs transition">Tutup</button>
+        </div>
+    </div>
+
     <script>
         document.getElementById('tanggal').valueAsDate = new Date();
 
@@ -291,6 +305,9 @@
         const modalMessage = document.getElementById('modal-message');
         const modalDetails = document.getElementById('modal-details');
         const modalFooterButtons = document.getElementById('modal-footer-buttons');
+
+        const nopolModal = document.getElementById('nopol-modal');
+        const nopolListContent = document.getElementById('nopol-list-content');
 
         window.switchTab = function(target) {
             sectionHome.classList.add('hidden');
@@ -374,6 +391,7 @@
                 document.getElementById('order-po').required = false;
                 document.getElementById('order-vendor').required = false;
                 document.getElementById('po-number').required = true;
+                document.getElementById('receipt-nopol').required = true;
                 document.getElementById('tanggal').required = false;
             } else {
                 wrapperOrderFields.classList.add('hidden');
@@ -408,6 +426,32 @@
 
         window.closeModal = function() {
             validationModal.classList.add('hidden');
+        }
+
+        window.closeNopolModal = function() {
+            nopolModal.classList.add('hidden');
+        }
+
+        window.showNopolList = function(poNumber) {
+            const receipts = rekapData.filter(item => item.tipe === 'RECEIPT' && item.po.toLowerCase() === poNumber.toLowerCase());
+            
+            nopolListContent.innerHTML = '';
+            if (receipts.length === 0) {
+                nopolListContent.innerHTML = `<p class="text-gray-400 text-center py-3">Belum ada nopol tercatat untuk PO ini.</p>`;
+            } else {
+                receipts.forEach((r, idx) => {
+                    nopolListContent.innerHTML += `
+                        <div class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-lg">
+                            <div>
+                                <p class="font-bold text-gray-800">${idx + 1}. Nopol: <span class="text-blue-600">${r.nopol || '-'}</span></p>
+                                <p class="text-[10px] text-gray-400">${r.tgl}</p>
+                            </div>
+                            <span class="font-bold text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">+${r.qty} pcs</span>
+                        </div>
+                    `;
+                });
+            }
+            nopolModal.classList.remove('hidden');
         }
 
         function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null) {
@@ -505,13 +549,26 @@
                     badgeColor = "bg-gray-100 text-gray-800"; 
                 }
                 else if(item.tipe === 'ORDER') { 
+                    // Hitung total receipt untuk PO ini
+                    let totalReceiptForPO = 0;
+                    rekapData.forEach(r => {
+                        if (r.tipe === 'RECEIPT' && r.po.toLowerCase() === item.po.toLowerCase()) {
+                            totalReceiptForPO += r.qty;
+                        }
+                    });
+
+                    const isFullyArrived = totalReceiptForPO >= item.qty;
+                    const badgeStatusText = isFullyArrived ? "Arrived" : "Waiting";
+                    const badgeStatusClass = isFullyArrived ? "bg-emerald-500 text-white" : "bg-amber-500 text-white";
+
                     badgeColor = "bg-amber-100 text-amber-800";
                     detailsHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Waiting</span>
+                            <span class="text-[9px] ${badgeStatusClass} px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">${badgeStatusText}</span>
+                            <button onclick="showNopolList('${item.po}')" class="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded font-semibold hover:bg-blue-100 transition">🚛 Cek Nopol</button>
                         </div>
                         <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
-                        <p class="text-[11px] text-gray-500">Vendor: <span class="font-medium text-gray-700">${item.vendor}</span></p>
+                        <p class="text-[11px] text-gray-500">Vendor: <span class="font-medium text-gray-700">${item.vendor}</span> | Datang: ${totalReceiptForPO}/${item.qty} pcs</p>
                     `;
                 }
                 else if(item.tipe === 'RECEIPT') { 
