@@ -431,7 +431,7 @@
                     <p class="font-semibold text-gray-700 mb-1">Detail Order Ditemukan:</p>
                     <p><span class="text-gray-500">No. PO:</span> <span class="font-bold text-gray-800">${detailsObj.po}</span></p>
                     <p><span class="text-gray-500">Vendor:</span> <span class="font-medium text-gray-700">${detailsObj.vendor}</span></p>
-                    <p><span class="text-gray-500">Quantity:</span> <span class="font-bold text-amber-600">${detailsObj.qty} pcs</span></p>
+                    <p><span class="text-gray-500">Quantity Sisa/Order:</span> <span class="font-bold text-amber-600">${detailsObj.qty} pcs</span></p>
                     <p><span class="text-gray-500">Tanggal Order:</span> <span class="text-gray-600">${detailsObj.tgl}</span></p>
                 `;
             } else {
@@ -479,13 +479,11 @@
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
             });
 
-            let totalEnding = (totalBegin + totalOrder) - totalIssue;
-
             dbBegin.innerText = totalBegin;
             dbOrder.innerText = totalOrder;
             dbReceipt.innerText = totalReceipt;
             dbIssue.innerText = totalIssue;
-            dbEnding.innerText = totalEnding;
+            dbEnding.innerText = (totalBegin + totalOrder) - totalIssue;
         }
 
         function renderData() {
@@ -560,17 +558,34 @@
             if (tipe === 'RECEIPT') {
                 po = document.getElementById('po-number').value.trim();
                 
-                // Validasi pencocokan Nomor PO dengan riwayat ORDER yang ada
+                // 1. Cek apakah Nomor PO ada di riwayat Order
                 const matchedOrder = rekapData.find(item => item.tipe === 'ORDER' && item.po.toLowerCase() === po.toLowerCase());
 
                 if (!matchedOrder) {
-                    // Jika PO tidak sesuai, tampilkan pop-up pemberitahuan biasa (Tutup)
                     showPopupModal(false, "Nomor PO Tidak Sesuai", `Nomor PO "${po}" tidak ditemukan pada riwayat Order Pallet. Transaksi Receipt tidak dapat dilakukan.`);
+                    return;
+                }
+
+                // 2. Hitung total qty yang sudah ter-receipt sebelumnya untuk PO ini agar tidak melebihi sisa order (mencegah minus)
+                let totalReceiptForThisPO = 0;
+                rekapData.forEach(item => {
+                    if (item.tipe === 'RECEIPT' && item.po.toLowerCase() === po.toLowerCase()) {
+                        totalReceiptForThisPO += item.qty;
+                    }
+                });
+
+                const remainingOrderQty = matchedOrder.qty - totalReceiptForThisPO;
+
+                if (qty > remainingOrderQty) {
+                    showPopupModal(false, "Quantity Melebihi Sisa PO", `Jumlah yang diinput (${qty} pcs) melebihi sisa kuota PO "${po}" yang tersedia (${remainingOrderQty} pcs). Pengeluaran tidak boleh membuat Order (In) menjadi minus.`);
                     return;
                 }
 
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 nopol = document.getElementById('receipt-nopol').value.trim().toUpperCase();
+
+                // Cek apakah dengan input ini kuota PO menjadi tepat habis (terpenuhi sepenuhnya)
+                const isNowFulfilled = (remainingOrderQty - qty) === 0;
 
                 // Fungsi eksekusi penyimpanan transaksi Receipt setelah tombol "Benar" diklik di pop-up
                 const executeSaveReceipt = () => {
@@ -581,18 +596,27 @@
                     form.reset();
                     document.getElementById('tanggal').valueAsDate = new Date();
                     
-                    showPopupModal(true, "Receipt Berhasil Disimpan", "Data kedatangan palet berhasil diverifikasi dan direkap.", matchedOrder, false);
+                    if (isNowFulfilled) {
+                        showPopupModal(true, "PO Telah Terpenuhi", `Data kedatangan berhasil disimpan. Perhatian: Kuantitas untuk No. PO "${po}" sekarang sudah sepenuhnya terpenuhi (terserap habis).`, matchedOrder, false);
+                    } else {
+                        showPopupModal(true, "Receipt Berhasil Disimpan", `Data kedatangan palet berhasil diverifikasi dan direkap. Sisa kuota PO: ${remainingOrderQty - qty} pcs.`, matchedOrder, false);
+                    }
+
                     setTimeout(() => {
                         closeModal();
                         switchTab('home');
-                    }, 1500);
+                    }, 1800);
                 };
 
-                // Jika PO sesuai, tampilkan pop-up konfirmasi pilihan Benar (Simpan) atau Salah (Batal)
+                // Susun pesan konfirmasi awal (apakah PO sudah terpenuhi seluruhnya atau sebagian)
+                let confirmationMsg = isNowFulfilled 
+                    ? `Nomor PO sesuai. Perhatian: Input ini akan **memenuhi seluruh sisa kuota PO** (${qty} pcs). Apakah data ini sudah benar?`
+                    : `Nomor PO sesuai dengan riwayat order (Sisa kuota: ${remainingOrderQty} pcs). Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?`;
+
                 showPopupModal(
                     true, 
-                    "Konfirmasi Data PO", 
-                    "Nomor PO sesuai dengan riwayat order. Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?", 
+                    isNowFulfilled ? "Konfirmasi: PO Akan Terpenuhi" : "Konfirmasi Data PO", 
+                    confirmationMsg, 
                     matchedOrder, 
                     true, 
                     executeSaveReceipt
