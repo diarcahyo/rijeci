@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <!-- Grid Lanskap Menjadi 4 Kolom dengan Icon & Satuan Pcs (Tanpa Simbol =, +, dll) -->
+                <!-- Grid Lanskap Menjadi 4 Kolom dengan Icon & Satuan Pcs -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-start mb-2">
@@ -219,7 +219,7 @@
             <div id="modal-details" class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 hidden border border-gray-200 text-left">
                 <!-- Detail order yang sesuai akan muncul di sini -->
             </div>
-            <!-- Area Tombol Dinamis (Bisa 1 tombol Tutup atau 2 tombol Pilihan Benar/Salah) -->
+            <!-- Area Tombol Dinamis -->
             <div id="modal-footer-buttons" class="flex gap-2 pt-2">
                 <button id="modal-btn-close" onclick="closeModal()" class="w-full py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
             </div>
@@ -410,7 +410,6 @@
             validationModal.classList.add('hidden');
         }
 
-        // Fungsi menampilkan Pop-up dengan opsi Benar / Salah (Konfirmasi) atau Tutup (Pemberitahuan)
         function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null) {
             if (isSuccess) {
                 modalIcon.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto";
@@ -439,7 +438,6 @@
                 modalDetails.innerHTML = '';
             }
 
-            // Atur tombol di footer modal berdasarkan apakah ini pilihan benar/salah atau sekadar pemberitahuan biasa
             if (isConfirmation) {
                 modalFooterButtons.innerHTML = `
                     <button onclick="closeModal()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs transition">Salah (Batal)</button>
@@ -562,11 +560,11 @@
                 const matchedOrder = rekapData.find(item => item.tipe === 'ORDER' && item.po.toLowerCase() === po.toLowerCase());
 
                 if (!matchedOrder) {
-                    showPopupModal(false, "Nomor PO Tidak Sesuai", `Nomor PO "${po}" tidak ditemukan pada riwayat Order Pallet. Transaksi Receipt tidak dapat dilakukan.`);
+                    showPopupModal(false, "Nomor PO Tidak Sesuai", `Nomor PO "${po}" tidak ditemukan pada riwayat Order Pallet.`);
                     return;
                 }
 
-                // 2. Hitung total qty yang sudah ter-receipt sebelumnya untuk PO ini agar tidak melebihi sisa order (mencegah minus)
+                // 2. Hitung total qty yang sudah ter-receipt sebelumnya untuk PO ini
                 let totalReceiptForThisPO = 0;
                 rekapData.forEach(item => {
                     if (item.tipe === 'RECEIPT' && item.po.toLowerCase() === po.toLowerCase()) {
@@ -576,8 +574,14 @@
 
                 const remainingOrderQty = matchedOrder.qty - totalReceiptForThisPO;
 
+                // 3. Validasi jika kuantiti melebihi sisa PO yang belum datang
                 if (qty > remainingOrderQty) {
-                    showPopupModal(false, "Quantity Melebihi Sisa PO", `Jumlah yang diinput (${qty} pcs) melebihi sisa kuota PO "${po}" yang tersedia (${remainingOrderQty} pcs). Pengeluaran tidak boleh membuat Order (In) menjadi minus.`);
+                    showPopupModal(
+                        false, 
+                        "Quantity Melebihi PO", 
+                        `Jumlah yang diinput (${qty} pcs) melebihi batas PO "${po}". Saat ini sisa quantity yang belum datang (tersedia) adalah sebanyak ${remainingOrderQty} pcs.`, 
+                        matchedOrder
+                    );
                     return;
                 }
 
@@ -587,7 +591,6 @@
                 // Cek apakah dengan input ini kuota PO menjadi tepat habis (terpenuhi sepenuhnya)
                 const isNowFulfilled = (remainingOrderQty - qty) === 0;
 
-                // Fungsi eksekusi penyimpanan transaksi Receipt setelah tombol "Benar" diklik di pop-up
                 const executeSaveReceipt = () => {
                     const newData = { tgl, tipe, po, vendor: matchedOrder.vendor, nopol, qty };
                     rekapData.unshift(newData);
@@ -608,10 +611,9 @@
                     }, 1800);
                 };
 
-                // Susun pesan konfirmasi awal (apakah PO sudah terpenuhi seluruhnya atau sebagian)
                 let confirmationMsg = isNowFulfilled 
                     ? `Nomor PO sesuai. Perhatian: Input ini akan **memenuhi seluruh sisa kuota PO** (${qty} pcs). Apakah data ini sudah benar?`
-                    : `Nomor PO sesuai dengan riwayat order (Sisa kuota: ${remainingOrderQty} pcs). Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?`;
+                    : `Nomor PO sesuai dengan riwayat order (Sisa kuota yang belum datang: ${remainingOrderQty} pcs). Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?`;
 
                 showPopupModal(
                     true, 
