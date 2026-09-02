@@ -475,7 +475,7 @@
             nopolModal.classList.remove('hidden');
         }
 
-        function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null) {
+        function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null, arrivalTimeStr = null) {
             if (isSuccess) {
                 modalIcon.className = "w-12 h-12 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center text-2xl mx-auto";
                 modalIcon.innerText = "✓";
@@ -491,12 +491,15 @@
 
             if (detailsObj) {
                 modalDetails.classList.remove('hidden');
+                let arrivalInfoHtml = arrivalTimeStr ? `<p><span class="text-slate-500">Tanggal Kedatangan:</span> <span class="font-bold text-emerald-400">${arrivalTimeStr}</span></p>` : '';
+                
                 modalDetails.innerHTML = `
                     <p class="font-semibold text-slate-300 mb-1">Detail Order Ditemukan:</p>
                     <p><span class="text-slate-500">No. PO:</span> <span class="font-bold text-slate-200">${detailsObj.po}</span></p>
                     <p><span class="text-slate-500">Vendor:</span> <span class="font-medium text-slate-300">${detailsObj.vendor}</span></p>
                     <p><span class="text-slate-500">Quantity Sisa/Order:</span> <span class="font-bold text-amber-400">${detailsObj.qty} pcs</span></p>
                     <p><span class="text-slate-500">Tanggal Order:</span> <span class="text-slate-400">${detailsObj.tgl}</span></p>
+                    ${arrivalInfoHtml}
                 `;
             } else {
                 modalDetails.classList.add('hidden');
@@ -673,15 +676,15 @@
                     if (tanggalInput) tanggalInput.valueAsDate = new Date();
                     
                     if (isNowFulfilled) {
-                        showPopupModal(true, "Arrived", `Arrived dengan jumlah sesuai kedatangan: ${qty} pcs. No. PO "${po}" sekarang sudah sepenuhnya terpenuhi.`, matchedOrder, false);
+                        showPopupModal(true, "Arrived", `Arrived dengan jumlah sesuai kedatangan: ${qty} pcs. No. PO "${po}" sudah sepenuhnya terpenuhi.`, matchedOrder, false, null, tgl);
                     } else {
-                        showPopupModal(true, "Receipt Berhasil Disimpan", `Data kedatangan palet berhasil diverifikasi dan direkap. Sisa kuota PO: ${remainingOrderQty - qty} pcs.`, matchedOrder, false);
+                        showPopupModal(true, "Receipt Berhasil Disimpan", `Data kedatangan palet berhasil diverifikasi dan direkap. Sisa kuota PO: ${remainingOrderQty - qty} pcs.`, matchedOrder, false, null, tgl);
                     }
 
                     setTimeout(() => {
                         closeModal();
                         switchTab('home');
-                    }, 1800);
+                    }, 2200);
                 };
 
                 let confirmationMsg = isNowFulfilled 
@@ -694,7 +697,8 @@
                     confirmationMsg, 
                     matchedOrder, 
                     true, 
-                    executeSaveReceipt
+                    executeSaveReceipt,
+                    tgl
                 );
                 return;
             }
