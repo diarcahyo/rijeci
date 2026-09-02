@@ -6,31 +6,31 @@
     <title>Dashboard Stock Pallet PWA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#10b981">
+    <meta name="theme-color" content="#334155">
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-2 sm:p-4">
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-2 sm:p-4 text-slate-100">
 
-    <!-- Container Utama Mode Lanskap -->
-    <div class="w-full max-w-4xl mx-auto bg-white min-h-[90vh] sm:min-h-[600px] shadow-xl rounded-2xl flex flex-col justify-between overflow-hidden border border-gray-100">
+    <!-- Container Utama Mode Lanskap (Industrial Theme) -->
+    <div class="w-full max-w-4xl mx-auto bg-slate-800 min-h-[90vh] sm:min-h-[600px] shadow-2xl rounded-xl flex flex-col justify-between overflow-hidden border border-slate-700">
         
         <!-- Header & Navigasi Utama -->
-        <div class="p-4 sm:p-6 pb-3 border-b border-gray-100 bg-white">
+        <div class="p-4 sm:p-6 pb-3 border-b border-slate-700 bg-slate-800/90 backdrop-blur">
             <header class="mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-emerald-600">Pallet Inventory</h1>
-                    <p class="text-gray-500 text-xs sm:text-sm">Warehouse Finished Good Jayanti 2</p>
+                    <h1 class="text-xl sm:text-2xl font-black uppercase tracking-wider text-amber-400 font-mono">Pallet Inventory</h1>
+                    <p class="text-slate-400 text-xs sm:text-sm font-medium tracking-wide">Warehouse Finished Good Jayanti 2</p>
                 </div>
                 <!-- Indikator Waktu Aktual Real-Time -->
-                <div id="live-clock" class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 self-stretch sm:self-auto justify-center">
+                <div id="live-clock" class="bg-slate-900/80 border border-slate-700 text-amber-300 px-3 py-1.5 rounded-md text-xs font-mono font-semibold shadow-inner flex items-center gap-1.5 self-stretch sm:self-auto justify-center">
                     <span>🕒</span> <span id="current-time-text">Memuat Waktu...</span>
                 </div>
             </header>
 
             <!-- Tab Menu Navigasi -->
-            <div class="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-xl max-w-md">
-                <button id="tab-home" onclick="switchTab('home')" class="py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition">Dashboard</button>
-                <button id="tab-input" onclick="switchTab('input')" class="py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Input Transaksi</button>
-                <button id="tab-rekap" onclick="switchTab('rekap')" class="py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Riwayat</button>
+            <div class="grid grid-cols-3 gap-2 bg-slate-900 p-1 rounded-lg max-w-md border border-slate-700/50">
+                <button id="tab-home" onclick="switchTab('home')" class="py-2 text-xs font-bold rounded-md bg-slate-700 text-amber-400 shadow transition font-mono">Dashboard</button>
+                <button id="tab-input" onclick="switchTab('input')" class="py-2 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition font-mono">Input Transaksi</button>
+                <button id="tab-rekap" onclick="switchTab('rekap')" class="py-2 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition font-mono">Riwayat</button>
             </div>
         </div>
 
@@ -39,100 +39,101 @@
 
             <!-- 1. DASHBOARD STOCK -->
             <div id="section-home" class="space-y-4">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-md flex justify-between items-center">
-                    <div>
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-slate-100 p-5 rounded-xl shadow-lg border border-slate-700 flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-slate-700 opacity-20 text-8xl font-black pointer-events-none select-none">WH2</div>
+                    <div class="relative z-10">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] bg-emerald-700 bg-opacity-40 text-emerald-100 px-2 py-0.5 rounded font-medium">🕒 Waktu Aktual: <span id="dashboard-live-date">...</span></span>
+                            <span class="text-[10px] bg-slate-800 border border-slate-700 text-amber-400 px-2 py-0.5 rounded font-mono font-medium">🕒 Waktu Aktual: <span id="dashboard-live-date">...</span></span>
                         </div>
-                        <p class="text-xs uppercase tracking-wider opacity-80 font-medium">Ending Balance (Stok Akhir)</p>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-1"><span id="db-ending">0</span> <span class="text-lg sm:text-xl font-normal opacity-90">pcs</span></h2>
-                        <p class="text-xs mt-2 opacity-90">Total ketersediaan palet saat ini</p>
+                        <p class="text-xs uppercase tracking-widest text-slate-400 font-bold font-mono">Ending Balance (Stok Akhir)</p>
+                        <h2 class="text-3xl sm:text-4xl font-black mt-1 font-mono text-amber-400"><span id="db-ending">0</span> <span class="text-lg sm:text-xl font-normal text-slate-300">pcs</span></h2>
+                        <p class="text-xs mt-2 text-slate-400 font-medium">Total ketersediaan palet saat ini</p>
                     </div>
-                    <div class="hidden sm:block text-right opacity-80">
-                        <span class="text-4xl">📊</span>
+                    <div class="hidden sm:block text-right text-amber-400 relative z-10">
+                        <span class="text-4xl">🏭</span>
                     </div>
                 </div>
 
                 <!-- Grid Lanskap Menjadi 4 Kolom dengan Icon & Satuan Pcs -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between relative">
+                    <div class="bg-slate-900/60 border border-slate-700 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
-                            <p class="text-[11px] text-gray-500 font-semibold uppercase">Beginning Balance</p>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-mono">Beginning Balance</p>
                             <div class="flex items-center gap-1">
-                                <button onclick="openDashboardDetail('BEGINNING')" class="w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Beginning">i</button>
-                                <span class="text-sm bg-gray-100 p-1.5 rounded-lg">📦</span>
+                                <button onclick="openDashboardDetail('BEGINNING')" class="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Beginning">i</button>
+                                <span class="text-sm bg-slate-800 p-1.5 rounded border border-slate-700">📦</span>
                             </div>
                         </div>
-                        <p class="text-lg sm:text-xl font-bold text-gray-800"><span id="db-begin">0</span> <span class="text-xs font-medium text-gray-500">pcs</span></p>
+                        <p class="text-lg sm:text-xl font-black text-slate-200 font-mono"><span id="db-begin">0</span> <span class="text-xs font-medium text-slate-400">pcs</span></p>
                     </div>
-                    <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between relative">
+                    <div class="bg-slate-900/60 border border-blue-900/50 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
-                            <p class="text-[11px] text-blue-600 font-semibold uppercase">Receipt (Masuk)</p>
+                            <p class="text-[11px] text-blue-400 font-bold uppercase tracking-wider font-mono">Receipt (Masuk)</p>
                             <div class="flex items-center gap-1">
-                                <button onclick="openDashboardDetail('RECEIPT')" class="w-5 h-5 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-700 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Receipt">i</button>
-                                <span class="text-sm bg-blue-100 p-1.5 rounded-lg">📥</span>
+                                <button onclick="openDashboardDetail('RECEIPT')" class="w-5 h-5 rounded bg-blue-950 hover:bg-blue-900 text-blue-300 border border-blue-800 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Receipt">i</button>
+                                <span class="text-sm bg-blue-950/60 p-1.5 rounded border border-blue-900">📥</span>
                             </div>
                         </div>
-                        <p class="text-lg sm:text-xl font-bold text-blue-700"><span id="db-receipt">0</span> <span class="text-xs font-medium text-blue-500">pcs</span></p>
+                        <p class="text-lg sm:text-xl font-black text-blue-400 font-mono"><span id="db-receipt">0</span> <span class="text-xs font-medium text-blue-500">pcs</span></p>
                     </div>
-                    <div class="bg-amber-50 border border-amber-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between relative">
+                    <div class="bg-slate-900/60 border border-amber-900/50 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
-                            <p class="text-[11px] text-amber-600 font-semibold uppercase">Order (In)</p>
+                            <p class="text-[11px] text-amber-400 font-bold uppercase tracking-wider font-mono">Order (In)</p>
                             <div class="flex items-center gap-1">
-                                <button onclick="openDashboardDetail('ORDER')" class="w-5 h-5 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-700 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Order">i</button>
-                                <span class="text-sm bg-amber-100 p-1.5 rounded-lg">🛒</span>
+                                <button onclick="openDashboardDetail('ORDER')" class="w-5 h-5 rounded bg-amber-950 hover:bg-amber-900 text-amber-300 border border-amber-800 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Order">i</button>
+                                <span class="text-sm bg-amber-950/60 p-1.5 rounded border border-amber-900">🛒</span>
                             </div>
                         </div>
-                        <p class="text-lg sm:text-xl font-bold text-amber-700"><span id="db-order">0</span> <span class="text-xs font-medium text-amber-500">pcs</span></p>
+                        <p class="text-lg sm:text-xl font-black text-amber-400 font-mono"><span id="db-order">0</span> <span class="text-xs font-medium text-amber-500">pcs</span></p>
                     </div>
-                    <div class="bg-red-50 border border-red-100 p-3.5 rounded-xl shadow-sm flex flex-col justify-between relative">
+                    <div class="bg-slate-900/60 border border-rose-900/50 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
-                            <p class="text-[11px] text-red-600 font-semibold uppercase">Issue (Keluar)</p>
+                            <p class="text-[11px] text-rose-400 font-bold uppercase tracking-wider font-mono">Issue (Keluar)</p>
                             <div class="flex items-center gap-1">
-                                <button onclick="openDashboardDetail('ISSUE')" class="w-5 h-5 rounded-full bg-red-200 hover:bg-red-300 text-red-700 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Issue">i</button>
-                                <span class="text-sm bg-red-100 p-1.5 rounded-lg">📤</span>
+                                <button onclick="openDashboardDetail('ISSUE')" class="w-5 h-5 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Issue">i</button>
+                                <span class="text-sm bg-rose-950/60 p-1.5 rounded border border-rose-900">📤</span>
                             </div>
                         </div>
-                        <p class="text-lg sm:text-xl font-bold text-red-700"><span id="db-issue">0</span> <span class="text-xs font-medium text-red-500">pcs</span></p>
+                        <p class="text-lg sm:text-xl font-black text-rose-400 font-mono"><span id="db-issue">0</span> <span class="text-xs font-medium text-rose-500">pcs</span></p>
                     </div>
                 </div>
 
-                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl mt-2 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <h3 class="text-sm font-bold text-emerald-800">Aksi Cepat Menu Manajemen Palet</h3>
+                <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg mt-2 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <h3 class="text-sm font-bold text-slate-200 font-mono">Aksi Cepat Menu Manajemen Palet</h3>
                     <div class="flex gap-2 w-full sm:w-auto">
-                        <button onclick="switchTab('input')" class="flex-1 sm:flex-none bg-emerald-600 text-white text-xs px-4 py-2.5 rounded-lg font-bold hover:bg-emerald-700 transition">+ Tambah Transaksi</button>
-                        <button onclick="switchTab('rekap')" class="flex-1 sm:flex-none bg-white border border-emerald-300 text-emerald-700 text-xs px-4 py-2.5 rounded-lg font-semibold hover:bg-emerald-100 transition">Lihat Riwayat</button>
+                        <button onclick="switchTab('input')" class="flex-1 sm:flex-none bg-amber-500 text-slate-950 text-xs px-4 py-2.5 rounded font-bold hover:bg-amber-400 transition font-mono uppercase tracking-wide">+ Tambah Transaksi</button>
+                        <button onclick="switchTab('rekap')" class="flex-1 sm:flex-none bg-slate-800 border border-slate-600 text-slate-200 text-xs px-4 py-2.5 rounded font-semibold hover:bg-slate-700 transition font-mono">Lihat Riwayat</button>
                     </div>
                 </div>
             </div>
 
             <!-- 2. INPUT TRANSAKSI MENU -->
             <div id="section-input" class="hidden space-y-4">
-                <h2 class="text-base font-bold text-gray-800">Pilih Jenis Transaksi Input</h2>
+                <h2 class="text-base font-bold text-slate-200 font-mono uppercase tracking-wide">Pilih Jenis Transaksi Input</h2>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <button onclick="selectSubInput('BEGINNING')" id="btn-sub-begin" class="p-3 text-left border rounded-xl transition text-xs font-semibold bg-white border-gray-200 text-gray-700 hover:border-emerald-500">
-                        📦 <span class="block mt-1 font-bold">Beginning Balance</span>
-                        <span class="text-[10px] text-gray-400 font-normal">Stok Awal</span>
+                    <button onclick="selectSubInput('BEGINNING')" id="btn-sub-begin" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-slate-700 text-slate-300 hover:border-amber-400">
+                        📦 <span class="block mt-1 font-bold text-slate-100 font-mono">Beginning Balance</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Stok Awal</span>
                     </button>
-                    <button onclick="selectSubInput('ORDER')" id="btn-sub-order" class="p-3 text-left border rounded-xl transition text-xs font-semibold bg-white border-gray-200 text-gray-700 hover:border-emerald-500">
-                        🛒 <span class="block mt-1 font-bold">Order Pallet</span>
-                        <span class="text-[10px] text-gray-400 font-normal">Pemesanan Masuk</span>
+                    <button onclick="selectSubInput('ORDER')" id="btn-sub-order" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-slate-700 text-slate-300 hover:border-amber-400">
+                        🛒 <span class="block mt-1 font-bold text-slate-100 font-mono">Order Pallet</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Pemesanan Masuk</span>
                     </button>
-                    <button onclick="selectSubInput('RECEIPT')" id="btn-sub-receipt" class="p-3 text-left border rounded-xl transition text-xs font-semibold bg-white border-blue-200 text-blue-700 hover:border-blue-500">
-                        📥 <span class="block mt-1 font-bold">Receipt (PO)</span>
-                        <span class="text-[10px] text-gray-400 font-normal">Kedatangan Palet</span>
+                    <button onclick="selectSubInput('RECEIPT')" id="btn-sub-receipt" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-blue-900 text-blue-300 hover:border-blue-500">
+                        📥 <span class="block mt-1 font-bold text-blue-200 font-mono">Receipt (PO)</span>
+                        <span class="text-[10px] text-blue-400/70 font-normal">Kedatangan Palet</span>
                     </button>
-                    <button onclick="selectSubInput('ISSUE')" id="btn-sub-issue" class="p-3 text-left border rounded-xl transition text-xs font-semibold bg-white border-red-200 text-red-700 hover:border-red-500">
-                        📤 <span class="block mt-1 font-bold">Issue Pallet</span>
-                        <span class="text-[10px] text-gray-400 font-normal">Pengeluaran Palet</span>
+                    <button onclick="selectSubInput('ISSUE')" id="btn-sub-issue" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-rose-900 text-rose-300 hover:border-rose-500">
+                        📤 <span class="block mt-1 font-bold text-rose-200 font-mono">Issue Pallet</span>
+                        <span class="text-[10px] text-rose-400/70 font-normal">Pengeluaran Palet</span>
                     </button>
                 </div>
 
-                <div id="form-container" class="bg-white border border-gray-200 p-4 sm:p-5 rounded-xl shadow-sm mt-4 hidden max-w-2xl mx-auto">
-                    <div class="flex justify-between items-center mb-3 border-b pb-2">
-                        <span id="form-title-label" class="text-xs font-bold text-emerald-600 uppercase tracking-wide">Form Transaksi</span>
-                        <button onclick="closeSubInput()" class="text-gray-400 hover:text-gray-600 text-xs font-semibold">Tutup ✕</button>
+                <div id="form-container" class="bg-slate-900 border border-slate-700 p-4 sm:p-5 rounded-lg shadow-lg mt-4 hidden max-w-2xl mx-auto">
+                    <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
+                        <span id="form-title-label" class="text-xs font-bold text-amber-400 uppercase tracking-widest font-mono">Form Transaksi</span>
+                        <button onclick="closeSubInput()" class="text-slate-400 hover:text-slate-200 text-xs font-semibold">Tutup ✕</button>
                     </div>
 
                     <form id="rekap-form" class="space-y-3">
@@ -141,54 +142,54 @@
                         <!-- Khusus Form RECEIPT -->
                         <div id="wrapper-receipt-fields" class="space-y-3 hidden">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Kedatangan Pallet (PO)</label>
-                                <input type="text" id="receipt-tanggal-jam" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-medium text-sm" readonly>
-                                <p class="text-[10px] text-blue-600 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal & Jam Kedatangan Pallet (PO)</label>
+                                <input type="text" id="receipt-tanggal-jam" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-400 font-medium text-sm font-mono" readonly>
+                                <p class="text-[10px] text-blue-400 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-700">Nomor Polisi (Nopol) Kendaraan</label>
-                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm uppercase" required>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Nomor Polisi (Nopol) Kendaraan</label>
+                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm uppercase font-mono" required>
                             </div>
                         </div>
 
                         <!-- Field Tanggal Umum -->
                         <div id="wrapper-tanggal">
-                            <label class="block text-xs font-medium text-gray-700">Tanggal Transaksi</label>
-                            <input type="date" id="tanggal" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
-                            <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Jam aktual sistem akan otomatis dicatat saat disimpan.</p>
+                            <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal Transaksi</label>
+                            <input type="date" id="tanggal" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-mono">
+                            <p class="text-[10px] text-amber-400 mt-0.5">🕒 Jam aktual sistem akan otomatis dicatat saat disimpan.</p>
                         </div>
 
                         <!-- Khusus Form ORDER PALLET -->
                         <div id="wrapper-order-fields" class="space-y-3 hidden">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700">Tanggal & Jam Pengajuan PO Pallet</label>
-                                <input type="text" id="order-tanggal-jam" class="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 font-medium text-sm" readonly>
-                                <p class="text-[10px] text-emerald-600 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal & Jam Pengajuan PO Pallet</label>
+                                <input type="text" id="order-tanggal-jam" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-400 font-medium text-sm font-mono" readonly>
+                                <p class="text-[10px] text-amber-400 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual sistem saat ini.</p>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700">Nomor PO (Acuan)</label>
-                                    <input type="text" id="order-po" placeholder="Cth: PO/2026/08/001" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <label class="block text-xs font-medium text-slate-300 font-mono">Nomor PO (Acuan)</label>
+                                    <input type="text" id="order-po" placeholder="Cth: PO/2026/08/001" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-mono">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700">Nama Vendor</label>
-                                    <input type="text" id="order-vendor" placeholder="Cth: PT Pallet Mandiri Sejahtera" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                                    <label class="block text-xs font-medium text-slate-300 font-mono">Nama Vendor</label>
+                                    <input type="text" id="order-vendor" placeholder="Cth: PT Pallet Mandiri Sejahtera" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Field Standar -->
                         <div id="wrapper-standard-desc">
-                            <label id="label-po-desc" class="block text-xs font-medium text-gray-700">Keterangan / Nomor PO</label>
-                            <input type="text" id="po-number" placeholder="Masukkan keterangan..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                            <label id="label-po-desc" class="block text-xs font-medium text-slate-300 font-mono">Keterangan / Nomor PO</label>
+                            <input type="text" id="po-number" placeholder="Masukkan keterangan..." class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700">Jumlah Quantity (Palet)</label>
-                            <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm" required>
+                            <label class="block text-xs font-medium text-slate-300 font-mono">Jumlah Quantity (Palet)</label>
+                            <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-mono" required>
                         </div>
                         
-                        <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-700 transition shadow-sm text-sm mt-2">Simpan Transaksi</button>
+                        <button type="submit" class="w-full bg-amber-500 text-slate-950 py-2.5 rounded font-bold hover:bg-amber-400 transition shadow text-sm mt-2 font-mono uppercase tracking-wide">Simpan Transaksi</button>
                     </form>
                 </div>
             </div>
@@ -196,15 +197,15 @@
             <!-- 3. DAFTAR RIWAYAT MENU -->
             <div id="section-rekap" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-base font-bold text-gray-800">Riwayat Transaksi</h2>
-                    <button id="btn-reset" class="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg font-semibold hover:bg-red-100 transition">Reset Semua</button>
+                    <h2 class="text-base font-bold text-slate-200 font-mono uppercase tracking-wide">Riwayat Transaksi</h2>
+                    <button id="btn-reset" class="text-xs bg-rose-950/60 text-rose-400 border border-rose-900/60 px-2.5 py-1.5 rounded font-semibold hover:bg-rose-900/60 transition font-mono">Reset Semua</button>
                 </div>
 
-                <div class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-xl text-center max-w-md">
-                    <button onclick="switchRiwayatTab('RECEIPT')" id="r-tab-receipt" class="py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition">Receipt</button>
-                    <button onclick="switchRiwayatTab('BEGINNING')" id="r-tab-begin" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Beginning</button>
-                    <button onclick="switchRiwayatTab('ORDER')" id="r-tab-order" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Order</button>
-                    <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">Issue</button>
+                <div class="grid grid-cols-4 gap-1 bg-slate-900 p-1 rounded-lg text-center max-w-md border border-slate-700/50">
+                    <button onclick="switchRiwayatTab('RECEIPT')" id="r-tab-receipt" class="py-1.5 text-[11px] font-bold rounded bg-slate-800 text-blue-400 shadow transition font-mono">Receipt</button>
+                    <button onclick="switchRiwayatTab('BEGINNING')" id="r-tab-begin" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Beginning</button>
+                    <button onclick="switchRiwayatTab('ORDER')" id="r-tab-order" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Order</button>
+                    <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Issue</button>
                 </div>
                 
                 <div id="daftar-rekap" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
@@ -215,40 +216,40 @@
         </div>
 
         <!-- Footer -->
-        <footer class="p-4 text-center text-xs text-gray-400 border-t border-gray-100 bg-white">
-            &copy; 2026 Rekap Palet PWA Lanskap
+        <footer class="p-4 text-center text-xs text-slate-500 border-t border-slate-700 bg-slate-900/80 font-mono">
+            &copy; 2026 Warehouse Management System Industrial PWA
         </footer>
     </div>
 
     <!-- Modal Pop-up Validasi PO -->
-    <div id="validation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 transform transition-all">
-            <div id="modal-icon" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mx-auto"></div>
+    <div id="validation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4 transform transition-all">
+            <div id="modal-icon" class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mx-auto font-bold"></div>
             <div class="text-center">
-                <h3 id="modal-title" class="text-lg font-bold text-gray-800"></h3>
-                <p id="modal-message" class="text-sm text-gray-600 mt-2"></p>
+                <h3 id="modal-title" class="text-lg font-bold text-slate-100 font-mono"></h3>
+                <p id="modal-message" class="text-sm text-slate-300 mt-2"></p>
             </div>
-            <div id="modal-details" class="bg-gray-50 p-3 rounded-xl text-xs space-y-1 hidden border border-gray-200 text-left">
+            <div id="modal-details" class="bg-slate-950 p-3 rounded text-xs space-y-1 hidden border border-slate-800 text-left font-mono">
                 <!-- Detail order yang sesuai akan muncul di sini -->
             </div>
             <!-- Area Tombol Dinamis -->
             <div id="modal-footer-buttons" class="flex gap-2 pt-2">
-                <button id="modal-btn-close" onclick="closeModal()" class="w-full py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
+                <button id="modal-btn-close" onclick="closeModal()" class="w-full py-2.5 rounded font-bold text-xs transition">Tutup</button>
             </div>
         </div>
     </div>
 
     <!-- Modal List Nopol Kendaraan -->
-    <div id="nopol-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-bold text-gray-800">Daftar Nopol Pengiriman PO</h3>
-                <button onclick="closeNopolModal()" class="text-gray-400 hover:text-gray-600 text-xs font-bold">✕</button>
+    <div id="nopol-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-slate-200 font-mono">Daftar Nopol Pengiriman PO</h3>
+                <button onclick="closeNopolModal()" class="text-slate-400 hover:text-slate-200 text-xs font-bold">✕</button>
             </div>
-            <div id="nopol-list-content" class="space-y-2 max-h-48 overflow-y-auto text-xs">
+            <div id="nopol-list-content" class="space-y-2 max-h-48 overflow-y-auto text-xs font-mono">
                 <!-- List nopol dinamis -->
             </div>
-            <button onclick="closeNopolModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-xl font-bold text-xs transition">Tutup</button>
+            <button onclick="closeNopolModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded font-bold text-xs transition font-mono">Tutup</button>
         </div>
     </div>
 
@@ -326,21 +327,21 @@
             sectionInput.classList.add('hidden');
             sectionRekap.classList.add('hidden');
 
-            tabHome.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            tabInput.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            tabRekap.className = "py-2 text-xs font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            tabHome.className = "py-2 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition font-mono";
+            tabInput.className = "py-2 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition font-mono";
+            tabRekap.className = "py-2 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition font-mono";
 
             if (target === 'home') {
                 sectionHome.classList.remove('hidden');
-                tabHome.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabHome.className = "py-2 text-xs font-bold rounded-md bg-slate-700 text-amber-400 shadow transition font-mono";
                 updateDashboardStats();
             } else if (target === 'input') {
                 sectionInput.classList.remove('hidden');
-                tabInput.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabInput.className = "py-2 text-xs font-bold rounded-md bg-slate-700 text-amber-400 shadow transition font-mono";
                 closeSubInput();
             } else if (target === 'rekap') {
                 sectionRekap.classList.remove('hidden');
-                tabRekap.className = "py-2 text-xs font-bold rounded-lg bg-white text-emerald-600 shadow-sm transition";
+                tabRekap.className = "py-2 text-xs font-bold rounded-md bg-slate-700 text-amber-400 shadow transition font-mono";
                 switchRiwayatTab('RECEIPT');
             }
         }
@@ -353,19 +354,19 @@
         window.switchRiwayatTab = function(category) {
             currentRiwayatCategory = category;
 
-            document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
-            document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition";
+            document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono";
+            document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono";
+            document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono";
+            document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono";
 
             if (category === 'RECEIPT') {
-                document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-blue-600 shadow-sm transition";
+                document.getElementById('r-tab-receipt').className = "py-1.5 text-[11px] font-bold rounded bg-slate-800 text-blue-400 shadow transition font-mono";
             } else if (category === 'BEGINNING') {
-                document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-gray-800 shadow-sm transition";
+                document.getElementById('r-tab-begin').className = "py-1.5 text-[11px] font-bold rounded bg-slate-800 text-slate-200 shadow transition font-mono";
             } else if (category === 'ORDER') {
-                document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-amber-600 shadow-sm transition";
+                document.getElementById('r-tab-order').className = "py-1.5 text-[11px] font-bold rounded bg-slate-800 text-amber-400 shadow transition font-mono";
             } else if (category === 'ISSUE') {
-                document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-bold rounded-lg bg-white text-red-600 shadow-sm transition";
+                document.getElementById('r-tab-issue').className = "py-1.5 text-[11px] font-bold rounded bg-slate-800 text-rose-400 shadow transition font-mono";
             }
 
             renderData();
@@ -454,16 +455,16 @@
             
             nopolListContent.innerHTML = '';
             if (receipts.length === 0) {
-                nopolListContent.innerHTML = `<p class="text-gray-400 text-center py-3">Belum ada nopol tercatat untuk PO ini.</p>`;
+                nopolListContent.innerHTML = `<p class="text-slate-500 text-center py-3">Belum ada nopol tercatat untuk PO ini.</p>`;
             } else {
                 receipts.forEach((r, idx) => {
                     nopolListContent.innerHTML += `
-                        <div class="flex justify-between items-center p-2.5 bg-gray-50 border rounded-lg">
+                        <div class="flex justify-between items-center p-2.5 bg-slate-950 border border-slate-800 rounded">
                             <div>
-                                <p class="font-bold text-gray-800">${idx + 1}. Nopol: <span class="text-blue-600">${r.nopol || '-'}</span></p>
-                                <p class="text-[10px] text-gray-400">${r.tgl}</p>
+                                <p class="font-bold text-slate-200">${idx + 1}. Nopol: <span class="text-blue-400 font-mono">${r.nopol || '-'}</span></p>
+                                <p class="text-[10px] text-slate-500">${r.tgl}</p>
                             </div>
-                            <span class="font-bold text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">+${r.qty} pcs</span>
+                            <span class="font-bold text-xs bg-blue-950 text-blue-300 border border-blue-900 px-2 py-0.5 rounded font-mono">+${r.qty} pcs</span>
                         </div>
                     `;
                 });
@@ -473,13 +474,13 @@
 
         function showPopupModal(isSuccess, title, message, detailsObj = null, isConfirmation = false, onConfirmCallback = null) {
             if (isSuccess) {
-                modalIcon.className = "w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto";
+                modalIcon.className = "w-12 h-12 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center text-2xl mx-auto";
                 modalIcon.innerText = "✓";
-                modalTitle.className = "text-lg font-bold text-emerald-700";
+                modalTitle.className = "text-lg font-bold text-emerald-400 font-mono";
             } else {
-                modalIcon.className = "w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl mx-auto";
+                modalIcon.className = "w-12 h-12 rounded-full bg-rose-950 border border-rose-800 text-rose-400 flex items-center justify-center text-2xl mx-auto";
                 modalIcon.innerText = "✕";
-                modalTitle.className = "text-lg font-bold text-red-700";
+                modalTitle.className = "text-lg font-bold text-rose-400 font-mono";
             }
 
             modalTitle.innerText = title;
@@ -488,11 +489,11 @@
             if (detailsObj) {
                 modalDetails.classList.remove('hidden');
                 modalDetails.innerHTML = `
-                    <p class="font-semibold text-gray-700 mb-1">Detail Order Ditemukan:</p>
-                    <p><span class="text-gray-500">No. PO:</span> <span class="font-bold text-gray-800">${detailsObj.po}</span></p>
-                    <p><span class="text-gray-500">Vendor:</span> <span class="font-medium text-gray-700">${detailsObj.vendor}</span></p>
-                    <p><span class="text-gray-500">Quantity Sisa/Order:</span> <span class="font-bold text-amber-600">${detailsObj.qty} pcs</span></p>
-                    <p><span class="text-gray-500">Tanggal Order:</span> <span class="text-gray-600">${detailsObj.tgl}</span></p>
+                    <p class="font-semibold text-slate-300 mb-1">Detail Order Ditemukan:</p>
+                    <p><span class="text-slate-500">No. PO:</span> <span class="font-bold text-slate-200">${detailsObj.po}</span></p>
+                    <p><span class="text-slate-500">Vendor:</span> <span class="font-medium text-slate-300">${detailsObj.vendor}</span></p>
+                    <p><span class="text-slate-500">Quantity Sisa/Order:</span> <span class="font-bold text-amber-400">${detailsObj.qty} pcs</span></p>
+                    <p><span class="text-slate-500">Tanggal Order:</span> <span class="text-slate-400">${detailsObj.tgl}</span></p>
                 `;
             } else {
                 modalDetails.classList.add('hidden');
@@ -501,8 +502,8 @@
 
             if (isConfirmation) {
                 modalFooterButtons.innerHTML = `
-                    <button onclick="closeModal()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-bold text-xs transition">Salah (Batal)</button>
-                    <button id="modal-btn-confirm" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition">Benar (Simpan)</button>
+                    <button onclick="closeModal()" class="flex-1 bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 py-2.5 rounded font-bold text-xs transition font-mono">Salah (Batal)</button>
+                    <button id="modal-btn-confirm" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 py-2.5 rounded font-bold text-xs transition font-mono uppercase">Benar (Simpan)</button>
                 `;
                 if (onConfirmCallback) {
                     document.getElementById('modal-btn-confirm').onclick = () => {
@@ -511,9 +512,9 @@
                     };
                 }
             } else {
-                let btnColorClass = isSuccess ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700";
+                let btnColorClass = isSuccess ? "bg-amber-500 hover:bg-amber-400 text-slate-950" : "bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300";
                 modalFooterButtons.innerHTML = `
-                    <button id="modal-btn-close" onclick="closeModal()" class="w-full ${btnColorClass} text-white py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
+                    <button id="modal-btn-close" onclick="closeModal()" class="w-full ${btnColorClass} py-2.5 rounded font-bold text-xs transition font-mono uppercase">Tutup</button>
                 `;
             }
 
@@ -551,19 +552,19 @@
             const filteredData = rekapData.filter(item => item.tipe === currentRiwayatCategory);
 
             if (filteredData.length === 0) {
-                daftarRekap.innerHTML = `<p class="text-center text-gray-400 text-sm py-8">Belum ada data untuk kategori ${currentRiwayatCategory}.</p>`;
+                daftarRekap.innerHTML = `<p class="text-center text-slate-500 text-sm py-8 font-mono">Belum ada data untuk kategori ${currentRiwayatCategory}.</p>`;
                 return;
             }
 
             filteredData.forEach((item) => {
                 const originalIndex = rekapData.indexOf(item);
 
-                let badgeColor = "bg-gray-100 text-gray-700";
+                let badgeColor = "bg-slate-800 text-slate-300 border border-slate-700";
                 let sign = "";
-                let detailsHTML = `<p class="font-bold text-sm text-gray-800">${item.po}</p>`;
+                let detailsHTML = `<p class="font-bold text-sm text-slate-200 font-mono">${item.po}</p>`;
 
                 if(item.tipe === 'BEGINNING') { 
-                    badgeColor = "bg-gray-100 text-gray-800"; 
+                    badgeColor = "bg-slate-800 text-slate-300 border border-slate-700"; 
                 }
                 else if(item.tipe === 'ORDER') { 
                     // Hitung total receipt untuk PO ini
@@ -576,44 +577,44 @@
 
                     const isFullyArrived = totalReceiptForPO >= item.qty;
                     const badgeStatusText = isFullyArrived ? "Arrived" : "Waiting";
-                    const badgeStatusClass = isFullyArrived ? "bg-emerald-500 text-white" : "bg-amber-500 text-white";
+                    const badgeStatusClass = isFullyArrived ? "bg-emerald-950 text-emerald-400 border border-emerald-800" : "bg-amber-950 text-amber-400 border border-amber-800";
 
-                    badgeColor = "bg-amber-100 text-amber-800";
+                    badgeColor = "bg-amber-950 text-amber-400 border border-amber-900";
                     detailsHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[9px] ${badgeStatusClass} px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">${badgeStatusText}</span>
-                            <button onclick="showNopolList('${item.po}')" class="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded font-semibold hover:bg-blue-100 transition">🚛 Cek Nopol</button>
+                            <span class="text-[9px] ${badgeStatusClass} px-1.5 py-0.2 rounded font-bold uppercase tracking-wider font-mono">${badgeStatusText}</span>
+                            <button onclick="showNopolList('${item.po}')" class="text-[10px] bg-slate-800 text-blue-400 border border-slate-700 px-2 py-0.5 rounded font-semibold hover:bg-slate-700 transition font-mono">🚛 Cek Nopol</button>
                         </div>
-                        <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
-                        <p class="text-[11px] text-gray-500">Vendor: <span class="font-medium text-gray-700">${item.vendor}</span> | Datang: ${totalReceiptForPO}/${item.qty} pcs</p>
+                        <p class="font-bold text-sm text-slate-100 font-mono">PO: ${item.po}</p>
+                        <p class="text-[11px] text-slate-400">Vendor: <span class="font-medium text-slate-300">${item.vendor}</span> | Datang: ${totalReceiptForPO}/${item.qty} pcs</p>
                     `;
                 }
                 else if(item.tipe === 'RECEIPT') { 
-                    badgeColor = "bg-blue-100 text-blue-800"; 
+                    badgeColor = "bg-blue-950 text-blue-400 border border-blue-900"; 
                     sign = "+"; 
                     detailsHTML = `
-                        <p class="font-bold text-sm text-gray-800">PO: ${item.po}</p>
-                        <p class="text-[11px] text-gray-500">Nopol: <span class="font-semibold text-blue-700">${item.nopol || '-'}</span></p>
+                        <p class="font-bold text-sm text-slate-100 font-mono">PO: ${item.po}</p>
+                        <p class="text-[11px] text-slate-400">Nopol: <span class="font-semibold text-blue-400 font-mono">${item.nopol || '-'}</span></p>
                     `;
                 }
                 else if(item.tipe === 'ISSUE') { 
-                    badgeColor = "bg-red-100 text-red-800"; 
+                    badgeColor = "bg-rose-950 text-rose-400 border border-rose-900"; 
                     sign = "-"; 
                 }
 
                 const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-3.5 border border-gray-200 rounded-lg bg-white shadow-sm";
+                card.className = "flex justify-between items-center p-3.5 border border-slate-700/60 rounded-lg bg-slate-900/80 shadow-sm";
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] px-2 py-0.5 rounded font-bold ${badgeColor}">${item.tipe}</span>
-                            <span class="text-[10px] text-gray-400">${item.tgl}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded font-bold font-mono ${badgeColor}">${item.tipe}</span>
+                            <span class="text-[10px] text-slate-500 font-mono">${item.tgl}</span>
                         </div>
                         ${detailsHTML}
                     </div>
                     <div class="text-right flex items-center gap-3">
-                        <span class="font-bold text-base ${item.tipe === 'RECEIPT' ? 'text-blue-600' : (item.tipe === 'ORDER' ? 'text-amber-600' : (item.tipe === 'ISSUE' ? 'text-red-600' : 'text-emerald-600'))}">${sign}${item.qty} pcs</span>
-                        <button onclick="hapusItem(${originalIndex})" class="text-gray-300 hover:text-red-500 text-sm transition" title="Hapus">✕</button>
+                        <span class="font-bold text-base font-mono ${item.tipe === 'RECEIPT' ? 'text-blue-400' : (item.tipe === 'ORDER' ? 'text-amber-400' : (item.tipe === 'ISSUE' ? 'text-rose-400' : 'text-slate-200'))}">${sign}${item.qty} pcs</span>
+                        <button onclick="hapusItem(${originalIndex})" class="text-slate-600 hover:text-rose-400 text-sm transition font-mono" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
             });
