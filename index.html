@@ -47,7 +47,7 @@
                         </div>
                         <p class="text-xs uppercase tracking-widest text-slate-400 font-bold font-mono">Ending Balance (Stok Akhir)</p>
                         <h2 class="text-3xl sm:text-4xl font-black mt-1 font-mono text-amber-400"><span id="db-ending">0</span> <span class="text-lg sm:text-xl font-normal text-slate-300">pcs</span></h2>
-                        <p class="text-xs mt-2 text-slate-400 font-medium">Total ketersediaan palet saat ini</p>
+                        <p class="text-xs mt-2 text-slate-400 font-medium">Total ketersediaan palet fisik saat ini</p>
                     </div>
                     <div class="hidden sm:block text-right text-amber-400 relative z-10">
                         <span class="text-4xl">🏭</span>
@@ -148,7 +148,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-300 font-mono">Nomor Polisi (Nopol) Kendaraan</label>
-                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm uppercase font-mono" required>
+                                <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm uppercase font-mono">
                             </div>
                         </div>
 
@@ -254,7 +254,8 @@
     </div>
 
     <script>
-        document.getElementById('tanggal').valueAsDate = new Date();
+        const tanggalEl = document.getElementById('tanggal');
+        if (tanggalEl) tanggalEl.valueAsDate = new Date();
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -377,7 +378,8 @@
             tipeInputHidden.value = tipe;
             
             form.reset();
-            document.getElementById('tanggal').valueAsDate = new Date();
+            const tanggalInput = document.getElementById('tanggal');
+            if (tanggalInput) tanggalInput.valueAsDate = new Date();
 
             const now = new Date();
             const formattedNow = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
@@ -394,7 +396,7 @@
                 document.getElementById('order-po').required = true;
                 document.getElementById('order-vendor').required = true;
                 document.getElementById('po-number').required = false;
-                document.getElementById('tanggal').required = false;
+                if (tanggalInput) tanggalInput.required = false;
             } else if(tipe === 'RECEIPT') {
                 formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
                 wrapperOrderFields.classList.add('hidden');
@@ -410,7 +412,7 @@
                 document.getElementById('order-vendor').required = false;
                 document.getElementById('po-number').required = true;
                 document.getElementById('receipt-nopol').required = true;
-                document.getElementById('tanggal').required = false;
+                if (tanggalInput) tanggalInput.required = false;
             } else {
                 wrapperOrderFields.classList.add('hidden');
                 wrapperReceiptFields.classList.add('hidden');
@@ -420,7 +422,7 @@
                 document.getElementById('order-po').required = false;
                 document.getElementById('order-vendor').required = false;
                 document.getElementById('po-number').required = true;
-                document.getElementById('tanggal').required = true;
+                if (tanggalInput) tanggalInput.required = true;
 
                 if(tipe === 'BEGINNING') {
                     formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
@@ -439,7 +441,8 @@
         window.closeSubInput = function() {
             formContainer.classList.add('hidden');
             form.reset();
-            document.getElementById('tanggal').valueAsDate = new Date();
+            const tanggalInput = document.getElementById('tanggal');
+            if (tanggalInput) tanggalInput.valueAsDate = new Date();
         }
 
         window.closeModal = function() {
@@ -521,7 +524,7 @@
             validationModal.classList.remove('hidden');
         }
 
-        // Kalkulasi Statistik Dashboard Stock
+        // Kalkulasi Statistik Dashboard Stock (Diperbaiki agar rumus fisik gudang akurat)
         function updateDashboardStats() {
             let totalBegin = 0;
             let totalOrder = 0;
@@ -531,19 +534,20 @@
             rekapData.forEach(item => {
                 if (item.tipe === 'BEGINNING') totalBegin += item.qty;
                 if (item.tipe === 'ORDER') totalOrder += item.qty;
-                if (item.tipe === 'RECEIPT') {
-                    totalReceipt += item.qty;
-                    totalBegin += item.qty;
-                    totalOrder -= item.qty;
-                }
+                if (item.tipe === 'RECEIPT') totalReceipt += item.qty;
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
             });
 
+            // Pending Order yang belum datang
+            let activeOrder = totalOrder - totalReceipt;
+            if (activeOrder < 0) activeOrder = 0;
+
             dbBegin.innerText = totalBegin;
-            dbOrder.innerText = totalOrder;
+            dbOrder.innerText = activeOrder;
             dbReceipt.innerText = totalReceipt;
             dbIssue.innerText = totalIssue;
-            dbEnding.innerText = (totalBegin + totalOrder) - totalIssue;
+            // Ending Balance = Stok Awal + Barang Masuk - Barang Keluar
+            dbEnding.innerText = (totalBegin + totalReceipt) - totalIssue;
         }
 
         function renderData() {
@@ -567,7 +571,6 @@
                     badgeColor = "bg-slate-800 text-slate-300 border border-slate-700"; 
                 }
                 else if(item.tipe === 'ORDER') { 
-                    // Hitung total receipt untuk PO ini
                     let totalReceiptForPO = 0;
                     rekapData.forEach(r => {
                         if (r.tipe === 'RECEIPT' && r.po.toLowerCase() === item.po.toLowerCase()) {
@@ -631,7 +634,6 @@
             if (tipe === 'RECEIPT') {
                 po = document.getElementById('po-number').value.trim();
                 
-                // 1. Cek apakah Nomor PO ada di riwayat Order
                 const matchedOrder = rekapData.find(item => item.tipe === 'ORDER' && item.po.toLowerCase() === po.toLowerCase());
 
                 if (!matchedOrder) {
@@ -639,7 +641,6 @@
                     return;
                 }
 
-                // 2. Hitung total qty yang sudah ter-receipt sebelumnya untuk PO ini
                 let totalReceiptForThisPO = 0;
                 rekapData.forEach(item => {
                     if (item.tipe === 'RECEIPT' && item.po.toLowerCase() === po.toLowerCase()) {
@@ -649,7 +650,6 @@
 
                 const remainingOrderQty = matchedOrder.qty - totalReceiptForThisPO;
 
-                // 3. Validasi jika kuantiti melebihi sisa PO yang belum datang
                 if (qty > remainingOrderQty) {
                     showPopupModal(
                         false, 
@@ -663,7 +663,6 @@
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 nopol = document.getElementById('receipt-nopol').value.trim().toUpperCase();
 
-                // Cek apakah dengan input ini kuota PO menjadi tepat habis (terpenuhi sepenuhnya)
                 const isNowFulfilled = (remainingOrderQty - qty) === 0;
 
                 const executeSaveReceipt = () => {
@@ -672,7 +671,8 @@
                     localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
                     
                     form.reset();
-                    document.getElementById('tanggal').valueAsDate = new Date();
+                    const tanggalInput = document.getElementById('tanggal');
+                    if (tanggalInput) tanggalInput.valueAsDate = new Date();
                     
                     if (isNowFulfilled) {
                         showPopupModal(true, "PO Telah Terpenuhi", `Data kedatangan berhasil disimpan. Perhatian: Kuantitas untuk No. PO "${po}" sekarang sudah sepenuhnya terpenuhi (terserap habis).`, matchedOrder, false);
@@ -722,7 +722,8 @@
             localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
             
             form.reset();
-            document.getElementById('tanggal').valueAsDate = new Date();
+            const tanggalInput = document.getElementById('tanggal');
+            if (tanggalInput) tanggalInput.valueAsDate = new Date();
             
             alert('Transaksi berhasil disimpan!');
             switchTab('home');
