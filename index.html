@@ -524,7 +524,7 @@
             validationModal.classList.remove('hidden');
         }
 
-        // Kalkulasi Statistik Dashboard Stock (Diperbaiki agar rumus fisik gudang akurat)
+        // Kalkulasi Statistik Dashboard Stock
         function updateDashboardStats() {
             let totalBegin = 0;
             let totalOrder = 0;
@@ -538,7 +538,6 @@
                 if (item.tipe === 'ISSUE') totalIssue += item.qty;
             });
 
-            // Pending Order yang belum datang
             let activeOrder = totalOrder - totalReceipt;
             if (activeOrder < 0) activeOrder = 0;
 
@@ -546,7 +545,6 @@
             dbOrder.innerText = activeOrder;
             dbReceipt.innerText = totalReceipt;
             dbIssue.innerText = totalIssue;
-            // Ending Balance = Stok Awal + Barang Masuk - Barang Keluar
             dbEnding.innerText = (totalBegin + totalReceipt) - totalIssue;
         }
 
@@ -675,7 +673,7 @@
                     if (tanggalInput) tanggalInput.valueAsDate = new Date();
                     
                     if (isNowFulfilled) {
-                        showPopupModal(true, "PO Telah Terpenuhi", `Data kedatangan berhasil disimpan. Perhatian: Kuantitas untuk No. PO "${po}" sekarang sudah sepenuhnya terpenuhi (terserap habis).`, matchedOrder, false);
+                        showPopupModal(true, "Arrived", `Arrived dengan jumlah sesuai kedatangan: ${qty} pcs. No. PO "${po}" sekarang sudah sepenuhnya terpenuhi.`, matchedOrder, false);
                     } else {
                         showPopupModal(true, "Receipt Berhasil Disimpan", `Data kedatangan palet berhasil diverifikasi dan direkap. Sisa kuota PO: ${remainingOrderQty - qty} pcs.`, matchedOrder, false);
                     }
@@ -687,12 +685,12 @@
                 };
 
                 let confirmationMsg = isNowFulfilled 
-                    ? `Nomor PO sesuai. Perhatian: Input ini akan **memenuhi seluruh sisa kuota PO** (${qty} pcs). Apakah data ini sudah benar?`
+                    ? `Nomor PO sesuai. Perhatian: Input ini akan memenuhi seluruh sisa kuota PO (${qty} pcs). Apakah data ini sudah benar?`
                     : `Nomor PO sesuai dengan riwayat order (Sisa kuota yang belum datang: ${remainingOrderQty} pcs). Apakah data di atas sudah benar dan ingin dilanjutkan untuk disimpan?`;
 
                 showPopupModal(
                     true, 
-                    isNowFulfilled ? "Konfirmasi: PO Akan Terpenuhi" : "Konfirmasi Data PO", 
+                    isNowFulfilled ? "Arrived" : "Konfirmasi Data PO", 
                     confirmationMsg, 
                     matchedOrder, 
                     true, 
