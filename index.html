@@ -88,9 +88,9 @@
                     </div>
                     <div class="bg-slate-900/60 border border-rose-900/50 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
-                            <p class="text-[11px] text-rose-400 font-bold uppercase tracking-wider font-mono">Issue (Keluar)</p>
+                            <p class="text-[11px] text-rose-400 font-bold uppercase tracking-wider font-mono">Penjualan Kayu Bekas Pallet Rusak</p>
                             <div class="flex items-center gap-1">
-                                <button onclick="openDashboardDetail('ISSUE')" class="w-5 h-5 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Issue">i</button>
+                                <button onclick="openDashboardDetail('ISSUE')" class="w-5 h-5 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 flex items-center justify-center text-[10px] font-bold transition" title="Lihat Riwayat Penjualan Kayu Bekas">i</button>
                                 <span class="text-sm bg-rose-950/60 p-1.5 rounded border border-rose-900">📤</span>
                             </div>
                         </div>
@@ -125,8 +125,8 @@
                         <span class="text-[10px] text-blue-400/70 font-normal">Kedatangan Palet</span>
                     </button>
                     <button onclick="selectSubInput('ISSUE')" id="btn-sub-issue" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-rose-900 text-rose-300 hover:border-rose-500">
-                        📤 <span class="block mt-1 font-bold text-rose-200 font-mono">Issue Pallet</span>
-                        <span class="text-[10px] text-rose-400/70 font-normal">Pengeluaran Timbangan</span>
+                        📤 <span class="block mt-1 font-bold text-rose-200 font-mono">Kayu Bekas Rusak</span>
+                        <span class="text-[10px] text-rose-400/70 font-normal">Penjualan Timbangan</span>
                     </button>
                 </div>
 
@@ -152,10 +152,10 @@
                             </div>
                         </div>
 
-                        <!-- Khusus Form ISSUE PALLET -->
+                        <!-- Khusus Form ISSUE PALLET / Penjualan Kayu Bekas -->
                         <div id="wrapper-issue-fields" class="space-y-3 hidden">
                             <div>
-                                <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal & Jam Aktual Pengeluaran</label>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal & Jam Aktual Penjualan</label>
                                 <input type="text" id="issue-tanggal-jam" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-400 font-medium text-sm font-mono" readonly>
                                 <p class="text-[10px] text-rose-400 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual Google/sistem saat ini.</p>
                             </div>
@@ -218,7 +218,7 @@
                     <button onclick="switchRiwayatTab('RECEIPT')" id="r-tab-receipt" class="py-1.5 text-[11px] font-bold rounded bg-slate-800 text-blue-400 shadow transition font-mono">Receipt</button>
                     <button onclick="switchRiwayatTab('BEGINNING')" id="r-tab-begin" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Beginning</button>
                     <button onclick="switchRiwayatTab('ORDER')" id="r-tab-order" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Order</button>
-                    <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Issue</button>
+                    <button onclick="switchRiwayatTab('ISSUE')" id="r-tab-issue" class="py-1.5 text-[11px] font-semibold rounded text-slate-400 hover:text-slate-200 transition font-mono">Kayu Bekas</button>
                 </div>
                 
                 <div id="daftar-rekap" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
@@ -428,7 +428,7 @@
                 document.getElementById('po-number').required = true;
                 document.getElementById('receipt-nopol').required = true;
             } else if(tipe === 'ISSUE') {
-                formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
+                formTitleLabel.innerText = "Input Penjualan Kayu Bekas Pallet Rusak";
                 wrapperIssueFields.classList.remove('hidden');
                 wrapperStandardDesc.classList.add('hidden'); // Sembunyikan field input tujuan/PO standar
                 
@@ -569,7 +569,7 @@
             const filteredData = rekapData.filter(item => item.tipe === currentRiwayatCategory);
 
             if (filteredData.length === 0) {
-                daftarRekap.innerHTML = `<p class="text-center text-slate-500 text-sm py-8 font-mono">Belum ada data untuk kategori ${currentRiwayatCategory}.</p>`;
+                daftarRekap.innerHTML = `<p class="text-center text-slate-500 text-sm py-8 font-mono">Belum ada data untuk kategori ${currentRiwayatCategory === 'ISSUE' ? 'Penjualan Kayu Bekas' : currentRiwayatCategory}.</p>`;
                 return;
             }
 
@@ -577,6 +577,7 @@
                 const originalIndex = rekapData.indexOf(item);
 
                 let badgeColor = "bg-slate-800 text-slate-300 border border-slate-700";
+                let badgeText = item.tipe;
                 let sign = "";
                 let detailsHTML = `<p class="font-bold text-sm text-slate-200 font-mono">${item.po}</p>`;
                 let satuanLabel = "pcs";
@@ -616,10 +617,11 @@
                 }
                 else if(item.tipe === 'ISSUE') { 
                     badgeColor = "bg-rose-950 text-rose-400 border border-rose-900"; 
+                    badgeText = "Kayu Bekas";
                     sign = "-"; 
                     satuanLabel = "Kg";
                     detailsHTML = `
-                        <p class="font-bold text-sm text-slate-100 font-mono">Pengeluaran Timbangan</p>
+                        <p class="font-bold text-sm text-slate-100 font-mono">Penjualan Kayu Bekas Pallet Rusak</p>
                         <p class="text-[11px] text-slate-400">Nopol: <span class="font-semibold text-rose-400 font-mono">${item.nopol || '-'}</span></p>
                     `;
                 }
@@ -629,7 +631,7 @@
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[10px] px-2 py-0.5 rounded font-bold font-mono ${badgeColor}">${item.tipe}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded font-bold font-mono ${badgeColor}">${badgeText}</span>
                             <span class="text-[10px] text-slate-500 font-mono">${item.tgl}</span>
                         </div>
                         ${detailsHTML}
@@ -728,7 +730,7 @@
             } else if (tipe === 'ISSUE') {
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 nopol = document.getElementById('issue-nopol').value.trim().toUpperCase();
-                po = "-"; // Set default karena input tujuan dihilangkan
+                po = "-";
             } else {
                 const inputDateVal = document.getElementById('tanggal').value;
                 const dateObj = inputDateVal ? new Date(inputDateVal) : now;
