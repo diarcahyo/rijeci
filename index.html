@@ -54,7 +54,7 @@
                     </div>
                 </div>
 
-                <!-- Grid Lanskap Menjadi 4 Kolom dengan Icon & Satuan Pcs -->
+                <!-- Grid Lanskap Menjadi 4 Kolom -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-slate-900/60 border border-slate-700 p-3.5 rounded-lg shadow-sm flex flex-col justify-between relative">
                         <div class="flex justify-between items-start mb-2">
@@ -94,7 +94,7 @@
                                 <span class="text-sm bg-rose-950/60 p-1.5 rounded border border-rose-900">📤</span>
                             </div>
                         </div>
-                        <p class="text-lg sm:text-xl font-black text-rose-400 font-mono"><span id="db-issue">0</span> <span class="text-xs font-medium text-rose-500">pcs</span></p>
+                        <p class="text-lg sm:text-xl font-black text-rose-400 font-mono"><span id="db-issue">0</span> <span class="text-xs font-medium text-rose-500">Kg</span></p>
                     </div>
                 </div>
 
@@ -126,7 +126,7 @@
                     </button>
                     <button onclick="selectSubInput('ISSUE')" id="btn-sub-issue" class="p-3 text-left border rounded-lg transition text-xs font-semibold bg-slate-900 border-rose-900 text-rose-300 hover:border-rose-500">
                         📤 <span class="block mt-1 font-bold text-rose-200 font-mono">Issue Pallet</span>
-                        <span class="text-[10px] text-rose-400/70 font-normal">Pengeluaran Palet</span>
+                        <span class="text-[10px] text-rose-400/70 font-normal">Pengeluaran Timbangan</span>
                     </button>
                 </div>
 
@@ -149,6 +149,19 @@
                             <div>
                                 <label class="block text-xs font-medium text-slate-300 font-mono">Nomor Polisi (Nopol) Kendaraan</label>
                                 <input type="text" id="receipt-nopol" placeholder="Cth: B 1234 XYZ" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm uppercase font-mono">
+                            </div>
+                        </div>
+
+                        <!-- Khusus Form ISSUE PALLET -->
+                        <div id="wrapper-issue-fields" class="space-y-3 hidden">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Tanggal & Jam Aktual Pengeluaran</label>
+                                <input type="text" id="issue-tanggal-jam" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-400 font-medium text-sm font-mono" readonly>
+                                <p class="text-[10px] text-rose-400 mt-0.5">🕒 Otomatis mencatat tanggal & jam aktual Google/sistem saat ini.</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 font-mono">Nomor Polisi (Nopol) Kendaraan</label>
+                                <input type="text" id="issue-nopol" placeholder="Cth: B 5678 ABC" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm uppercase font-mono">
                             </div>
                         </div>
 
@@ -185,7 +198,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-slate-300 font-mono">Jumlah Quantity (Palet)</label>
+                            <label id="label-qty-weight" class="block text-xs font-medium text-slate-300 font-mono">Jumlah Quantity (Palet)</label>
                             <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 border border-slate-700 rounded bg-slate-950 text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-mono" required>
                         </div>
                         
@@ -309,8 +322,10 @@
         
         const wrapperTanggal = document.getElementById('wrapper-tanggal');
         const wrapperReceiptFields = document.getElementById('wrapper-receipt-fields');
+        const wrapperIssueFields = document.getElementById('wrapper-issue-fields');
         const wrapperOrderFields = document.getElementById('wrapper-order-fields');
         const wrapperStandardDesc = document.getElementById('wrapper-standard-desc');
+        const labelQtyWeight = document.getElementById('label-qty-weight');
 
         // Modal Elemen
         const validationModal = document.getElementById('validation-modal');
@@ -384,55 +399,54 @@
             const now = new Date();
             const formattedNow = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 
+            // Reset visibilitas field khusus
+            wrapperOrderFields.classList.add('hidden');
+            wrapperReceiptFields.classList.add('hidden');
+            wrapperIssueFields.classList.add('hidden');
+            wrapperTanggal.classList.add('hidden');
+            wrapperStandardDesc.classList.remove('hidden');
+            labelQtyWeight.innerText = "Jumlah Quantity (Palet)";
+
             if(tipe === 'ORDER') {
                 formTitleLabel.innerText = "Input Order Pallet";
-                wrapperReceiptFields.classList.add('hidden');
-                wrapperTanggal.classList.add('hidden');
-                wrapperStandardDesc.classList.add('hidden');
                 wrapperOrderFields.classList.remove('hidden');
+                wrapperStandardDesc.classList.add('hidden');
                 
                 document.getElementById('order-tanggal-jam').value = formattedNow;
 
                 document.getElementById('order-po').required = true;
                 document.getElementById('order-vendor').required = true;
                 document.getElementById('po-number').required = false;
-                if (tanggalInput) tanggalInput.required = false;
             } else if(tipe === 'RECEIPT') {
                 formTitleLabel.innerText = "Input Receipt Kedatangan Pallet (PO)";
-                wrapperOrderFields.classList.add('hidden');
-                wrapperTanggal.classList.add('hidden');
                 wrapperReceiptFields.classList.remove('hidden');
-                wrapperStandardDesc.classList.remove('hidden');
                 
                 document.getElementById('receipt-tanggal-jam').value = formattedNow;
                 document.getElementById('label-po-desc').innerText = "Nomor PO Pallet Masuk";
                 document.getElementById('po-number').placeholder = "Cth: PO-PALLET-9982";
 
-                document.getElementById('order-po').required = false;
-                document.getElementById('order-vendor').required = false;
                 document.getElementById('po-number').required = true;
                 document.getElementById('receipt-nopol').required = true;
-                if (tanggalInput) tanggalInput.required = false;
-            } else {
-                wrapperOrderFields.classList.add('hidden');
-                wrapperReceiptFields.classList.add('hidden');
-                wrapperTanggal.classList.remove('hidden');
+            } else if(tipe === 'ISSUE') {
+                formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
+                wrapperIssueFields.classList.remove('hidden');
                 wrapperStandardDesc.classList.remove('hidden');
                 
-                document.getElementById('order-po').required = false;
-                document.getElementById('order-vendor').required = false;
+                document.getElementById('issue-tanggal-jam').value = formattedNow;
+                document.getElementById('label-po-desc').innerText = "Tujuan / No. DO Pengeluaran";
+                document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
+                labelQtyWeight.innerText = "Berat Timbangan (Kg)";
+
+                document.getElementById('po-number').required = true;
+                document.getElementById('issue-nopol').required = true;
+            } else {
+                // BEGINNING
+                formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
+                wrapperTanggal.classList.remove('hidden');
+                document.getElementById('label-po-desc').innerText = "Keterangan / Catatan";
+                document.getElementById('po-number').placeholder = "Cth: Saldo Awal Gudang";
                 document.getElementById('po-number').required = true;
                 if (tanggalInput) tanggalInput.required = true;
-
-                if(tipe === 'BEGINNING') {
-                    formTitleLabel.innerText = "Input Beginning Balance (Stok Awal)";
-                    document.getElementById('label-po-desc').innerText = "Keterangan / Catatan";
-                    document.getElementById('po-number').placeholder = "Cth: Saldo Awal Gudang";
-                } else if(tipe === 'ISSUE') {
-                    formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
-                    document.getElementById('label-po-desc').innerText = "Tujuan / No. DO Pengeluaran";
-                    document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
-                }
             }
 
             formContainer.scrollIntoView({ behavior: 'smooth' });
@@ -532,13 +546,13 @@
             let totalBegin = 0;
             let totalOrder = 0;
             let totalReceipt = 0;
-            let totalIssue = 0;
+            let totalIssueWeight = 0;
 
             rekapData.forEach(item => {
                 if (item.tipe === 'BEGINNING') totalBegin += item.qty;
                 if (item.tipe === 'ORDER') totalOrder += item.qty;
                 if (item.tipe === 'RECEIPT') totalReceipt += item.qty;
-                if (item.tipe === 'ISSUE') totalIssue += item.qty;
+                if (item.tipe === 'ISSUE') totalIssueWeight += (item.qty || 0); // Di sini qty menyimpan nilai berat timbangan (Kg)
             });
 
             let activeOrder = totalOrder - totalReceipt;
@@ -547,8 +561,8 @@
             dbBegin.innerText = totalBegin;
             dbOrder.innerText = activeOrder;
             dbReceipt.innerText = totalReceipt;
-            dbIssue.innerText = totalIssue;
-            dbEnding.innerText = (totalBegin + totalReceipt) - totalIssue;
+            dbIssue.innerText = totalIssueWeight; // Menampilkan total berat (Kg) pada kartu Issue
+            dbEnding.innerText = (totalBegin + totalReceipt); // Ending balance fisik unit palet
         }
 
         function renderData() {
@@ -567,6 +581,7 @@
                 let badgeColor = "bg-slate-800 text-slate-300 border border-slate-700";
                 let sign = "";
                 let detailsHTML = `<p class="font-bold text-sm text-slate-200 font-mono">${item.po}</p>`;
+                let satuanLabel = "pcs";
 
                 if(item.tipe === 'BEGINNING') { 
                     badgeColor = "bg-slate-800 text-slate-300 border border-slate-700"; 
@@ -604,6 +619,11 @@
                 else if(item.tipe === 'ISSUE') { 
                     badgeColor = "bg-rose-950 text-rose-400 border border-rose-900"; 
                     sign = "-"; 
+                    satuanLabel = "Kg";
+                    detailsHTML = `
+                        <p class="font-bold text-sm text-slate-100 font-mono">Tujuan/DO: ${item.po}</p>
+                        <p class="text-[11px] text-slate-400">Nopol: <span class="font-semibold text-rose-400 font-mono">${item.nopol || '-'}</span></p>
+                    `;
                 }
 
                 const card = document.createElement('div');
@@ -617,7 +637,7 @@
                         ${detailsHTML}
                     </div>
                     <div class="text-right flex items-center gap-3">
-                        <span class="font-bold text-base font-mono ${item.tipe === 'RECEIPT' ? 'text-blue-400' : (item.tipe === 'ORDER' ? 'text-amber-400' : (item.tipe === 'ISSUE' ? 'text-rose-400' : 'text-slate-200'))}">${sign}${item.qty} pcs</span>
+                        <span class="font-bold text-base font-mono ${item.tipe === 'RECEIPT' ? 'text-blue-400' : (item.tipe === 'ORDER' ? 'text-amber-400' : (item.tipe === 'ISSUE' ? 'text-rose-400' : 'text-slate-200'))}">${sign}${item.qty} ${satuanLabel}</span>
                         <button onclick="hapusItem(${originalIndex})" class="text-slate-600 hover:text-rose-400 text-sm transition font-mono" title="Hapus">✕</button>
                     </div>`;
                 daftarRekap.appendChild(card);
@@ -627,7 +647,7 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const tipe = document.getElementById('tipe-transaksi').value;
-            const qty = parseInt(document.getElementById('quantity').value);
+            const qty = parseFloat(document.getElementById('quantity').value);
             
             let tgl, po, vendor, nopol = "";
             const now = new Date();
@@ -707,6 +727,10 @@
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
                 po = document.getElementById('order-po').value.trim();
                 vendor = document.getElementById('order-vendor').value.trim();
+            } else if (tipe === 'ISSUE') {
+                tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                po = document.getElementById('po-number').value.trim();
+                nopol = document.getElementById('issue-nopol').value.trim().toUpperCase();
             } else {
                 const inputDateVal = document.getElementById('tanggal').value;
                 const dateObj = inputDateVal ? new Date(inputDateVal) : now;
