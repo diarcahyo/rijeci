@@ -430,14 +430,12 @@
             } else if(tipe === 'ISSUE') {
                 formTitleLabel.innerText = "Input Issue Pengeluaran Pallet";
                 wrapperIssueFields.classList.remove('hidden');
-                wrapperStandardDesc.classList.remove('hidden');
+                wrapperStandardDesc.classList.add('hidden'); // Sembunyikan field input tujuan/PO standar
                 
                 document.getElementById('issue-tanggal-jam').value = formattedNow;
-                document.getElementById('label-po-desc').innerText = "Tujuan / No. DO Pengeluaran";
-                document.getElementById('po-number').placeholder = "Cth: Kirim ke Produksi / DO-401";
                 labelQtyWeight.innerText = "Berat Timbangan (Kg)";
 
-                document.getElementById('po-number').required = true;
+                document.getElementById('po-number').required = false;
                 document.getElementById('issue-nopol').required = true;
             } else {
                 // BEGINNING
@@ -621,7 +619,7 @@
                     sign = "-"; 
                     satuanLabel = "Kg";
                     detailsHTML = `
-                        <p class="font-bold text-sm text-slate-100 font-mono">Tujuan/DO: ${item.po}</p>
+                        <p class="font-bold text-sm text-slate-100 font-mono">Pengeluaran Timbangan</p>
                         <p class="text-[11px] text-slate-400">Nopol: <span class="font-semibold text-rose-400 font-mono">${item.nopol || '-'}</span></p>
                     `;
                 }
@@ -729,8 +727,8 @@
                 vendor = document.getElementById('order-vendor').value.trim();
             } else if (tipe === 'ISSUE') {
                 tgl = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-                po = document.getElementById('po-number').value.trim();
                 nopol = document.getElementById('issue-nopol').value.trim().toUpperCase();
+                po = "-"; // Set default karena input tujuan dihilangkan
             } else {
                 const inputDateVal = document.getElementById('tanggal').value;
                 const dateObj = inputDateVal ? new Date(inputDateVal) : now;
