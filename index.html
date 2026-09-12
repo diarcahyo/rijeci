@@ -295,8 +295,35 @@
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
 
-        let rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
+        let rekapData = [];
         let currentRiwayatCategory = 'RECEIPT';
+
+        // Tambahkan fungsi fetch GET ini di bawahnya
+        async function loadDataFromServer() {
+            try {
+                const response = await fetch('https://dspgdfg.diarcahyow15.workers.dev/');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        rekapData = data;
+                        localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
+                    } else {
+                        rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
+                    }
+                } else {
+                    rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
+                }
+            } catch (err) {
+                console.error('Gagal mengambil data dari server, menggunakan local storage:', err);
+                rekapData = JSON.parse(localStorage.getItem('pallet_stock_data')) || [];
+            }
+            
+            updateDashboardStats();
+            if (typeof renderData === 'function') renderData();
+        }
+
+        // Panggil fungsi saat aplikasi dimuat
+        loadDataFromServer();
 
         const form = document.getElementById('rekap-form');
         const daftarRekap = document.getElementById('daftar-rekap');
