@@ -691,6 +691,14 @@
                     rekapData.unshift(newData);
                     localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
                     
+                    // Tambahkan kode sync ke Cloudflare Worker di sini
+                    fetch('https://dspgdfg.diarcahyow15.workers.dev/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newData)
+                    }).catch(err => console.error('Sync error:', err));
+
+                    
                     form.reset();
                     const tanggalInput = document.getElementById('tanggal');
                     if (tanggalInput) tanggalInput.valueAsDate = new Date();
@@ -746,6 +754,14 @@
             rekapData.unshift(newData);
             
             localStorage.setItem('pallet_stock_data', JSON.stringify(rekapData));
+
+            // Tambahkan kode sync ke Cloudflare Worker di sini
+            fetch('https://dspgdfg.diarcahyow15.workers.dev/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData)
+            }).catch(err => console.error('Sync error:', err));
+
             
             form.reset();
             const tanggalInput = document.getElementById('tanggal');
