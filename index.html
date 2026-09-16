@@ -698,12 +698,12 @@
             const tipe = document.getElementById('tipe-transaksi').value;
             const qty = parseFloat(document.getElementById('quantity').value);
             
-            let tgl, po, vendor, nopol = "";
+            let tgl, vendor = "";
+            let po = document.getElementById('po-number').value.trim();
+            let nopol = "";
             const now = new Date();
 
             if (tipe === 'RECEIPT') {
-                po = document.getElementById('po-number').value.trim();
-                
                 const matchedOrder = rekapData.find(item => {
                     let t = item.tipe || item['Tipe Transaksi'] || item.category || '';
                     let p = item.po || item['Nomor PO'] || '';
