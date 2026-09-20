@@ -41,40 +41,35 @@
 
             <!-- Kartu Metrik Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                <!-- Beginning -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
                     <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
                     <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <!-- Receipt -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
-                        <button onclick="goToRiwayat()" title="Informasi Riwayat Receipt" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
                     </div>
                     <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <!-- Order -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
-                        <button onclick="goToRiwayat()" title="Informasi Riwayat Order" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
                     </div>
                     <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <!-- Issue -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
-                        <button onclick="goToRiwayat()" title="Informasi Riwayat Issue" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
                     </div>
                     <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <!-- Other -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
-                        <button onclick="goToRiwayat()" title="Informasi Riwayat Other" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
                     </div>
                     <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
@@ -121,7 +116,7 @@
                 <!-- Dropdown khusus ketika menu Receipt dipilih -->
                 <div id="receipt-dropdown-container" class="mb-4">
                     <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
-                    <select id="receipt-sub-type" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                    <select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                         <option value="Pallet Order">1. Pallet Order</option>
                         <option value="Pallet Balikan Mobil Racking">2. Pallet Balikan Mobil Racking</option>
                     </select>
@@ -134,13 +129,21 @@
                         <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
                     </div>
 
+                    <!-- Input Keterangan / Nomor PO -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Nomor PO / Keterangan Transaksi</label>
-                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219 / Keterangan Muat" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                        <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
+                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
                     </div>
 
+                    <!-- Input tambahan No Polisi (Khusus Receipt) -->
+                    <div id="nopol-container">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
+                        <input type="text" id="nopol" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                    </div>
+
+                    <!-- Input Quantity -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Quantity (Palet / Pcs)</label>
+                        <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
                         <input type="number" id="quantity" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
                     </div>
 
@@ -153,9 +156,7 @@
         <div id="section-riwayat" class="space-y-4 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
-                <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                    <!-- Daftar transaksi masuk sini -->
-                </div>
+                <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </div>
     </div>
@@ -189,6 +190,35 @@
             switchTab('riwayat');
         }
 
+        function updateFormLabels() {
+            const labelKet = document.getElementById('label-keterangan');
+            const inputKet = document.getElementById('keterangan');
+            const labelQty = document.getElementById('label-quantity');
+            const nopolContainer = document.getElementById('nopol-container');
+
+            if (currentSubmenu === 'receipt') {
+                nopolContainer.classList.remove('hidden');
+                const subType = document.getElementById('receipt-sub-type').value;
+                if (subType === 'Pallet Order') {
+                    labelKet.innerText = "Nomor PO";
+                    inputKet.placeholder = "Contoh: PO-88219";
+                } else {
+                    labelKet.innerText = "Keterangan Transaksi";
+                    inputKet.placeholder = "Keterangan muat / lainnya";
+                }
+                labelQty.innerText = "Jumlah (pcs)";
+            } else {
+                nopolContainer.classList.add('hidden');
+                labelKet.innerText = "Nomor PO / Keterangan Transaksi";
+                inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
+                labelQty.innerText = "Quantity (Palet / Pcs)";
+            }
+        }
+
+        function onReceiptSubChange() {
+            updateFormLabels();
+        }
+
         function selectSubmenu(sub) {
             currentSubmenu = sub;
             ['receipt', 'order', 'issue', 'other'].forEach(s => {
@@ -200,7 +230,6 @@
                 }
             });
 
-            // Tampilkan atau sembunyikan dropdown khusus receipt
             const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
             if (sub === 'receipt') {
                 receiptDropdownContainer.classList.remove('hidden');
@@ -217,6 +246,8 @@
                 effectEl.innerText = "(Mengurangi Stok)";
                 effectEl.className = "text-rose-400 font-bold";
             }
+
+            updateFormLabels();
         }
 
         function setBeginningBalance() {
@@ -233,6 +264,7 @@
             e.preventDefault();
             const ket = document.getElementById('keterangan').value;
             const qty = parseInt(document.getElementById('quantity').value);
+            const nopol = document.getElementById('nopol').value;
 
             let tipeFinal = currentSubmenu;
             let subKategori = '';
@@ -247,6 +279,7 @@
                 tipe: tipeFinal,
                 subTipe: subKategori,
                 ket,
+                nopol: (currentSubmenu === 'receipt') ? nopol : '',
                 qty
             };
 
@@ -254,6 +287,7 @@
             saveData();
             render();
             document.getElementById('transaksi-form').reset();
+            updateFormLabels();
             switchTab('dashboard');
         }
 
@@ -299,6 +333,8 @@
                     detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
                 }
 
+                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300">No Pol: ${t.nopol}</span>` : '';
+
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm";
                 card.innerHTML = `
@@ -308,6 +344,7 @@
                             <span class="text-[10px] text-slate-400">${t.date}</span>
                         </div>
                         <p class="font-bold text-slate-200 mt-1">${t.ket}</p>
+                        ${nopolDisplay}
                     </div>
                     <div class="text-right flex items-center gap-4">
                         <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
