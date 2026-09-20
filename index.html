@@ -10,80 +10,87 @@
 </head>
 <body class="bg-gray-50 min-h-screen pb-12">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
+    <!-- Kontainer dibuat max-w-4xl agar optimal untuk tampilan landscape/lebar -->
+    <div class="max-w-4xl mx-auto bg-white min-h-screen shadow-lg flex flex-col">
         <!-- Header -->
         <header class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-md">
-            <h1 class="text-xl font-bold">Dashboard Pallet</h1>
-            <p class="text-blue-100 text-sm">GDFG Jayanti 2</p>
+            <h1 class="text-xl font-bold">Dashboard Pallet GDFG Jayanti 2</h1>
+            <p class="text-blue-100 text-sm">Sistem Manajemen Stok Pallet</p>
         </header>
 
-        <!-- Main Content -->
-        <div class="p-6 space-y-6 flex-1">
+        <!-- Main Content (Layout Grid untuk Landscape) -->
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
             
-            <!-- Summary Cards / Dashboard -->
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Beginning Balance -->
-                <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200">
-                    <p class="text-xs text-gray-500 font-medium">Beginning Balance</p>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-1" id="val-begin">0</h2>
-                </div>
-                <!-- Ending Balance -->
-                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
-                    <p class="text-xs text-blue-600 font-medium">Ending Balance</p>
-                    <h2 class="text-2xl font-bold text-blue-700 mt-1" id="val-ending">0</h2>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Total Receipt -->
-                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
-                    <p class="text-xs text-emerald-600 font-medium">Total Receipt (+)</p>
-                    <h2 class="text-xl font-bold text-emerald-700 mt-1" id="val-receipt">0</h2>
-                </div>
-                <!-- Total Issue -->
-                <div class="bg-rose-50 p-4 rounded-2xl border border-rose-200">
-                    <p class="text-xs text-rose-600 font-medium">Penjualan Kayu Bekas (-)</p>
-                    <h2 class="text-xl font-bold text-rose-700 mt-1" id="val-issue">0</h2>
-                </div>
-            </div>
-
-            <!-- Set Initial / Beginning Balance Button / Form -->
-            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                <h3 class="text-sm font-bold text-gray-700 mb-2">Atur Stock Awal (Beginning Balance)</h3>
-                <div class="flex gap-2">
-                    <input type="number" id="input-begin" placeholder="Jumlah Stock Awal" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="setBeginningBalance()" class="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-900 transition">Atur</button>
-                </div>
-            </div>
-
-            <!-- Input Form Transaction -->
-            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                <h3 class="text-sm font-bold text-gray-700 mb-3">Input Transaksi Baru</h3>
-                <form id="transaksi-form" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Tipe Transaksi</label>
-                        <select id="tipe" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                            <option value="receipt">Receipt (Masuk +)</option>
-                            <option value="issue">Penjualan Kayu Bekas Pallet Rusak (Keluar -)</option>
-                        </select>
+            <!-- Kolom Kiri: Ringkasan & Form Pengaturan -->
+            <div class="space-y-6 md:col-span-1">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
+                    <!-- Beginning Balance -->
+                    <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200">
+                        <p class="text-xs text-gray-500 font-medium">Beginning Balance</p>
+                        <h2 class="text-2xl font-bold text-gray-800 mt-1" id="val-begin">0</h2>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Nomor PO / Keterangan</label>
-                        <input type="text" id="keterangan" placeholder="Contoh: PO-99823 / Nota 01" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <!-- Ending Balance -->
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                        <p class="text-xs text-blue-600 font-medium">Ending Balance</p>
+                        <h2 class="text-2xl font-bold text-blue-700 mt-1" id="val-ending">0</h2>
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Quantity (Palet)</label>
-                        <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
+                    <!-- Receipt -->
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                        <p class="text-xs text-emerald-600 font-medium">Receipt (+)</p>
+                        <h2 class="text-xl font-bold text-emerald-700 mt-1" id="val-receipt">0</h2>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-sm">Simpan Transaksi</button>
-                </form>
+                    <!-- Issue -->
+                    <div class="bg-rose-50 p-4 rounded-2xl border border-rose-200">
+                        <p class="text-xs text-rose-600 font-medium">Issue (-)</p>
+                        <h2 class="text-xl font-bold text-rose-700 mt-1" id="val-issue">0</h2>
+                    </div>
+                </div>
+
+                <!-- Set Beginning Balance Form -->
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">Atur Stock Awal (Beginning)</h3>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-begin" placeholder="Stock Awal" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="setBeginningBalance()" class="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-900 transition">Atur</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Riwayat Transaksi -->
-            <div>
-                <h3 class="font-bold text-gray-800 text-sm mb-3">Riwayat Transaksi</h3>
-                <div id="daftar-transaksi" class="space-y-2.5">
-                    <!-- Data transaksi masuk sini -->
+            <!-- Kolom Kanan: Form Input & Riwayat Transaksi (Landscape Mode) -->
+            <div class="space-y-6 md:col-span-2">
+                <!-- Input Form Transaction -->
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-sm font-bold text-gray-700 mb-3">Input Transaksi Baru</h3>
+                    <form id="transaksi-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tipe</label>
+                            <select id="tipe" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                <option value="receipt">Receipt (+)</option>
+                                <option value="issue">Issue (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Nomor PO / Ket</label>
+                            <input type="text" id="keterangan" placeholder="No. PO / Keterangan" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Quantity</label>
+                            <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <button type="submit" class="sm:col-span-3 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-sm">Simpan Transaksi</button>
+                    </form>
+                </div>
+
+                <!-- Riwayat Transaksi -->
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm mb-3">Riwayat Transaksi</h3>
+                    <div id="daftar-transaksi" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                        <!-- Data transaksi masuk sini -->
+                    </div>
                 </div>
             </div>
 
@@ -161,7 +168,7 @@
                 const isReceipt = t.tipe === 'receipt';
                 const badgeColor = isReceipt ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
                 const sign = isReceipt ? '+' : '-';
-                const titleText = isReceipt ? 'Receipt' : 'Penjualan Kayu Bekas';
+                const titleText = isReceipt ? 'Receipt' : 'Issue';
 
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3 border border-gray-200 rounded-xl bg-white shadow-xs text-sm";
