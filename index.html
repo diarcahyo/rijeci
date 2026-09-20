@@ -130,15 +130,24 @@
                     </div>
 
                     <!-- Input Keterangan / Nomor PO -->
-                    <div>
+                    <div id="keterangan-container">
                         <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
-                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                     </div>
 
-                    <!-- Input tambahan No Polisi (Khusus Receipt) -->
+                    <!-- Input tambahan No Polisi / Dropdown -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
-                        <input type="text" id="nopol" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
+                            <option value="B 9799 BQA/RA">B 9799 BQA/RA</option>
+                            <option value="B 9927 BQA/RA">B 9927 BQA/RA</option>
+                            <option value="D 8147 VS">D 8147 VS</option>
+                            <option value="A 8403 XM/MJ">A 8403 XM/MJ</option>
+                            <option value="B 9888 CW/MJ">B 9888 CW/MJ</option>
+                            <option value="A 8255 ZU/OPS">A 8255 ZU/OPS</option>
+                            <option value="MANUAL">-- Ketik Manual Lainnya --</option>
+                        </select>
+                        <input type="text" id="nopol-manual" placeholder="Ketik nomor polisi manual di sini..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
                     </div>
 
                     <!-- Input Quantity -->
@@ -152,7 +161,7 @@
             </div>
         </div>
 
-        <!-- Tab Riwayat Transaksi (Dengan Sub-Tab Terpisah) -->
+        <!-- Tab Riwayat Transaksi -->
         <div id="section-riwayat" class="space-y-4 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
@@ -173,7 +182,7 @@
 
     <script>
         let currentSubmenu = 'receipt';
-        let currentRiwayatFilter = 'receipt'; // Default tab riwayat aktif
+        let currentRiwayatFilter = 'receipt';
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
             beginning: 100,
@@ -197,17 +206,13 @@
             document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
         }
 
-        // Fungsi saat ikon "i" diklik dari dashboard
         function goToRiwayatCategory(category) {
             switchTab('riwayat');
             switchRiwayatTab(category);
         }
 
-        // Fungsi mengganti sub-tab di halaman riwayat
         function switchRiwayatTab(category) {
             currentRiwayatFilter = category;
-            
-            // Styling tombol sub-tab riwayat
             const tabs = ['receipt', 'order', 'issue', 'other'];
             tabs.forEach(t => {
                 const btn = document.getElementById('riwayat-tab-' + t);
@@ -220,12 +225,25 @@
                     btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center";
                 }
             });
-
             render();
         }
 
+        function onNopolSelectChange() {
+            const val = document.getElementById('nopol-select').value;
+            const manualInput = document.getElementById('nopol-manual');
+            if (val === 'MANUAL') {
+                manualInput.classList.remove('hidden');
+                manualInput.required = true;
+                manualInput.focus();
+            } else {
+                manualInput.classList.add('hidden');
+                manualInput.required = false;
+                manualInput.value = '';
+            }
+        }
+
         function updateFormLabels() {
-            const labelKet = document.getElementById('label-keterangan');
+            const ketContainer = document.getElementById('keterangan-container');
             const inputKet = document.getElementById('keterangan');
             const labelQty = document.getElementById('label-quantity');
             const nopolContainer = document.getElementById('nopol-container');
@@ -233,17 +251,19 @@
             if (currentSubmenu === 'receipt') {
                 nopolContainer.classList.remove('hidden');
                 const subType = document.getElementById('receipt-sub-type').value;
-                if (subType === 'Pallet Order') {
-                    labelKet.innerText = "Nomor PO";
-                    inputKet.placeholder = "Contoh: PO-88219";
+                if (subType === 'Pallet Balikan Mobil Racking') {
+                    ketContainer.classList.add('hidden');
+                    inputKet.required = false;
                 } else {
-                    labelKet.innerText = "Keterangan Transaksi";
-                    inputKet.placeholder = "Keterangan muat / lainnya";
+                    ketContainer.classList.remove('hidden');
+                    inputKet.required = true;
+                    inputKet.placeholder = "Contoh: PO-88219";
                 }
                 labelQty.innerText = "Jumlah (pcs)";
             } else {
                 nopolContainer.classList.add('hidden');
-                labelKet.innerText = "Nomor PO / Keterangan Transaksi";
+                ketContainer.classList.remove('hidden');
+                inputKet.required = true;
                 inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
                 labelQty.innerText = "Quantity (Palet / Pcs)";
             }
@@ -296,16 +316,27 @@
 
         function submitTransaksi(e) {
             e.preventDefault();
-            const ket = document.getElementById('keterangan').value;
             const qty = parseInt(document.getElementById('quantity').value);
-            const nopol = document.getElementById('nopol').value;
-
-            let tipeFinal = currentSubmenu;
-            let subKategori = '';
+            
+            let ket = '';
+            let nopolFinal = '';
 
             if (currentSubmenu === 'receipt') {
-                subKategori = document.getElementById('receipt-sub-type').value;
+                const subType = document.getElementById('receipt-sub-type').value;
+                if (subType === 'Pallet Balikan Mobil Racking') {
+                    ket = 'Pallet Balikan Mobil Racking';
+                    const selectNopol = document.getElementById('nopol-select').value;
+                    nopolFinal = (selectNopol === 'MANUAL') ? document.getElementById('nopol-manual').value : selectNopol;
+                } else {
+                    ket = document.getElementById('keterangan').value;
+                    nopolFinal = document.getElementById('nopol-select').value === 'MANUAL' ? document.getElementById('nopol-manual').value : document.getElementById('nopol-select').value;
+                }
+            } else {
+                ket = document.getElementById('keterangan').value;
             }
+
+            let tipeFinal = currentSubmenu;
+            let subKategori = (currentSubmenu === 'receipt') ? document.getElementById('receipt-sub-type').value : '';
 
             const newTx = {
                 id: Date.now(),
@@ -313,7 +344,7 @@
                 tipe: tipeFinal,
                 subTipe: subKategori,
                 ket,
-                nopol: (currentSubmenu === 'receipt') ? nopol : '',
+                nopol: (currentSubmenu === 'receipt') ? nopolFinal : '',
                 qty
             };
 
@@ -321,6 +352,7 @@
             saveData();
             render();
             document.getElementById('transaksi-form').reset();
+            onNopolSelectChange();
             updateFormLabels();
             switchTab('dashboard');
         }
@@ -343,7 +375,6 @@
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
-            // Filter transaksi berdasarkan sub-tab riwayat yang sedang aktif
             const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
 
             if (filteredTransactions.length === 0) {
@@ -372,7 +403,8 @@
                     detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
                 }
 
-                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300">No Pol: ${t.nopol}</span>` : '';
+                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
+                let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
 
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm";
@@ -382,7 +414,7 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
                             <span class="text-[10px] text-slate-400">${t.date}</span>
                         </div>
-                        <p class="font-bold text-slate-200 mt-1">${t.ket}</p>
+                        ${ketDisplay}
                         ${nopolDisplay}
                     </div>
                     <div class="text-right flex items-center gap-4">
