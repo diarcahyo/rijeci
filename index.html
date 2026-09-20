@@ -135,19 +135,25 @@
                         <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                     </div>
 
-                    <!-- Input tambahan No Polisi / Dropdown -->
+                    <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
-                        <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
-                            <option value="B 9799 BQA/RA">B 9799 BQA/RA</option>
-                            <option value="B 9927 BQA/RA">B 9927 BQA/RA</option>
-                            <option value="D 8147 VS">D 8147 VS</option>
-                            <option value="A 8403 XM/MJ">A 8403 XM/MJ</option>
-                            <option value="B 9888 CW/MJ">B 9888 CW/MJ</option>
-                            <option value="A 8255 ZU/OPS">A 8255 ZU/OPS</option>
-                            <option value="MANUAL">-- Ketik Manual Lainnya --</option>
-                        </select>
-                        <input type="text" id="nopol-manual" placeholder="Ketik nomor polisi manual di sini..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+                        <!-- Input Manual (untuk Pallet Order / Menu Lain) -->
+                        <input type="text" id="nopol-manual" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        
+                        <!-- Dropdown & Manual Input (untuk Pallet Balikan Mobil Racking) -->
+                        <div id="nopol-dropdown-wrapper" class="hidden">
+                            <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
+                                <option value="B 9799 BQA/RA">1. B 9799 BQA/RA</option>
+                                <option value="B 9927 BQA/RA">2. B 9927 BQA/RA</option>
+                                <option value="D 8147 VS">3. D 8147 VS</option>
+                                <option value="A 8403 XM/MJ">4. A 8403 XM/MJ</option>
+                                <option value="B 9888 CW/MJ">5. B 9888 CW/MJ</option>
+                                <option value="A 8255 ZU/OPS">6. A 8255 ZU/OPS</option>
+                                <option value="MANUAL">-- Ketik Manual Lainnya --</option>
+                            </select>
+                            <input type="text" id="nopol-dropdown-manual" placeholder="Ketik nomor polisi manual di sini..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+                        </div>
                     </div>
 
                     <!-- Input Quantity -->
@@ -230,7 +236,7 @@
 
         function onNopolSelectChange() {
             const val = document.getElementById('nopol-select').value;
-            const manualInput = document.getElementById('nopol-manual');
+            const manualInput = document.getElementById('nopol-dropdown-manual');
             if (val === 'MANUAL') {
                 manualInput.classList.remove('hidden');
                 manualInput.required = true;
@@ -247,6 +253,8 @@
             const inputKet = document.getElementById('keterangan');
             const labelQty = document.getElementById('label-quantity');
             const nopolContainer = document.getElementById('nopol-container');
+            const nopolManualInput = document.getElementById('nopol-manual');
+            const nopolDropdownWrapper = document.getElementById('nopol-dropdown-wrapper');
 
             if (currentSubmenu === 'receipt') {
                 nopolContainer.classList.remove('hidden');
@@ -254,10 +262,22 @@
                 if (subType === 'Pallet Balikan Mobil Racking') {
                     ketContainer.classList.add('hidden');
                     inputKet.required = false;
+                    
+                    // Tampilkan dropdown, sembunyikan input manual bebas
+                    nopolManualInput.classList.add('hidden');
+                    nopolManualInput.required = false;
+                    nopolDropdownWrapper.classList.remove('hidden');
+                    onNopolSelectChange();
                 } else {
                     ketContainer.classList.remove('hidden');
                     inputKet.required = true;
                     inputKet.placeholder = "Contoh: PO-88219";
+                    
+                    // Tampilkan input manual bebas untuk Pallet Order, sembunyikan dropdown
+                    nopolDropdownWrapper.classList.add('hidden');
+                    nopolManualInput.classList.remove('hidden');
+                    nopolManualInput.required = true;
+                    nopolManualInput.placeholder = "Contoh: B 1234 XYZ";
                 }
                 labelQty.innerText = "Jumlah (pcs)";
             } else {
@@ -326,10 +346,10 @@
                 if (subType === 'Pallet Balikan Mobil Racking') {
                     ket = 'Pallet Balikan Mobil Racking';
                     const selectNopol = document.getElementById('nopol-select').value;
-                    nopolFinal = (selectNopol === 'MANUAL') ? document.getElementById('nopol-manual').value : selectNopol;
+                    nopolFinal = (selectNopol === 'MANUAL') ? document.getElementById('nopol-dropdown-manual').value : selectNopol;
                 } else {
                     ket = document.getElementById('keterangan').value;
-                    nopolFinal = document.getElementById('nopol-select').value === 'MANUAL' ? document.getElementById('nopol-manual').value : document.getElementById('nopol-select').value;
+                    nopolFinal = document.getElementById('nopol-manual').value;
                 }
             } else {
                 ket = document.getElementById('keterangan').value;
