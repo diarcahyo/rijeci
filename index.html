@@ -16,7 +16,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
-                    <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2[span_1](start_span)[span_1](end_span)</p>
+                    <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
                 </div>
                 <!-- Navigation Tabs -->
                 <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
@@ -100,11 +100,11 @@
                 
                 <!-- Pilihan Submenu Utama -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                    <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
                         <span>📥 Receipt</span>
                         <span class="text-[10px] text-slate-400 font-normal">Tambah Stok Masuk</span>
                     </button>
-                    <button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
+                    <button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
                         <span>📋 Order</span>
                         <span class="text-[10px] text-slate-400 font-normal">Tambah / Alokasi</span>
                     </button>
@@ -118,10 +118,10 @@
                     </button>
                 </div>
 
-                <!-- Dropdown khusus ketika menu Order dipilih -->
-                <div id="order-dropdown-container" class="mb-4">
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Order</label>
-                    <select id="order-sub-type" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                <!-- Dropdown khusus ketika menu Receipt dipilih -->
+                <div id="receipt-dropdown-container" class="mb-4">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
+                    <select id="receipt-sub-type" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                         <option value="Pallet Order">1. Pallet Order</option>
                         <option value="Pallet Balikan Mobil Racking">2. Pallet Balikan Mobil Racking</option>
                     </select>
@@ -130,7 +130,7 @@
                 <!-- Form Aktif Berdasarkan Pilihan Kolom -->
                 <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
                     <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
-                        <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">Order</strong></span>
+                        <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
                         <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
                     </div>
 
@@ -161,7 +161,7 @@
     </div>
 
     <script>
-        let currentSubmenu = 'order';
+        let currentSubmenu = 'receipt';
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
             beginning: 100,
@@ -200,12 +200,12 @@
                 }
             });
 
-            // Tampilkan atau sembunyikan dropdown khusus order
-            const orderDropdownContainer = document.getElementById('order-dropdown-container');
-            if (sub === 'order') {
-                orderDropdownContainer.classList.remove('hidden');
+            // Tampilkan atau sembunyikan dropdown khusus receipt
+            const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+            if (sub === 'receipt') {
+                receiptDropdownContainer.classList.remove('hidden');
             } else {
-                orderDropdownContainer.classList.add('hidden');
+                receiptDropdownContainer.classList.add('hidden');
             }
 
             document.getElementById('active-category-label').innerText = sub;
@@ -237,8 +237,8 @@
             let tipeFinal = currentSubmenu;
             let subKategori = '';
 
-            if (currentSubmenu === 'order') {
-                subKategori = document.getElementById('order-sub-type').value;
+            if (currentSubmenu === 'receipt') {
+                subKategori = document.getElementById('receipt-sub-type').value;
             }
 
             const newTx = {
@@ -294,7 +294,6 @@
 
                 const sign = isAdd ? '+' : '-';
                 
-                // Tampilkan subtipe jika ada (khusus order)
                 let detailTipeDisplay = t.tipe;
                 if (t.subTipe) {
                     detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
@@ -328,7 +327,7 @@
         }
 
         render();
-        selectSubmenu('order'); 
+        selectSubmenu('receipt'); 
     </script>
 </body>
 </html>
