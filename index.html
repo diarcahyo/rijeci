@@ -48,7 +48,7 @@
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
-                        <button onclick="goToRiwayatCategory('receipt')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
+                        <button onclick="goToRiwayatCategory('receipt_order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
                     </div>
                     <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
@@ -138,10 +138,8 @@
                     <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
-                        <!-- Input Manual (untuk Pallet Order / Menu Lain) -->
                         <input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                         
-                        <!-- Dropdown & Manual Input (untuk Pallet Balikan Mobil Racking) -->
                         <div id="nopol-dropdown-wrapper" class="hidden space-y-2">
                             <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                                 <option value="B 9799 BQA/RA">1. B 9799 BQA/RA</option>
@@ -153,13 +151,11 @@
                                 <option value="MANUAL">-- Ketik Manual Lainnya --</option>
                             </select>
 
-                            <!-- Wrapper Input Manual Khusus Nopol & Ekspedisi -->
                             <div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
                                 <input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual (misal: B 9901 TE)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                                 <input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi (misal: Anugerah Amalia)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                             </div>
                             
-                            <!-- Dropdown Pengirim khusus Pallet Balikan Mobil Racking -->
                             <div class="mt-3">
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Pengirim</label>
                                 <select id="pengirim-select" onchange="onPengirimSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
@@ -190,12 +186,23 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
-                <!-- Sub-Tab Navigasi Riwayat -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-                    <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center">Receipt</button>
-                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Order</button>
-                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Issue</button>
-                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Other</button>
+                <!-- Sub-Tab Navigasi Riwayat (Dipisah Menjadi 5 Kolom dengan Ikon) -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
+                    <button onclick="switchRiwayatTab('receipt_order')" id="riwayat-tab-receipt_order" class="py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
+                        <span>📥 Receipt Order</span>
+                    </button>
+                    <button onclick="switchRiwayatTab('receipt_racking')" id="riwayat-tab-receipt_racking" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
+                        <span>🚛 Receipt Racking</span>
+                    </button>
+                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
+                        <span>📋 Order</span>
+                    </button>
+                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
+                        <span>📤 Issue</span>
+                    </button>
+                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1">
+                        <span>⚡ Other</span>
+                    </button>
                 </div>
 
                 <!-- Kontainer Daftar Transaksi per Tab -->
@@ -206,7 +213,7 @@
 
     <script>
         let currentSubmenu = 'receipt';
-        let currentRiwayatFilter = 'receipt';
+        let currentRiwayatFilter = 'receipt_order';
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v4')) || {
             beginning: 100,
@@ -237,16 +244,25 @@
 
         function switchRiwayatTab(category) {
             currentRiwayatFilter = category;
-            const tabs = ['receipt', 'order', 'issue', 'other'];
+            const tabs = ['receipt_order', 'receipt_racking', 'order', 'issue', 'other'];
             tabs.forEach(t => {
                 const btn = document.getElementById('riwayat-tab-' + t);
                 if (t === category) {
-                    if (t === 'receipt') btn.className = "py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center";
-                    else if (t === 'order') btn.className = "py-2.5 px-3 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 font-bold text-xs transition text-center";
-                    else if (t === 'issue') btn.className = "py-2.5 px-3 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 font-bold text-xs transition text-center";
-                    else if (t === 'other') btn.className = "py-2.5 px-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 font-bold text-xs transition text-center";
+                    if (t === 'receipt_order' || t === 'receipt_racking') {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                    } else if (t === 'order') {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                    } else if (t === 'issue') {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                    } else if (t === 'other') {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1";
+                    }
                 } else {
-                    btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center";
+                    if (t === 'other') {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1";
+                    } else {
+                        btn.className = "py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                    }
                 }
             });
             render();
@@ -453,10 +469,19 @@
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
-            const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
+            // Filter transaksi berdasarkan kategori riwayat yang dipilih
+            const filteredTransactions = state.transactions.filter(t => {
+                if (currentRiwayatFilter === 'receipt_order') {
+                    return t.tipe === 'receipt' && t.subTipe === 'Pallet Order';
+                } else if (currentRiwayatFilter === 'receipt_racking') {
+                    return t.tipe === 'receipt' && t.subTipe === 'Pallet Balikan Mobil Racking';
+                } else {
+                    return t.tipe === currentRiwayatFilter;
+                }
+            });
 
             if (filteredTransactions.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori <span class="uppercase font-bold">${currentRiwayatFilter}</span>.</p>`;
+                listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
             }
 
             state.transactions.forEach(t => {
