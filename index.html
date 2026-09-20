@@ -48,28 +48,28 @@
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
-                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayatCategory('receipt')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
                     </div>
                     <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
-                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayatCategory('order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Order">i</button>
                     </div>
                     <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
-                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayatCategory('issue')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Issue">i</button>
                     </div>
                     <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
-                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                        <button onclick="goToRiwayatCategory('other')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Other">i</button>
                     </div>
                     <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
@@ -152,10 +152,20 @@
             </div>
         </div>
 
-        <!-- Tab Riwayat Transaksi -->
+        <!-- Tab Riwayat Transaksi (Dengan Sub-Tab Terpisah) -->
         <div id="section-riwayat" class="space-y-4 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
+                
+                <!-- Sub-Tab Navigasi Riwayat -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+                    <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center">Receipt</button>
+                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Order</button>
+                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Issue</button>
+                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Other</button>
+                </div>
+
+                <!-- Kontainer Daftar Transaksi per Tab -->
                 <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </div>
@@ -163,6 +173,7 @@
 
     <script>
         let currentSubmenu = 'receipt';
+        let currentRiwayatFilter = 'receipt'; // Default tab riwayat aktif
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
             beginning: 100,
@@ -186,8 +197,31 @@
             document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
         }
 
-        function goToRiwayat() {
+        // Fungsi saat ikon "i" diklik dari dashboard
+        function goToRiwayatCategory(category) {
             switchTab('riwayat');
+            switchRiwayatTab(category);
+        }
+
+        // Fungsi mengganti sub-tab di halaman riwayat
+        function switchRiwayatTab(category) {
+            currentRiwayatFilter = category;
+            
+            // Styling tombol sub-tab riwayat
+            const tabs = ['receipt', 'order', 'issue', 'other'];
+            tabs.forEach(t => {
+                const btn = document.getElementById('riwayat-tab-' + t);
+                if (t === category) {
+                    if (t === 'receipt') btn.className = "py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center";
+                    else if (t === 'order') btn.className = "py-2.5 px-3 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 font-bold text-xs transition text-center";
+                    else if (t === 'issue') btn.className = "py-2.5 px-3 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 font-bold text-xs transition text-center";
+                    else if (t === 'other') btn.className = "py-2.5 px-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 font-bold text-xs transition text-center";
+                } else {
+                    btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center";
+                }
+            });
+
+            render();
         }
 
         function updateFormLabels() {
@@ -309,8 +343,11 @@
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
-            if (state.transactions.length === 0) {
-                listEl.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi tercatat.</p>';
+            // Filter transaksi berdasarkan sub-tab riwayat yang sedang aktif
+            const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
+
+            if (filteredTransactions.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori <span class="uppercase font-bold">${currentRiwayatFilter}</span>.</p>`;
             }
 
             state.transactions.forEach(t => {
@@ -318,7 +355,9 @@
                 if (t.tipe === 'order') totalOrder += t.qty;
                 if (t.tipe === 'issue') totalIssue += t.qty;
                 if (t.tipe === 'other') totalOther += t.qty;
+            });
 
+            filteredTransactions.forEach(t => {
                 const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
                 let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
                 if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
