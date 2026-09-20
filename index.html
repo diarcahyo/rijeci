@@ -82,7 +82,7 @@
                     <p class="text-xs text-slate-400">Nilai stock awal dasar perhitungan sistem</p>
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <input type="number" id="input-begin" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
+                    <input type="number" id="input-begin" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
                     <button onclick="setBeginningBalance()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold rounded-lg transition whitespace-nowrap">Simpan</button>
                 </div>
             </div>
@@ -132,14 +132,14 @@
                     <!-- Input Keterangan / Nomor PO -->
                     <div id="keterangan-container">
                         <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
-                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        <input type="text" id="keterangan" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                     </div>
 
                     <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
                         <!-- Input Manual (untuk Pallet Order / Menu Lain) -->
-                        <input type="text" id="nopol-manual" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        <input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                         
                         <!-- Dropdown & Manual Input (untuk Pallet Balikan Mobil Racking) -->
                         <div id="nopol-dropdown-wrapper" class="hidden space-y-2">
@@ -155,8 +155,8 @@
 
                             <!-- Wrapper Input Manual Khusus Nopol & Ekspedisi -->
                             <div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
-                                <input type="text" id="nopol-dropdown-manual" placeholder="Ketik nomor polisi manual (misal: B 9901 TE)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
-                                <input type="text" id="ekspedisi-manual" placeholder="Ketik nama ekspedisi (misal: Anugerah Amalia)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                                <input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual (misal: B 9901 TE)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+                                <input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi (misal: Anugerah Amalia)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                             </div>
                             
                             <!-- Dropdown Pengirim khusus Pallet Balikan Mobil Racking -->
@@ -169,15 +169,15 @@
                                     <option value="/MT Tambun">4. /MT Tambun</option>
                                     <option value="MANUAL">-- Ketik Manual Lainnya --</option>
                                 </select>
-                                <input type="text" id="pengirim-manual" placeholder="Ketik pengirim manual (contoh: /Cns)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+                                <input type="text" id="pengirim-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik pengirim manual (contoh: /Cns)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase hidden" style="text-transform: uppercase;">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Input Quantity -->
+                    <!-- Input Quantity dengan Popup Numerik -->
                     <div>
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
-                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                        <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
                     </div>
 
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
@@ -386,8 +386,8 @@
                     
                     let nopolPart = '';
                     if (selectNopol === 'MANUAL') {
-                        const mNopol = document.getElementById('nopol-dropdown-manual').value.trim();
-                        const mEkspedisi = document.getElementById('ekspedisi-manual').value.trim();
+                        const mNopol = document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase();
+                        const mEkspedisi = document.getElementById('ekspedisi-manual').value.trim().toUpperCase();
                         nopolPart = `${mNopol}/${mEkspedisi}`;
                     } else {
                         nopolPart = selectNopol;
@@ -396,21 +396,20 @@
                     const selectPengirim = document.getElementById('pengirim-select').value;
                     let pengirimPart = '';
                     if (selectPengirim === 'MANUAL') {
-                        let mPengirim = document.getElementById('pengirim-manual').value.trim();
+                        let mPengirim = document.getElementById('pengirim-manual').value.trim().toUpperCase();
                         if (!mPengirim.startsWith('/')) mPengirim = '/' + mPengirim;
                         pengirimPart = mPengirim;
                     } else {
                         pengirimPart = selectPengirim;
                     }
                     
-                    // Menggabungkan dengan pemisah garis miring "/"
                     nopolFinal = `${nopolPart}${pengirimPart}`;
                 } else {
-                    ket = document.getElementById('keterangan').value;
-                    nopolFinal = document.getElementById('nopol-manual').value;
+                    ket = document.getElementById('keterangan').value.toUpperCase();
+                    nopolFinal = document.getElementById('nopol-manual').value.toUpperCase();
                 }
             } else {
-                ket = document.getElementById('keterangan').value;
+                ket = document.getElementById('keterangan').value.toUpperCase();
             }
 
             let tipeFinal = currentSubmenu;
