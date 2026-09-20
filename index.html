@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen pb-12">
 
-    <!-- Kontainer dibuat max-w-4xl agar optimal untuk tampilan landscape/lebar -->
+    <!-- Kontainer Landscape -->
     <div class="max-w-4xl mx-auto bg-white min-h-screen shadow-lg flex flex-col">
         <!-- Header -->
         <header class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-md">
@@ -18,7 +18,7 @@
             <p class="text-blue-100 text-sm">Sistem Manajemen Stok Pallet</p>
         </header>
 
-        <!-- Main Content (Layout Grid untuk Landscape) -->
+        <!-- Main Content -->
         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
             
             <!-- Kolom Kiri: Ringkasan & Form Pengaturan -->
@@ -40,12 +40,12 @@
                 <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
                     <!-- Receipt -->
                     <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
-                        <p class="text-xs text-emerald-600 font-medium">Receipt (+)</p>
+                        <p class="text-xs text-emerald-600 font-medium">Receipt</p>
                         <h2 class="text-xl font-bold text-emerald-700 mt-1" id="val-receipt">0</h2>
                     </div>
                     <!-- Issue -->
                     <div class="bg-rose-50 p-4 rounded-2xl border border-rose-200">
-                        <p class="text-xs text-rose-600 font-medium">Issue (-)</p>
+                        <p class="text-xs text-rose-600 font-medium">Issue</p>
                         <h2 class="text-xl font-bold text-rose-700 mt-1" id="val-issue">0</h2>
                     </div>
                 </div>
@@ -60,17 +60,19 @@
                 </div>
             </div>
 
-            <!-- Kolom Kanan: Form Input & Riwayat Transaksi (Landscape Mode) -->
+            <!-- Kolom Kanan: Menu Transaksi & Riwayat -->
             <div class="space-y-6 md:col-span-2">
-                <!-- Input Form Transaction -->
+                <!-- Form Transaksi -->
                 <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 class="text-sm font-bold text-gray-700 mb-3">Input Transaksi Baru</h3>
+                    <h3 class="text-sm font-bold text-gray-700 mb-3">Transaksi</h3>
                     <form id="transaksi-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Tipe</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Submenu</label>
                             <select id="tipe" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                                <option value="receipt">Receipt (+)</option>
-                                <option value="issue">Issue (-)</option>
+                                <option value="receipt">Receipt</option>
+                                <option value="order">Order</option>
+                                <option value="issue">Issue</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                         <div>
@@ -162,13 +164,22 @@
             }
 
             state.transactions.forEach(t => {
-                if (t.tipe === 'receipt') totalReceipt += t.qty;
-                if (t.tipe === 'issue') totalIssue += t.qty;
+                // Logika perhitungan: Receipt dan Order menambah stok, Issue dan Other mengurangi stok (atau sesuaikan kebutuhan)
+                let isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
+                let isSub = (t.tipe === 'issue' || t.tipe === 'other');
 
-                const isReceipt = t.tipe === 'receipt';
-                const badgeColor = isReceipt ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700';
-                const sign = isReceipt ? '+' : '-';
-                const titleText = isReceipt ? 'Receipt' : 'Issue';
+                if (isAdd) totalReceipt += t.qty;
+                if (isSub) totalIssue += t.qty;
+
+                // Styling badge berdasarkan submenu
+                let badgeColor = 'bg-blue-100 text-blue-700';
+                if (t.tipe === 'receipt') badgeColor = 'bg-emerald-100 text-emerald-700';
+                else if (t.tipe === 'order') badgeColor = 'bg-amber-100 text-amber-700';
+                else if (t.tipe === 'issue') badgeColor = 'bg-rose-100 text-rose-700';
+                else if (t.tipe === 'other') badgeColor = 'bg-purple-100 text-purple-700';
+
+                const sign = isAdd ? '+' : '-';
+                const titleText = t.tipe.toUpperCase();
 
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3 border border-gray-200 rounded-xl bg-white shadow-xs text-sm";
@@ -182,7 +193,7 @@
                     </div>
                     <div class="text-right flex items-center gap-3">
                         <div>
-                            <p class="font-bold ${isReceipt ? 'text-emerald-600' : 'text-rose-600'}">${sign}${t.qty}</p>
+                            <p class="font-bold ${isAdd ? 'text-emerald-600' : 'text-rose-600'}">${sign}${t.qty}</p>
                         </div>
                         <button onclick="deleteTx(${t.id})" class="text-gray-400 hover:text-red-500 font-bold px-1">&times;</button>
                     </div>
