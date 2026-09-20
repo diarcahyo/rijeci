@@ -11,12 +11,14 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
 
     <div class="max-w-5xl mx-auto p-4 md:p-6">
+        <!-- Header -->
         <header class="mb-6 border-b border-slate-800 pb-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
                     <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
                 </div>
+                <!-- Navigation Tabs -->
                 <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
                     <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
                     <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
@@ -25,7 +27,9 @@
             </div>
         </header>
 
+        <!-- Tab Dashboard -->
         <div id="section-dashboard" class="space-y-6">
+            <!-- Ending Balance Highlight -->
             <div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
                 <div class="absolute right-4 top-4 opacity-10 text-6xl font-bold">📦</div>
                 <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
@@ -35,6 +39,7 @@
                 </div>
             </div>
 
+            <!-- Kartu Metrik Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
                     <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
@@ -70,6 +75,7 @@
                 </div>
             </div>
 
+            <!-- Atur Beginning Balance -->
             <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div>
                     <h3 class="text-sm font-bold text-slate-200">Atur Stock Awal (Beginning Balance)</h3>
@@ -82,10 +88,12 @@
             </div>
         </div>
 
+        <!-- Tab Input Transaksi -->
         <div id="section-transaksi" class="space-y-6 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
                 
+                <!-- Pilihan Submenu Utama -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
                         <span>📥 Receipt</span>
@@ -105,6 +113,7 @@
                     </button>
                 </div>
 
+                <!-- Dropdown khusus ketika menu Receipt dipilih -->
                 <div id="receipt-dropdown-container" class="mb-4">
                     <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
                     <select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
@@ -113,21 +122,26 @@
                     </select>
                 </div>
 
+                <!-- Form Aktif Berdasarkan Pilihan Kolom -->
                 <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
                     <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
                         <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
                         <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
                     </div>
 
+                    <!-- Input Keterangan / Nomor PO -->
                     <div id="keterangan-container">
                         <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
                         <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                     </div>
 
+                    <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
+                        <!-- Input Manual (untuk Pallet Order / Menu Lain) -->
                         <input type="text" id="nopol-manual" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                         
+                        <!-- Dropdown & Manual Input (untuk Pallet Balikan Mobil Racking) -->
                         <div id="nopol-dropdown-wrapper" class="hidden space-y-2">
                             <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                                 <option value="B 9799 BQA/RA">1. B 9799 BQA/RA</option>
@@ -138,8 +152,14 @@
                                 <option value="A 8255 ZU/OPS">6. A 8255 ZU/OPS</option>
                                 <option value="MANUAL">-- Ketik Manual Lainnya --</option>
                             </select>
-                            <input type="text" id="nopol-dropdown-manual" placeholder="Ketik nomor polisi manual di sini..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+
+                            <!-- Wrapper Input Manual Khusus Nopol & Ekspedisi -->
+                            <div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
+                                <input type="text" id="nopol-dropdown-manual" placeholder="Ketik nomor polisi manual (misal: B 9901 TE)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                                <input type="text" id="ekspedisi-manual" placeholder="Ketik nama ekspedisi (misal: Anugerah Amalia)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                            </div>
                             
+                            <!-- Dropdown Pengirim khusus Pallet Balikan Mobil Racking -->
                             <div class="mt-3">
                                 <label class="block text-xs font-medium text-slate-300 mb-1">Pengirim</label>
                                 <select id="pengirim-select" onchange="onPengirimSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
@@ -149,11 +169,12 @@
                                     <option value="/MT Tambun">4. /MT Tambun</option>
                                     <option value="MANUAL">-- Ketik Manual Lainnya --</option>
                                 </select>
-                                <input type="text" id="pengirim-manual" placeholder="Ketik pengirim manual (contoh: /MT Cabang)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+                                <input type="text" id="pengirim-manual" placeholder="Ketik pengirim manual (contoh: /Cns)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
                             </div>
                         </div>
                     </div>
 
+                    <!-- Input Quantity -->
                     <div>
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
                         <input type="number" id="quantity" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
@@ -164,10 +185,12 @@
             </div>
         </div>
 
+        <!-- Tab Riwayat Transaksi -->
         <div id="section-riwayat" class="space-y-4 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
+                <!-- Sub-Tab Navigasi Riwayat -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
                     <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center">Receipt</button>
                     <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Order</button>
@@ -175,6 +198,7 @@
                     <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center">Other</button>
                 </div>
 
+                <!-- Kontainer Daftar Transaksi per Tab -->
                 <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </div>
@@ -184,13 +208,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v3')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v4')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v3', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v4', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -230,15 +254,21 @@
 
         function onNopolSelectChange() {
             const val = document.getElementById('nopol-select').value;
-            const manualInput = document.getElementById('nopol-dropdown-manual');
+            const manualBox = document.getElementById('manual-nopol-ekspedisi-box');
+            const manualNopol = document.getElementById('nopol-dropdown-manual');
+            const manualEkspedisi = document.getElementById('ekspedisi-manual');
+
             if (val === 'MANUAL') {
-                manualInput.classList.remove('hidden');
-                manualInput.required = true;
-                manualInput.focus();
+                manualBox.classList.remove('hidden');
+                manualNopol.required = true;
+                manualEkspedisi.required = true;
+                manualNopol.focus();
             } else {
-                manualInput.classList.add('hidden');
-                manualInput.required = false;
-                manualInput.value = '';
+                manualBox.classList.add('hidden');
+                manualNopol.required = false;
+                manualEkspedisi.required = false;
+                manualNopol.value = '';
+                manualEkspedisi.value = '';
             }
         }
 
@@ -271,7 +301,6 @@
                     ketContainer.classList.add('hidden');
                     inputKet.required = false;
                     
-                    // Tampilkan dropdown & pengirim, sembunyikan input manual bebas
                     nopolManualInput.classList.add('hidden');
                     nopolManualInput.required = false;
                     nopolDropdownWrapper.classList.remove('hidden');
@@ -282,7 +311,6 @@
                     inputKet.required = true;
                     inputKet.placeholder = "Contoh: PO-88219";
                     
-                    // Tampilkan input manual bebas untuk Pallet Order, sembunyikan dropdown
                     nopolDropdownWrapper.classList.add('hidden');
                     nopolManualInput.classList.remove('hidden');
                     nopolManualInput.required = true;
@@ -355,13 +383,28 @@
                 if (subType === 'Pallet Balikan Mobil Racking') {
                     ket = 'Pallet Balikan Mobil Racking';
                     const selectNopol = document.getElementById('nopol-select').value;
-                    const nopolVal = (selectNopol === 'MANUAL') ? document.getElementById('nopol-dropdown-manual').value : selectNopol;
+                    
+                    let nopolPart = '';
+                    if (selectNopol === 'MANUAL') {
+                        const mNopol = document.getElementById('nopol-dropdown-manual').value.trim();
+                        const mEkspedisi = document.getElementById('ekspedisi-manual').value.trim();
+                        nopolPart = `${mNopol}/${mEkspedisi}`;
+                    } else {
+                        nopolPart = selectNopol;
+                    }
                     
                     const selectPengirim = document.getElementById('pengirim-select').value;
-                    const pengirimVal = (selectPengirim === 'MANUAL') ? document.getElementById('pengirim-manual').value : selectPengirim;
+                    let pengirimPart = '';
+                    if (selectPengirim === 'MANUAL') {
+                        let mPengirim = document.getElementById('pengirim-manual').value.trim();
+                        if (!mPengirim.startsWith('/')) mPengirim = '/' + mPengirim;
+                        pengirimPart = mPengirim;
+                    } else {
+                        pengirimPart = selectPengirim;
+                    }
                     
-                    // Menggabungkan nopol dan pengirim sesuai format yang diinginkan
-                    nopolFinal = `${nopolVal}${pengirimVal}`;
+                    // Menggabungkan dengan pemisah garis miring "/"
+                    nopolFinal = `${nopolPart}${pengirimPart}`;
                 } else {
                     ket = document.getElementById('keterangan').value;
                     nopolFinal = document.getElementById('nopol-manual').value;
