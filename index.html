@@ -40,7 +40,7 @@
             </div>
 
             <!-- Kartu Metrik Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
                     <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
                     <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
@@ -48,7 +48,7 @@
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
-                        <button onclick="goToRiwayatCategory('receipt_order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
+                        <button onclick="goToRiwayatCategory('receipt')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
                     </div>
                     <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
@@ -65,13 +65,6 @@
                         <button onclick="goToRiwayatCategory('issue')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Issue">i</button>
                     </div>
                     <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1 relative">
-                    <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
-                        <button onclick="goToRiwayatCategory('other')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Other">i</button>
-                    </div>
-                    <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
             </div>
 
@@ -186,22 +179,19 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
-                <!-- Sub-Tab Navigasi Riwayat (Dipisah Menjadi 5 Kolom dengan Ikon) -->
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
-                    <button onclick="switchRiwayatTab('receipt_order')" id="riwayat-tab-receipt_order" class="py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
-                        <span>📥 Receipt Order</span>
+                <!-- Sub-Tab Navigasi Riwayat (Kembali Normal 4 Kolom) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
+                    <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
+                        📥 Receipt
                     </button>
-                    <button onclick="switchRiwayatTab('receipt_racking')" id="riwayat-tab-receipt_racking" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
-                        <span>🚛 Receipt Racking</span>
+                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+                        📋 Order
                     </button>
-                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
-                        <span>📋 Order</span>
+                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+                        📤 Issue
                     </button>
-                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5">
-                        <span>📤 Issue</span>
-                    </button>
-                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1">
-                        <span>⚡ Other</span>
+                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+                        ⚡ Other
                     </button>
                 </div>
 
@@ -213,7 +203,7 @@
 
     <script>
         let currentSubmenu = 'receipt';
-        let currentRiwayatFilter = 'receipt_order';
+        let currentRiwayatFilter = 'receipt';
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v4')) || {
             beginning: 100,
@@ -244,25 +234,21 @@
 
         function switchRiwayatTab(category) {
             currentRiwayatFilter = category;
-            const tabs = ['receipt_order', 'receipt_racking', 'order', 'issue', 'other'];
+            const tabs = ['receipt', 'order', 'issue', 'other'];
             tabs.forEach(t => {
                 const btn = document.getElementById('riwayat-tab-' + t);
                 if (t === category) {
-                    if (t === 'receipt_order' || t === 'receipt_racking') {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                    if (t === 'receipt') {
+                        btn.className = "py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1";
                     } else if (t === 'order') {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                        btn.className = "py-2.5 px-3 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 transition text-center flex items-center justify-center gap-1";
                     } else if (t === 'issue') {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
+                        btn.className = "py-2.5 px-3 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 transition text-center flex items-center justify-center gap-1";
                     } else if (t === 'other') {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1";
+                        btn.className = "py-2.5 px-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 transition text-center flex items-center justify-center gap-1";
                     }
                 } else {
-                    if (t === 'other') {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5 col-span-2 sm:col-span-1";
-                    } else {
-                        btn.className = "py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-xs transition text-center flex flex-col items-center gap-0.5";
-                    }
+                    btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1";
                 }
             });
             render();
@@ -469,19 +455,43 @@
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
-            // Filter transaksi berdasarkan kategori riwayat yang dipilih
-            const filteredTransactions = state.transactions.filter(t => {
-                if (currentRiwayatFilter === 'receipt_order') {
-                    return t.tipe === 'receipt' && t.subTipe === 'Pallet Order';
-                } else if (currentRiwayatFilter === 'receipt_racking') {
-                    return t.tipe === 'receipt' && t.subTipe === 'Pallet Balikan Mobil Racking';
-                } else {
-                    return t.tipe === currentRiwayatFilter;
-                }
-            });
+            const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
 
             if (filteredTransactions.length === 0) {
                 listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
+            }
+
+            // Khusus tab 'receipt', kita kelompokkan/pisahkan tampilannya menjadi Pallet Order dan Pallet Balikan Mobil Racking
+            if (currentRiwayatFilter === 'receipt') {
+                const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
+                const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
+
+                if (listOrder.length > 0) {
+                    const headerOrder = document.createElement('div');
+                    headerOrder.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/30 px-3 py-1.5 rounded-lg border border-emerald-900/50 mt-2 mb-1";
+                    headerOrder.innerText = "📦 RECEIPT - PALLET ORDER";
+                    listEl.appendChild(headerOrder);
+
+                    listOrder.forEach(t => {
+                        listEl.appendChild(createCardItem(t));
+                    });
+                }
+
+                if (listRacking.length > 0) {
+                    const headerRacking = document.createElement('div');
+                    headerRacking.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/30 px-3 py-1.5 rounded-lg border border-emerald-900/50 mt-4 mb-1";
+                    headerRacking.innerText = "🚛 RECEIPT - PALLET BALIKAN MOBIL RACKING";
+                    listEl.appendChild(headerRacking);
+
+                    listRacking.forEach(t => {
+                        listEl.appendChild(createCardItem(t));
+                    });
+                }
+            } else {
+                // Untuk tab selain receipt (Order, Issue, Other) tampilkan normal
+                filteredTransactions.forEach(t => {
+                    listEl.appendChild(createCardItem(t));
+                });
             }
 
             state.transactions.forEach(t => {
@@ -491,50 +501,49 @@
                 if (t.tipe === 'other') totalOther += t.qty;
             });
 
-            filteredTransactions.forEach(t => {
-                const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
-                let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
-                if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
-                else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
-                else if (t.tipe === 'issue') badgeColor = 'bg-rose-950/60 text-rose-400 border border-rose-800';
-                else if (t.tipe === 'other') badgeColor = 'bg-purple-950/60 text-purple-400 border border-purple-800';
-
-                const sign = isAdd ? '+' : '-';
-                
-                let detailTipeDisplay = t.tipe;
-                if (t.subTipe) {
-                    detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
-                }
-
-                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
-                let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
-
-                const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm";
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
-                            <span class="text-[10px] text-slate-400">${t.date}</span>
-                        </div>
-                        ${ketDisplay}
-                        ${nopolDisplay}
-                    </div>
-                    <div class="text-right flex items-center gap-4">
-                        <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
-                        <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
-                    </div>
-                `;
-                listEl.appendChild(card);
-            });
-
             const endingBalance = state.beginning + totalReceipt + totalOrder - totalIssue - totalOther;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
             document.getElementById('val-order').innerText = totalOrder.toLocaleString('id-ID');
             document.getElementById('val-issue').innerText = totalIssue.toLocaleString('id-ID');
-            document.getElementById('val-other').innerText = totalOther.toLocaleString('id-ID');
             document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
+        }
+
+        function createCardItem(t) {
+            const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
+            let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
+            if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
+            else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
+            else if (t.tipe === 'issue') badgeColor = 'bg-rose-950/60 text-rose-400 border border-rose-800';
+            else if (t.tipe === 'other') badgeColor = 'bg-purple-950/60 text-purple-400 border border-purple-800';
+
+            const sign = isAdd ? '+' : '-';
+            
+            let detailTipeDisplay = t.tipe;
+            if (t.subTipe) {
+                detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
+            }
+
+            let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
+            let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
+
+            const card = document.createElement('div');
+            card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm mb-2";
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
+                        <span class="text-[10px] text-slate-400">${t.date}</span>
+                    </div>
+                    ${ketDisplay}
+                    ${nopolDisplay}
+                </div>
+                <div class="text-right flex items-center gap-4">
+                    <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
+                    <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
+                </div>
+            `;
+            return card;
         }
 
         render();
