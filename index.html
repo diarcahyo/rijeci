@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pallet GDFG Jayanti 2</title>
+    <title>Dashboard Pallet Inventory Jayanti 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e293b">
@@ -18,7 +18,7 @@
                     <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
                     <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
                 </div>
-                <!-- Navigation Tabs / Menu Atas -->
+                <!-- Navigation Tabs -->
                 <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
                     <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
                     <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
@@ -27,7 +27,7 @@
             </div>
         </header>
 
-        <!-- Tab Dashboard & Ringkasan Utama -->
+        <!-- Tab Dashboard -->
         <div id="section-dashboard" class="space-y-6">
             <!-- Ending Balance Highlight -->
             <div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
@@ -35,11 +35,11 @@
                 <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
                 <div class="flex items-baseline gap-2 mt-1">
                     <h2 class="text-4xl font-black text-white" id="val-ending">0</h2>
-                    <span class="text-sm text-slate-400">pcs / palet</span>
+                    <span class="text-sm text-slate-400">pcs</span>
                 </div>
             </div>
 
-            <!-- Kartu Metrik Grid (Beginning, Receipt, Order, Issue, Other) -->
+            <!-- Kartu Metrik Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 <!-- Beginning -->
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
@@ -47,23 +47,35 @@
                     <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <!-- Receipt -->
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
+                        <button onclick="goToRiwayat()" title="Informasi Riwayat Receipt" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
                     <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <!-- Order -->
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+                        <button onclick="goToRiwayat()" title="Informasi Riwayat Order" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
                     <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <!-- Issue -->
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
+                        <button onclick="goToRiwayat()" title="Informasi Riwayat Issue" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
                     <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
                 <!-- Other -->
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1">
-                    <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
+                        <button onclick="goToRiwayat()" title="Informasi Riwayat Other" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
                     <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
             </div>
@@ -81,12 +93,11 @@
             </div>
         </div>
 
-        <!-- Tab Input Transaksi (Submenu Kolom Terpisah, Tanpa Dropdown) -->
+        <!-- Tab Input Transaksi -->
         <div id="section-transaksi" class="space-y-6 hidden">
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
                 
-                <!-- Pilihan Submenu Berbentuk Tombol Kolom Terpisah -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                     <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
                         <span>📥 Receipt</span>
@@ -106,7 +117,6 @@
                     </button>
                 </div>
 
-                <!-- Form Aktif Berdasarkan Pilihan Kolom -->
                 <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
                     <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
                         <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">Receipt</strong></span>
@@ -133,21 +143,16 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                    <!-- Daftar transaksi masuk sini -->
+                    <!-- Data Riwayat Masuk Sini -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
-        }
-
         let currentSubmenu = 'receipt';
-
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
-            beginning: 100,
+            beginning: 0,
             transactions: []
         };
 
@@ -166,6 +171,10 @@
 
             document.getElementById('section-' + tabName).classList.remove('hidden');
             document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
+        }
+
+        function goToRiwayat() {
+            switchTab('riwayat');
         }
 
         function selectSubmenu(sub) {
@@ -274,7 +283,6 @@
                 listEl.appendChild(card);
             });
 
-            // Ending balance = Beginning + Receipt + Order - Issue - Other
             const endingBalance = state.beginning + totalReceipt + totalOrder - totalIssue - totalOther;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
