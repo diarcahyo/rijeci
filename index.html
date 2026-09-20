@@ -6,135 +6,209 @@
     <title>Dashboard Pallet GDFG Jayanti 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#1e293b">
 </head>
-<body class="bg-gray-50 min-h-screen pb-12">
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
 
-    <!-- Kontainer Landscape -->
-    <div class="max-w-4xl mx-auto bg-white min-h-screen shadow-lg flex flex-col">
+    <div class="max-w-5xl mx-auto p-4 md:p-6">
         <!-- Header -->
-        <header class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-md">
-            <h1 class="text-xl font-bold">Dashboard Pallet GDFG Jayanti 2</h1>
-            <p class="text-blue-100 text-sm">Sistem Manajemen Stok Pallet</p>
+        <header class="mb-6 border-b border-slate-800 pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
+                    <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
+                </div>
+                <!-- Navigation Tabs / Menu Atas -->
+                <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
+                    <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
+                    <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
+                    <button onclick="switchTab('riwayat')" id="btn-tab-riwayat" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Riwayat</button>
+                </div>
+            </div>
         </header>
 
-        <!-- Main Content -->
-        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-            
-            <!-- Kolom Kiri: Ringkasan & Form Pengaturan -->
-            <div class="space-y-6 md:col-span-1">
-                <!-- Summary Cards -->
-                <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
-                    <!-- Beginning Balance -->
-                    <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200">
-                        <p class="text-xs text-gray-500 font-medium">Beginning Balance</p>
-                        <h2 class="text-2xl font-bold text-gray-800 mt-1" id="val-begin">0</h2>
-                    </div>
-                    <!-- Ending Balance -->
-                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
-                        <p class="text-xs text-blue-600 font-medium">Ending Balance</p>
-                        <h2 class="text-2xl font-bold text-blue-700 mt-1" id="val-ending">0</h2>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
-                    <!-- Receipt -->
-                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
-                        <p class="text-xs text-emerald-600 font-medium">Receipt</p>
-                        <h2 class="text-xl font-bold text-emerald-700 mt-1" id="val-receipt">0</h2>
-                    </div>
-                    <!-- Issue -->
-                    <div class="bg-rose-50 p-4 rounded-2xl border border-rose-200">
-                        <p class="text-xs text-rose-600 font-medium">Issue</p>
-                        <h2 class="text-xl font-bold text-rose-700 mt-1" id="val-issue">0</h2>
-                    </div>
-                </div>
-
-                <!-- Set Beginning Balance Form -->
-                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">Atur Stock Awal (Beginning)</h3>
-                    <div class="flex gap-2">
-                        <input type="number" id="input-begin" placeholder="Stock Awal" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                        <button onclick="setBeginningBalance()" class="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-900 transition">Atur</button>
-                    </div>
+        <!-- Tab Dashboard & Ringkasan Utama -->
+        <div id="section-dashboard" class="space-y-6">
+            <!-- Ending Balance Highlight -->
+            <div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
+                <div class="absolute right-4 top-4 opacity-10 text-6xl font-bold">📦</div>
+                <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
+                <div class="flex items-baseline gap-2 mt-1">
+                    <h2 class="text-4xl font-black text-white" id="val-ending">0</h2>
+                    <span class="text-sm text-slate-400">pcs / palet</span>
                 </div>
             </div>
 
-            <!-- Kolom Kanan: Menu Transaksi & Riwayat -->
-            <div class="space-y-6 md:col-span-2">
-                <!-- Form Transaksi -->
-                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 class="text-sm font-bold text-gray-700 mb-3">Transaksi</h3>
-                    <form id="transaksi-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Submenu</label>
-                            <select id="tipe" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                                <option value="receipt">Receipt</option>
-                                <option value="order">Order</option>
-                                <option value="issue">Issue</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Nomor PO / Ket</label>
-                            <input type="text" id="keterangan" placeholder="No. PO / Keterangan" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Quantity</label>
-                            <input type="number" id="quantity" placeholder="0" class="w-full p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        <button type="submit" class="sm:col-span-3 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-sm">Simpan Transaksi</button>
-                    </form>
+            <!-- Kartu Metrik Grid (Beginning, Receipt, Order, Issue, Other) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <!-- Beginning -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
+                    <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
+                <!-- Receipt -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
+                    <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <!-- Order -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+                    <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <!-- Issue -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
+                    <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <!-- Other -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1">
+                    <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
+                    <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+            </div>
 
-                <!-- Riwayat Transaksi -->
+            <!-- Atur Beginning Balance -->
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div>
-                    <h3 class="font-bold text-gray-800 text-sm mb-3">Riwayat Transaksi</h3>
-                    <div id="daftar-transaksi" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-                        <!-- Data transaksi masuk sini -->
-                    </div>
+                    <h3 class="text-sm font-bold text-slate-200">Atur Stock Awal (Beginning Balance)</h3>
+                    <p class="text-xs text-slate-400">Nilai stock awal dasar perhitungan sistem</p>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <input type="number" id="input-begin" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
+                    <button onclick="setBeginningBalance()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold rounded-lg transition whitespace-nowrap">Simpan</button>
                 </div>
             </div>
+        </div>
 
+        <!-- Tab Input Transaksi (Submenu Kolom Terpisah, Tanpa Dropdown) -->
+        <div id="section-transaksi" class="space-y-6 hidden">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
+                
+                <!-- Pilihan Submenu Berbentuk Tombol Kolom Terpisah -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
+                        <span>📥 Receipt</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Tambah Stok Masuk</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>📋 Order</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Tambah / Alokasi</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('issue')" id="sub-issue" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>📤 Issue</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Kurang Stok Keluar</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('other')" id="sub-other" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>⚡ Other</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Penyesuaian Lainnya</span>
+                    </button>
+                </div>
+
+                <!-- Form Aktif Berdasarkan Pilihan Kolom -->
+                <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
+                    <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
+                        <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">Receipt</strong></span>
+                        <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Nomor PO / Keterangan Transaksi</label>
+                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219 / Keterangan Muat" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Quantity (Palet / Pcs)</label>
+                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab Riwayat Transaksi -->
+        <div id="section-riwayat" class="space-y-4 hidden">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
+                <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                    <!-- Daftar transaksi masuk sini -->
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Service Worker PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js');
         }
 
-        // State Data
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2')) || {
-            beginning: 0,
+        let currentSubmenu = 'receipt';
+
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
+            beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v2', JSON.stringify(state));
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('section-dashboard').classList.add('hidden');
+            document.getElementById('section-transaksi').classList.add('hidden');
+            document.getElementById('section-riwayat').classList.add('hidden');
+
+            document.getElementById('btn-tab-dashboard').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-tab-transaksi').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-tab-riwayat').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+
+            document.getElementById('section-' + tabName).classList.remove('hidden');
+            document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
+        }
+
+        function selectSubmenu(sub) {
+            currentSubmenu = sub;
+            ['receipt', 'order', 'issue', 'other'].forEach(s => {
+                const btn = document.getElementById('sub-' + s);
+                if(s === sub) {
+                    btn.className = "p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500";
+                } else {
+                    btn.className = "p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1";
+                }
+            });
+
+            document.getElementById('active-category-label').innerText = sub;
+            const effectEl = document.getElementById('active-effect-label');
+            if(sub === 'receipt' || sub === 'order') {
+                effectEl.innerText = "(Menambah Stok)";
+                effectEl.className = "text-emerald-400 font-bold";
+            } else {
+                effectEl.innerText = "(Mengurangi Stok)";
+                effectEl.className = "text-rose-400 font-bold";
+            }
         }
 
         function setBeginningBalance() {
             const val = parseInt(document.getElementById('input-begin').value);
-            if (isNaN(val)) return alert('Masukkan angka yang valid');
+            if (isNaN(val)) return alert('Masukkan angka valid');
             state.beginning = val;
             saveData();
             render();
             document.getElementById('input-begin').value = '';
+            alert('Beginning balance berhasil diperbarui!');
         }
 
-        const form = document.getElementById('transaksi-form');
-        form.addEventListener('submit', (e) => {
+        function submitTransaksi(e) {
             e.preventDefault();
-            const tipe = document.getElementById('tipe').value;
             const ket = document.getElementById('keterangan').value;
             const qty = parseInt(document.getElementById('quantity').value);
 
             const newTx = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-                tipe,
+                tipe: currentSubmenu,
                 ket,
                 qty
             };
@@ -142,8 +216,9 @@
             state.transactions.unshift(newTx);
             saveData();
             render();
-            form.reset();
-        });
+            document.getElementById('transaksi-form').reset();
+            switchTab('dashboard');
+        }
 
         function deleteTx(id) {
             state.transactions = state.transactions.filter(t => t.id !== id);
@@ -153,62 +228,62 @@
 
         function render() {
             document.getElementById('val-begin').innerText = state.beginning.toLocaleString('id-ID');
-            
+            document.getElementById('input-begin').value = state.beginning;
+
             let totalReceipt = 0;
+            let totalOrder = 0;
             let totalIssue = 0;
+            let totalOther = 0;
+
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
             if (state.transactions.length === 0) {
-                listEl.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">Belum ada transaksi tercatat.</p>';
+                listEl.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi tercatat.</p>';
             }
 
             state.transactions.forEach(t => {
-                // Logika perhitungan: Receipt dan Order menambah stok, Issue dan Other mengurangi stok (atau sesuaikan kebutuhan)
-                let isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
-                let isSub = (t.tipe === 'issue' || t.tipe === 'other');
+                if (t.tipe === 'receipt') totalReceipt += t.qty;
+                if (t.tipe === 'order') totalOrder += t.qty;
+                if (t.tipe === 'issue') totalIssue += t.qty;
+                if (t.tipe === 'other') totalOther += t.qty;
 
-                if (isAdd) totalReceipt += t.qty;
-                if (isSub) totalIssue += t.qty;
-
-                // Styling badge berdasarkan submenu
-                let badgeColor = 'bg-blue-100 text-blue-700';
-                if (t.tipe === 'receipt') badgeColor = 'bg-emerald-100 text-emerald-700';
-                else if (t.tipe === 'order') badgeColor = 'bg-amber-100 text-amber-700';
-                else if (t.tipe === 'issue') badgeColor = 'bg-rose-100 text-rose-700';
-                else if (t.tipe === 'other') badgeColor = 'bg-purple-100 text-purple-700';
+                const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
+                let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
+                if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
+                else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
+                else if (t.tipe === 'issue') badgeColor = 'bg-rose-950/60 text-rose-400 border border-rose-800';
+                else if (t.tipe === 'other') badgeColor = 'bg-purple-950/60 text-purple-400 border border-purple-800';
 
                 const sign = isAdd ? '+' : '-';
-                const titleText = t.tipe.toUpperCase();
-
                 const card = document.createElement('div');
-                card.className = "flex justify-between items-center p-3 border border-gray-200 rounded-xl bg-white shadow-xs text-sm";
+                card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm";
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeColor}">${titleText}</span>
-                            <span class="text-[10px] text-gray-400">${t.date}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${t.tipe}</span>
+                            <span class="text-[10px] text-slate-400">${t.date}</span>
                         </div>
-                        <p class="font-bold text-gray-800 mt-1">${t.ket}</p>
+                        <p class="font-bold text-slate-200 mt-1">${t.ket}</p>
                     </div>
-                    <div class="text-right flex items-center gap-3">
-                        <div>
-                            <p class="font-bold ${isAdd ? 'text-emerald-600' : 'text-rose-600'}">${sign}${t.qty}</p>
-                        </div>
-                        <button onclick="deleteTx(${t.id})" class="text-gray-400 hover:text-red-500 font-bold px-1">&times;</button>
+                    <div class="text-right flex items-center gap-4">
+                        <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
+                        <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
                     </div>
                 `;
                 listEl.appendChild(card);
             });
 
-            const endingBalance = state.beginning + totalReceipt - totalIssue;
+            // Ending balance = Beginning + Receipt + Order - Issue - Other
+            const endingBalance = state.beginning + totalReceipt + totalOrder - totalIssue - totalOther;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
+            document.getElementById('val-order').innerText = totalOrder.toLocaleString('id-ID');
             document.getElementById('val-issue').innerText = totalIssue.toLocaleString('id-ID');
+            document.getElementById('val-other').innerText = totalOther.toLocaleString('id-ID');
             document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
         }
 
-        // Initial Load
         render();
     </script>
 </body>
