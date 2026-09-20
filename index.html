@@ -3,340 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palet Inventory - PWA</title>
-    <!-- FontAwesome untuk Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #3b82f6;
-            --border-color: #334155;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .title-area h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #f59e0b;
-        }
-
-        .title-area p {
-            margin: 4px 0 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .nav-buttons button {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 8px;
-            font-weight: 600;
-        }
-
-        .nav-buttons button.active-nav {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-        }
-
-        /* Section Visibility */
-        .page-section {
-            display: none;
-        }
-        .page-section.active-section {
-            display: block;
-        }
-
-        /* Dashboard Styles */
-        .card-ending {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .card-ending h2 {
-            margin: 0 0 10px 0;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .card-ending .value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #38bdf8;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .card-summary {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .info-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 4px;
-            transition: color 0.2s;
-        }
-
-        .info-btn:hover {
-            color: var(--accent-blue);
-        }
-
-        .card-body {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        /* History Tab Styles */
-        .history-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background-color: var(--card-bg);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background-color: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
-        }
-
-        .history-pane {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .history-pane h3 {
-            margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .data-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .data-list li {
-            padding: 10px 0;
-            border-bottom: 1px dashed var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-    </style>
+    <title>Dashboard Pallet GDFG Jayanti 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
 
-    <header>
-        <div class="title-area">
-            <h1>PALLET INVENTORY</h1>
-            <p>Warehouse Finished Good Jayanti 2</p>
-        </div>
-        <div class="nav-buttons">
-            <button id="nav-dashboard" class="active-nav" onclick="switchSection('dashboard')">Dashboard</button>
-            <button id="nav-history" onclick="switchSection('history')">Riwayat</button>
-        </div>
-    </header>
-
-    <!-- BAGIAN 1: DASHBOARD -->
-    <div id="section-dashboard" class="page-section active-section">
-        <div class="card-ending">
-            <h2>ENDING BALANCE (STOK AKHIR)</h2>
-            <div class="value">100 <span style="font-size: 1rem; color: var(--text-muted);">pcs</span></div>
-        </div>
-
-        <div class="summary-grid">
-            <!-- Card Receipt -->
-            <div class="card-summary">
-                <div class="card-header">
-                    <span>RECEIPT</span>
-                    <button class="info-btn" onclick="openHistoryTab('receipt')" title="Lihat Riwayat Receipt">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
+    <div class="max-w-5xl mx-auto p-4 md:p-6">
+        <!-- Header -->
+        <header class="mb-6 border-b border-slate-800 pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
+                    <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
                 </div>
-                <div class="card-body">100 pcs</div>
+                <!-- Navigation Tabs -->
+                <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
+                    <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
+                    <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
+                    <button onclick="switchTab('riwayat')" id="btn-tab-riwayat" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Riwayat</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Dashboard -->
+        <div id="section-dashboard" class="space-y-6">
+            <!-- Ending Balance Highlight -->
+            <div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
+                <div class="absolute right-4 top-4 opacity-10 text-6xl font-bold">📦</div>
+                <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
+                <div class="flex items-baseline gap-2 mt-1">
+                    <h2 class="text-4xl font-black text-white" id="val-ending">0</h2>
+                    <span class="text-sm text-slate-400">pcs</span>
+                </div>
             </div>
 
-            <!-- Card Order -->
-            <div class="card-summary">
-                <div class="card-header">
-                    <span>ORDER</span>
-                    <button class="info-btn" onclick="openHistoryTab('order')" title="Lihat Riwayat Order">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
+            <!-- Kartu Metrik Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
+                    <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <div class="card-body">0 pcs</div>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
+                    <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
+                    <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
+                    <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 col-span-2 sm:col-span-1 relative">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[10px] text-purple-400 font-semibold uppercase">Other</p>
+                        <button onclick="goToRiwayat()" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-purple-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition">i</button>
+                    </div>
+                    <p class="text-xl font-bold text-purple-400 mt-1"><span id="val-other">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                </div>
             </div>
 
-            <!-- Card Issue -->
-            <div class="card-summary">
-                <div class="card-header">
-                    <span>ISSUE</span>
-                    <button class="info-btn" onclick="openHistoryTab('issue')" title="Lihat Riwayat Issue">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
+            <!-- Atur Beginning Balance -->
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-200">Atur Stock Awal (Beginning Balance)</h3>
+                    <p class="text-xs text-slate-400">Nilai stock awal dasar perhitungan sistem</p>
                 </div>
-                <div class="card-body">0 pcs</div>
-            </div>
-
-            <!-- Card Other / Penjualan Kayu Bekas Pallet Rusak -->
-            <div class="card-summary">
-                <div class="card-header">
-                    <span>OTHER</span>
-                    <button class="info-btn" onclick="openHistoryTab('other')" title="Lihat Riwayat Other">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <input type="number" id="input-begin" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
+                    <button onclick="setBeginningBalance()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold rounded-lg transition whitespace-nowrap">Simpan</button>
                 </div>
-                <div class="card-body">0 pcs</div>
             </div>
         </div>
-    </div>
 
-    <!-- BAGIAN 2: HALAMAN RIWAYAT DENGAN 4 TAB TERPISAH -->
-    <div id="section-history" class="page-section">
-        <div class="history-tabs">
-            <button class="tab-btn active" onclick="switchHistoryTab('receipt')">Receipt</button>
-            <button class="tab-btn" onclick="switchHistoryTab('order')">Order</button>
-            <button class="tab-btn" onclick="switchHistoryTab('issue')">Issue</button>
-            <button class="tab-btn" onclick="switchHistoryTab('other')">Other (Penjualan Kayu)</button>
+        <!-- Tab Input Transaksi -->
+        <div id="section-transaksi" class="space-y-6 hidden">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
+                
+                <!-- Pilihan Submenu Utama -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
+                        <span>📥 Receipt</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Tambah Stok Masuk</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>📋 Order</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Tambah / Alokasi</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('issue')" id="sub-issue" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>📤 Issue</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Kurang Stok Keluar</span>
+                    </button>
+                    <button type="button" onclick="selectSubmenu('other')" id="sub-other" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+                        <span>⚡ Other</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Penyesuaian Lainnya</span>
+                    </button>
+                </div>
+
+                <!-- Dropdown khusus ketika menu Receipt dipilih -->
+                <div id="receipt-dropdown-container" class="mb-4">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
+                    <select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        <option value="Pallet Order">1. Pallet Order</option>
+                        <option value="Pallet Balikan Mobil Racking">2. Pallet Balikan Mobil Racking</option>
+                    </select>
+                </div>
+
+                <!-- Form Aktif Berdasarkan Pilihan Kolom -->
+                <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
+                    <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
+                        <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
+                        <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
+                    </div>
+
+                    <!-- Input Keterangan / Nomor PO -->
+                    <div>
+                        <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
+                        <input type="text" id="keterangan" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                    </div>
+
+                    <!-- Input tambahan No Polisi (Khusus Receipt) -->
+                    <div id="nopol-container">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
+                        <input type="text" id="nopol" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                    </div>
+
+                    <!-- Input Quantity -->
+                    <div>
+                        <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
+                        <input type="number" id="quantity" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
+                </form>
+            </div>
         </div>
 
-        <!-- Pane Receipt -->
-        <div id="history-receipt" class="history-pane">
-            <h3>Riwayat Receipt</h3>
-            <ul class="data-list">
-                <li>Belum ada data receipt masuk.</li>
-            </ul>
-        </div>
-
-        <!-- Pane Order -->
-        <div id="history-order" class="history-pane" style="display:none;">
-            <h3>Riwayat Order</h3>
-            <ul class="data-list">
-                <li>Belum ada data order masuk.</li>
-            </ul>
-        </div>
-
-        <!-- Pane Issue -->
-        <div id="history-pane-issue" class="history-pane" style="display:none;">
-            <h3>Riwayat Issue</h3>
-            <ul class="data-list">
-                <li>Belum ada data issue masuk.</li>
-            </ul>
-        </div>
-
-        <!-- Pane Other -->
-        <div id="history-other" class="history-pane" style="display:none;">
-            <h3>Riwayat Other / Penjualan Kayu Bekas Pallet Rusak</h3>
-            <ul class="data-list">
-                <li>Belum ada data penjualan kayu bekas.</li>
-            </ul>
+        <!-- Tab Riwayat Transaksi -->
+        <div id="section-riwayat" class="space-y-4 hidden">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
+                <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Fungsi untuk navigasi utama (Dashboard <-> Riwayat)
-        function switchSection(sectionId) {
-            document.querySelectorAll('.page-section').forEach(sec => {
-                sec.classList.remove('active-section');
-            });
-            document.querySelectorAll('.nav-buttons button').forEach(btn => {
-                btn.classList.remove('active-nav');
-            });
+        let currentSubmenu = 'receipt';
 
-            document.getElementById('section-' + sectionId).classList.add('active-section');
-            document.getElementById('nav-' + sectionId).classList.add('active-nav');
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v2')) || {
+            beginning: 100,
+            transactions: []
+        };
+
+        function saveData() {
+            localStorage.setItem('pallet_state_jayanti2_v2', JSON.stringify(state));
         }
 
-        // Fungsi ketika ikon "i" diklik dari Dashboard
-        function openHistoryTab(category) {
-            switchSection('history');
-            switchHistoryTab(category);
+        function switchTab(tabName) {
+            document.getElementById('section-dashboard').classList.add('hidden');
+            document.getElementById('section-transaksi').classList.add('hidden');
+            document.getElementById('section-riwayat').classList.add('hidden');
+
+            document.getElementById('btn-tab-dashboard').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-tab-transaksi').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+            document.getElementById('btn-tab-riwayat').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+
+            document.getElementById('section-' + tabName).classList.remove('hidden');
+            document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
         }
 
-        // Fungsi untuk mengganti sub-tab di dalam halaman Riwayat
-        function switchHistoryTab(category) {
-            // Sembunyikan semua pane riwayat
-            const panes = ['receipt', 'order', 'pane-issue', 'other'];
-            panes.forEach(p => {
-                const el = document.getElementById('history-' + p);
-                if (el) el.style.display = 'none';
-            });
-
-            // Hilangkan class active dari semua tombol tab riwayat
-            document.querySelectorAll('.history-tabs .tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Tampilkan pane yang sesuai
-            let targetId = category === 'issue' ? 'history-pane-issue' : 'history-' + category;
-            const targetPane = document.getElementById(targetId);
-            if (targetPane) targetPane.style.display = 'block';
-
-            // Aktifkan tombol tab yang diklik
-            event && event.target && event.target.classList.add('active');
+        function goToRiwayat() {
+            switchTab('riwayat');
         }
+
+        function updateFormLabels() {
+            const labelKet = document.getElementById('label-keterangan');
+            const inputKet = document.getElementById('keterangan');
+            const labelQty = document.getElementById('label-quantity');
+            const nopolContainer = document.getElementById('nopol-container');
+
+            if (currentSubmenu === 'receipt') {
+                nopolContainer.classList.remove('hidden');
+                const subType = document.getElementById('receipt-sub-type').value;
+                if (subType === 'Pallet Order') {
+                    labelKet.innerText = "Nomor PO";
+                    inputKet.placeholder = "Contoh: PO-88219";
+                } else {
+                    labelKet.innerText = "Keterangan Transaksi";
+                    inputKet.placeholder = "Keterangan muat / lainnya";
+                }
+                labelQty.innerText = "Jumlah (pcs)";
+            } else {
+                nopolContainer.classList.add('hidden');
+                labelKet.innerText = "Nomor PO / Keterangan Transaksi";
+                inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
+                labelQty.innerText = "Quantity (Palet / Pcs)";
+            }
+        }
+
+        function onReceiptSubChange() {
+            updateFormLabels();
+        }
+
+        function selectSubmenu(sub) {
+            currentSubmenu = sub;
+            ['receipt', 'order', 'issue', 'other'].forEach(s => {
+                const btn = document.getElementById('sub-' + s);
+                if(s === sub) {
+                    btn.className = "p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500";
+                } else {
+                    btn.className = "p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1";
+                }
+            });
+
+            const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+            if (sub === 'receipt') {
+                receiptDropdownContainer.classList.remove('hidden');
+            } else {
+                receiptDropdownContainer.classList.add('hidden');
+            }
+
+            document.getElementById('active-category-label').innerText = sub;
+            const effectEl = document.getElementById('active-effect-label');
+            if(sub === 'receipt' || sub === 'order') {
+                effectEl.innerText = "(Menambah Stok)";
+                effectEl.className = "text-emerald-400 font-bold";
+            } else {
+                effectEl.innerText = "(Mengurangi Stok)";
+                effectEl.className = "text-rose-400 font-bold";
+            }
+
+            updateFormLabels();
+        }
+
+        function setBeginningBalance() {
+            const val = parseInt(document.getElementById('input-begin').value);
+            if (isNaN(val)) return alert('Masukkan angka valid');
+            state.beginning = val;
+            saveData();
+            render();
+            document.getElementById('input-begin').value = '';
+            alert('Beginning balance berhasil diperbarui!');
+        }
+
+        function submitTransaksi(e) {
+            e.preventDefault();
+            const ket = document.getElementById('keterangan').value;
+            const qty = parseInt(document.getElementById('quantity').value);
+            const nopol = document.getElementById('nopol').value;
+
+            let tipeFinal = currentSubmenu;
+            let subKategori = '';
+
+            if (currentSubmenu === 'receipt') {
+                subKategori = document.getElementById('receipt-sub-type').value;
+            }
+
+            const newTx = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                tipe: tipeFinal,
+                subTipe: subKategori,
+                ket,
+                nopol: (currentSubmenu === 'receipt') ? nopol : '',
+                qty
+            };
+
+            state.transactions.unshift(newTx);
+            saveData();
+            render();
+            document.getElementById('transaksi-form').reset();
+            updateFormLabels();
+            switchTab('dashboard');
+        }
+
+        function deleteTx(id) {
+            state.transactions = state.transactions.filter(t => t.id !== id);
+            saveData();
+            render();
+        }
+
+        function render() {
+            document.getElementById('val-begin').innerText = state.beginning.toLocaleString('id-ID');
+            document.getElementById('input-begin').value = state.beginning;
+
+            let totalReceipt = 0;
+            let totalOrder = 0;
+            let totalIssue = 0;
+            let totalOther = 0;
+
+            const listEl = document.getElementById('daftar-transaksi');
+            listEl.innerHTML = '';
+
+            if (state.transactions.length === 0) {
+                listEl.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi tercatat.</p>';
+            }
+
+            state.transactions.forEach(t => {
+                if (t.tipe === 'receipt') totalReceipt += t.qty;
+                if (t.tipe === 'order') totalOrder += t.qty;
+                if (t.tipe === 'issue') totalIssue += t.qty;
+                if (t.tipe === 'other') totalOther += t.qty;
+
+                const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
+                let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
+                if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
+                else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
+                else if (t.tipe === 'issue') badgeColor = 'bg-rose-950/60 text-rose-400 border border-rose-800';
+                else if (t.tipe === 'other') badgeColor = 'bg-purple-950/60 text-purple-400 border border-purple-800';
+
+                const sign = isAdd ? '+' : '-';
+                
+                let detailTipeDisplay = t.tipe;
+                if (t.subTipe) {
+                    detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
+                }
+
+                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300">No Pol: ${t.nopol}</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
+                            <span class="text-[10px] text-slate-400">${t.date}</span>
+                        </div>
+                        <p class="font-bold text-slate-200 mt-1">${t.ket}</p>
+                        ${nopolDisplay}
+                    </div>
+                    <div class="text-right flex items-center gap-4">
+                        <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
+                        <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+
+            const endingBalance = state.beginning + totalReceipt + totalOrder - totalIssue - totalOther;
+
+            document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
+            document.getElementById('val-order').innerText = totalOrder.toLocaleString('id-ID');
+            document.getElementById('val-issue').innerText = totalIssue.toLocaleString('id-ID');
+            document.getElementById('val-other').innerText = totalOther.toLocaleString('id-ID');
+            document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
+        }
+
+        render();
+        selectSubmenu('receipt'); 
     </script>
 </body>
 </html>
