@@ -54,7 +54,7 @@
                 </div>
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order (Sisa)</p>
+                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
                         <button onclick="goToRiwayatCategory('order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Order">i</button>
                     </div>
                     <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
@@ -221,13 +221,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v6')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v7')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v6', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v7', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -312,11 +312,13 @@
             const orderExtraContainer = document.getElementById('order-extra-container');
             const orderVendorInput = document.getElementById('order-vendor');
             const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+            const nopolManualInput = document.getElementById('nopol-manual');
 
             receiptDropdownContainer.classList.add('hidden');
             orderExtraContainer.classList.add('hidden');
             orderVendorInput.required = false;
             nopolContainer.classList.add('hidden');
+            nopolManualInput.required = false; // Matikan required agar tidak block form order/issue/other
             ketContainer.classList.remove('hidden');
 
             if (currentSubmenu === 'receipt') {
@@ -326,17 +328,17 @@
                 if (subType === 'Pallet Balikan Mobil Racking') {
                     ketContainer.classList.add('hidden');
                     inputKet.required = false;
-                    document.getElementById('nopol-manual').classList.add('hidden');
-                    document.getElementById('nopol-manual').required = false;
+                    nopolManualInput.classList.add('hidden');
+                    nopolManualInput.required = false;
                     document.getElementById('nopol-dropdown-wrapper').classList.remove('hidden');
                 } else {
                     ketContainer.classList.remove('hidden');
                     inputKet.required = true;
                     inputKet.placeholder = "Contoh: PO-88219";
                     document.getElementById('nopol-dropdown-wrapper').classList.add('hidden');
-                    document.getElementById('nopol-manual').classList.remove('hidden');
-                    document.getElementById('nopol-manual').required = true;
-                    document.getElementById('nopol-manual').placeholder = "Contoh: B 1234 XYZ";
+                    nopolManualInput.classList.remove('hidden');
+                    nopolManualInput.required = true;
+                    nopolManualInput.placeholder = "Contoh: B 1234 XYZ";
                 }
                 labelQty.innerText = "Jumlah (pcs)";
             } else if (currentSubmenu === 'order') {
@@ -462,8 +464,6 @@
             let totalIssue = 0;
             let totalOther = 0;
 
-            // Hitung sisa qty order berdasarkan penerimaan receipt (Pallet Order)
-            // Buat salinan list order dengan sisa kuantitas awal sama dengan qty-nya
             let orderMap = {};
             state.transactions.forEach(t => {
                 if (t.tipe === 'order') {
@@ -471,7 +471,6 @@
                 }
             });
 
-            // Kurangi sisa order jika ada receipt dengan subTipe 'Pallet Order' dan PO yang sama
             state.transactions.forEach(t => {
                 if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order') {
                     if (orderMap[t.ket] !== undefined) {
@@ -536,7 +535,6 @@
                 if (t.tipe === 'other') totalOther += t.qty;
             });
 
-            // Ending Balance hanya dihitung dari Beginning + Receipt - Issue - Other (Order tidak masuk perhitungan stok akhir)
             const endingBalance = state.beginning + totalReceipt - totalIssue - totalOther;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
