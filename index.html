@@ -221,13 +221,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v10')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v11')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v10', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v11', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -419,14 +419,12 @@
                 } else {
                     ket = document.getElementById('keterangan').value.toUpperCase();
                     
-                    // 1. Cek apakah Nomor PO ada di riwayat Order
                     const orderItem = state.transactions.find(t => t.tipe === 'order' && t.ket === ket);
                     if (!orderItem) {
                         alert('No PO tidak ada');
                         return;
                     }
 
-                    // 2. Hitung total yang sudah di-receipt sebelumnya untuk PO ini
                     let totalReceivedSoFar = 0;
                     state.transactions.forEach(t => {
                         if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === ket) {
@@ -434,7 +432,6 @@
                         }
                     });
 
-                    // 3. Cek sisa kuantitas yang belum datang
                     let sisaOrder = orderItem.qty - totalReceivedSoFar;
                     if (qty > sisaOrder) {
                         alert('kuantiti melebihi order');
@@ -451,9 +448,14 @@
                 ket = document.getElementById('keterangan').value.toUpperCase();
             }
 
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
             const newTx = {
                 id: Date.now(),
-                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                date: dateStr,
+                time: timeStr,
                 tipe: currentSubmenu,
                 subTipe: subKategori,
                 ket,
@@ -579,6 +581,9 @@
             let detailTipeDisplay = t.tipe;
             if (t.subTipe) detailTipeDisplay = `${t.subTipe}`;
 
+            // Tampilkan tanggal & waktu digital (jam:menit)
+            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
+
             let extraInfo = '';
             if (t.tipe === 'order') {
                 let totalReceivedForPO = 0;
@@ -612,7 +617,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
-                        <span class="text-[10px] text-slate-400">${t.date}</span>
+                        <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
                     </div>
                     ${extraInfo}
                 </div>
