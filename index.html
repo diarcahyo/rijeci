@@ -221,13 +221,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v7')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v8')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v7', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v8', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -318,7 +318,7 @@
             orderExtraContainer.classList.add('hidden');
             orderVendorInput.required = false;
             nopolContainer.classList.add('hidden');
-            nopolManualInput.required = false; // Matikan required agar tidak block form order/issue/other
+            nopolManualInput.required = false;
             ketContainer.classList.remove('hidden');
 
             if (currentSubmenu === 'receipt') {
@@ -418,6 +418,16 @@
                     nopolFinal = `${nopolPart}${pengirimPart}`;
                 } else {
                     ket = document.getElementById('keterangan').value.toUpperCase();
+                    
+                    // Validasi khusus Pallet Order: Cek apakah Nomor PO ada di riwayat Order
+                    if (subKategori === 'Pallet Order') {
+                        const poExists = state.transactions.some(t => t.tipe === 'order' && t.ket === ket);
+                        if (!poExists) {
+                            alert('No PO tidak ada');
+                            return; // Batalkan penyimpanan transaksi
+                        }
+                    }
+
                     nopolFinal = document.getElementById('nopol-manual').value.toUpperCase();
                 }
             } else if (currentSubmenu === 'order') {
