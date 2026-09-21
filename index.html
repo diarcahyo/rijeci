@@ -184,11 +184,15 @@
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
                         <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
                         
-                        <select id="quantity-dropdown" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
-                            <option value="72">72 pcs</option>
-                            <option value="36">36 pcs</option>
-                            <option value="0">0 pcs (Hutang Pallet dari Pengirim)</option>
-                        </select>
+                        <div id="quantity-dropdown-wrapper" class="space-y-2 hidden">
+                            <select id="quantity-dropdown" onchange="onQuantityDropdownChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                                <option value="72">72 pcs (Membayar Hutang)</option>
+                                <option value="36">36 pcs (Standar)</option>
+                                <option value="0">0 pcs (Hutang Pallet)</option>
+                                <option value="MANUAL">-- Ketik Manual Lainnya --</option>
+                            </select>
+                            <input type="number" id="quantity-manual" inputmode="numeric" pattern="[0-9]*" placeholder="Ketik jumlah manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
@@ -239,13 +243,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v13')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v14')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v13', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v14', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -308,6 +312,20 @@
             }
         }
 
+        function onQuantityDropdownChange() {
+            const val = document.getElementById('quantity-dropdown').value;
+            const manualInput = document.getElementById('quantity-manual');
+            if (val === 'MANUAL') {
+                manualInput.classList.remove('hidden');
+                manualInput.required = true;
+                manualInput.focus();
+            } else {
+                manualInput.classList.add('hidden');
+                manualInput.required = false;
+                manualInput.value = '';
+            }
+        }
+
         function onPengirimSelectChange() {
             const val = document.getElementById('pengirim-select').value;
             const manualInput = document.getElementById('pengirim-manual');
@@ -332,7 +350,8 @@
             const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
             const nopolManualInput = document.getElementById('nopol-manual');
             const quantityInput = document.getElementById('quantity');
-            const quantityDropdown = document.getElementById('quantity-dropdown');
+            const quantityDropdownWrapper = document.getElementById('quantity-dropdown-wrapper');
+            const quantityManualInput = document.getElementById('quantity-manual');
 
             receiptDropdownContainer.classList.add('hidden');
             orderExtraContainer.classList.add('hidden');
@@ -342,7 +361,8 @@
             ketContainer.classList.remove('hidden');
             quantityInput.classList.remove('hidden');
             quantityInput.required = true;
-            quantityDropdown.classList.add('hidden');
+            quantityDropdownWrapper.classList.add('hidden');
+            quantityManualInput.required = false;
 
             if (currentSubmenu === 'receipt') {
                 receiptDropdownContainer.classList.remove('hidden');
@@ -355,10 +375,10 @@
                     nopolManualInput.required = false;
                     document.getElementById('nopol-dropdown-wrapper').classList.remove('hidden');
                     
-                    // Ubah input quantity jadi dropdown khusus racking
+                    // Ubah input quantity jadi dropdown khusus racking dengan manual support
                     quantityInput.classList.add('hidden');
                     quantityInput.required = false;
-                    quantityDropdown.classList.remove('hidden');
+                    quantityDropdownWrapper.classList.remove('hidden');
                 } else {
                     ketContainer.classList.remove('hidden');
                     inputKet.required = true;
@@ -442,8 +462,12 @@
             if (currentSubmenu === 'receipt') {
                 subKategori = document.getElementById('receipt-sub-type').value;
                 if (subKategori === 'Pallet Balikan Mobil Racking') {
-                    ket = 'Pallet Balikan Mobil Racking';
-                    qty = parseInt(document.getElementById('quantity-dropdown').value);
+                    const dropdownVal = document.getElementById('quantity-dropdown').value;
+                    if (dropdownVal === 'MANUAL') {
+                        qty = parseInt(document.getElementById('quantity-manual').value);
+                    } else {
+                        qty = parseInt(dropdownVal);
+                    }
                     
                     const selectNopol = document.getElementById('nopol-select').value;
                     let nopolPart = (selectNopol === 'MANUAL') ? `${document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase()}/${document.getElementById('ekspedisi-manual').value.trim().toUpperCase()}` : selectNopol;
@@ -451,11 +475,15 @@
                     let pengirimPart = (selectPengirim === 'MANUAL') ? (function(){ let m = document.getElementById('pengirim-manual').value.trim().toUpperCase(); return m.startsWith('/') ? m : '/' + m; })() : selectPengirim;
                     nopolFinal = `${nopolPart}${pengirimPart}`;
 
-                    // Cek jika qty 0, arahkan ke kategori 'other' sebagai hutang pallet
-                    if (qty === 0) {
+                    // Perhitungan selisih terhadap standar 36 pcs (misal: 0 -> -36 hutang, 72 -> +36 bayar hutang)
+                    let selisih = qty - 36;
+                    if (selisih !== 0) {
                         targetTipe = 'other';
-                        subKategori = 'Hutang Pallet';
-                        ket = `Hutang Pallet (${nopolFinal})`;
+                        subKategori = selisih < 0 ? 'Hutang Pallet' : 'Pembayaran Hutang Pallet';
+                        ket = `${subKategori} (${nopolFinal}) [Input: ${qty} pcs]`;
+                        qty = selisih; // Menyimpan selisih (-36 atau +36 atau nilai lainnya)
+                    } else {
+                        ket = 'Pallet Balikan Mobil Racking (Standar 36)';
                     }
                 } else {
                     ket = document.getElementById('keterangan').value.toUpperCase();
@@ -515,6 +543,7 @@
             document.getElementById('transaksi-form').reset();
             onNopolSelectChange();
             onPengirimSelectChange();
+            onQuantityDropdownChange();
             updateFormLabels();
             switchTab('dashboard');
         }
