@@ -128,6 +128,22 @@
                         <input type="text" id="keterangan" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                     </div>
 
+                    <!-- Input Khusus Order (Nama Pengorder & Nama Vendor) -->
+                    <div id="order-extra-container" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Nama Pengorder</label>
+                            <select id="order-pengorder" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                                <option value="Bpk. Badruzaman/GDFG">Bpk. Badruzaman/GDFG</option>
+                                <option value="Bpk. Sanggar/GDPM">Bpk. Sanggar/GDPM</option>
+                                <option value="Bpk. Trio/GDRM">Bpk. Trio/GDRM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Nama Vendor</label>
+                            <input type="text" id="order-vendor" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PT. Vendor Pallet" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
                     <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
@@ -145,8 +161,8 @@
                             </select>
 
                             <div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
-                                <input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual (misal: B 9901 TE)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                                <input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi (misal: Anugerah Amalia)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+                                <input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+                                <input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                             </div>
                             
                             <div class="mt-3">
@@ -158,7 +174,7 @@
                                     <option value="/MT Tambun">4. /MT Tambun</option>
                                     <option value="MANUAL">-- Ketik Manual Lainnya --</option>
                                 </select>
-                                <input type="text" id="pengirim-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik pengirim manual (contoh: /Cns)..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase hidden" style="text-transform: uppercase;">
+                                <input type="text" id="pengirim-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik pengirim manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase hidden" style="text-transform: uppercase;">
                             </div>
                         </div>
                     </div>
@@ -205,13 +221,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v4')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v5')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v4', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v5', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -293,35 +309,45 @@
             const inputKet = document.getElementById('keterangan');
             const labelQty = document.getElementById('label-quantity');
             const nopolContainer = document.getElementById('nopol-container');
-            const nopolManualInput = document.getElementById('nopol-manual');
-            const nopolDropdownWrapper = document.getElementById('nopol-dropdown-wrapper');
+            const orderExtraContainer = document.getElementById('order-extra-container');
+            const orderVendorInput = document.getElementById('order-vendor');
+            const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+
+            receiptDropdownContainer.classList.add('hidden');
+            orderExtraContainer.classList.add('hidden');
+            orderVendorInput.required = false;
+            nopolContainer.classList.add('hidden');
+            ketContainer.classList.remove('hidden');
 
             if (currentSubmenu === 'receipt') {
+                receiptDropdownContainer.classList.remove('hidden');
                 nopolContainer.classList.remove('hidden');
                 const subType = document.getElementById('receipt-sub-type').value;
                 if (subType === 'Pallet Balikan Mobil Racking') {
                     ketContainer.classList.add('hidden');
                     inputKet.required = false;
-                    
-                    nopolManualInput.classList.add('hidden');
-                    nopolManualInput.required = false;
-                    nopolDropdownWrapper.classList.remove('hidden');
-                    onNopolSelectChange();
-                    onPengirimSelectChange();
+                    document.getElementById('nopol-manual').classList.add('hidden');
+                    document.getElementById('nopol-manual').required = false;
+                    document.getElementById('nopol-dropdown-wrapper').classList.remove('hidden');
                 } else {
                     ketContainer.classList.remove('hidden');
                     inputKet.required = true;
                     inputKet.placeholder = "Contoh: PO-88219";
-                    
-                    nopolDropdownWrapper.classList.add('hidden');
-                    nopolManualInput.classList.remove('hidden');
-                    nopolManualInput.required = true;
-                    nopolManualInput.placeholder = "Contoh: B 1234 XYZ";
+                    document.getElementById('nopol-dropdown-wrapper').classList.add('hidden');
+                    document.getElementById('nopol-manual').classList.remove('hidden');
+                    document.getElementById('nopol-manual').required = true;
+                    document.getElementById('nopol-manual').placeholder = "Contoh: B 1234 XYZ";
                 }
                 labelQty.innerText = "Jumlah (pcs)";
+            } else if (currentSubmenu === 'order') {
+                orderExtraContainer.classList.remove('hidden');
+                orderVendorInput.required = true;
+                document.getElementById('label-keterangan').innerText = "Nomor PO";
+                inputKet.placeholder = "Contoh: PO-99210";
+                inputKet.required = true;
+                labelQty.innerText = "Jumlah Order (pcs)";
             } else {
-                nopolContainer.classList.add('hidden');
-                ketContainer.classList.remove('hidden');
+                document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
                 inputKet.required = true;
                 inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
                 labelQty.innerText = "Quantity (Palet / Pcs)";
@@ -342,13 +368,6 @@
                     btn.className = "p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1";
                 }
             });
-
-            const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
-            if (sub === 'receipt') {
-                receiptDropdownContainer.classList.remove('hidden');
-            } else {
-                receiptDropdownContainer.classList.add('hidden');
-            }
 
             document.getElementById('active-category-label').innerText = sub;
             const effectEl = document.getElementById('active-effect-label');
@@ -379,51 +398,40 @@
             
             let ket = '';
             let nopolFinal = '';
+            let pengorderVal = '';
+            let vendorVal = '';
+            let subKategori = '';
 
             if (currentSubmenu === 'receipt') {
-                const subType = document.getElementById('receipt-sub-type').value;
-                if (subType === 'Pallet Balikan Mobil Racking') {
+                subKategori = document.getElementById('receipt-sub-type').value;
+                if (subKategori === 'Pallet Balikan Mobil Racking') {
                     ket = 'Pallet Balikan Mobil Racking';
                     const selectNopol = document.getElementById('nopol-select').value;
-                    
-                    let nopolPart = '';
-                    if (selectNopol === 'MANUAL') {
-                        const mNopol = document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase();
-                        const mEkspedisi = document.getElementById('ekspedisi-manual').value.trim().toUpperCase();
-                        nopolPart = `${mNopol}/${mEkspedisi}`;
-                    } else {
-                        nopolPart = selectNopol;
-                    }
-                    
-                    const selectPengirim = document.getElementById('pengirim-select').value;
-                    let pengirimPart = '';
-                    if (selectPengirim === 'MANUAL') {
-                        let mPengirim = document.getElementById('pengirim-manual').value.trim().toUpperCase();
-                        if (!mPengirim.startsWith('/')) mPengirim = '/' + mPengirim;
-                        pengirimPart = mPengirim;
-                    } else {
-                        pengirimPart = selectPengirim;
-                    }
-                    
+                    let nopolPart = (selectNopol === 'MANUAL') ? `${document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase()}/${document.getElementById('ekspedisi-manual').value.trim().toUpperCase()}` : selectNopol;
+                    let selectPengirim = document.getElementById('pengirim-select').value;
+                    let pengirimPart = (selectPengirim === 'MANUAL') ? (function(){ let m = document.getElementById('pengirim-manual').value.trim().toUpperCase(); return m.startsWith('/') ? m : '/' + m; })() : selectPengirim;
                     nopolFinal = `${nopolPart}${pengirimPart}`;
                 } else {
                     ket = document.getElementById('keterangan').value.toUpperCase();
                     nopolFinal = document.getElementById('nopol-manual').value.toUpperCase();
                 }
+            } else if (currentSubmenu === 'order') {
+                ket = document.getElementById('keterangan').value.toUpperCase();
+                pengorderVal = document.getElementById('order-pengorder').value;
+                vendorVal = document.getElementById('order-vendor').value.toUpperCase();
             } else {
                 ket = document.getElementById('keterangan').value.toUpperCase();
             }
 
-            let tipeFinal = currentSubmenu;
-            let subKategori = (currentSubmenu === 'receipt') ? document.getElementById('receipt-sub-type').value : '';
-
             const newTx = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-                tipe: tipeFinal,
+                tipe: currentSubmenu,
                 subTipe: subKategori,
                 ket,
-                nopol: (currentSubmenu === 'receipt') ? nopolFinal : '',
+                nopol: nopolFinal,
+                pengorder: pengorderVal,
+                vendor: vendorVal,
                 qty
             };
 
@@ -457,7 +465,6 @@
 
             const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
 
-            // Khusus tab 'receipt', buat layout 2 kolom (Kiri: Pallet Order, Kanan: Pallet Balikan Mobil Racking)
             if (currentRiwayatFilter === 'receipt') {
                 const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
                 const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
@@ -465,44 +472,22 @@
                 const gridContainer = document.createElement('div');
                 gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
 
-                // Kolom Kiri: Pallet Order
                 const colOrder = document.createElement('div');
                 colOrder.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                
-                const headerOrder = document.createElement('div');
-                headerOrder.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center";
-                headerOrder.innerText = "📦 PALLET ORDER";
-                colOrder.appendChild(headerOrder);
-
+                colOrder.innerHTML = `<div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center">📦 PALLET ORDER</div>`;
                 if (listOrder.length === 0) {
-                    const emptyOrder = document.createElement('p');
-                    emptyOrder.className = "text-xs text-slate-500 text-center py-4";
-                    emptyOrder.innerText = "Belum ada data Pallet Order.";
-                    colOrder.appendChild(emptyOrder);
+                    colOrder.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Pallet Order.</p>`;
                 } else {
-                    listOrder.forEach(t => {
-                        colOrder.appendChild(createCardItem(t));
-                    });
+                    listOrder.forEach(t => colOrder.appendChild(createCardItem(t)));
                 }
 
-                // Kolom Kanan: Pallet Balikan Mobil Racking
                 const colRacking = document.createElement('div');
                 colRacking.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                
-                const headerRacking = document.createElement('div');
-                headerRacking.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center";
-                headerRacking.innerText = "🚛 PALLET BALIKAN RACKING";
-                colRacking.appendChild(headerRacking);
-
+                colRacking.innerHTML = `<div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center">🚛 PALLET BALIKAN RACKING</div>`;
                 if (listRacking.length === 0) {
-                    const emptyRacking = document.createElement('p');
-                    emptyRacking.className = "text-xs text-slate-500 text-center py-4";
-                    emptyRacking.innerText = "Belum ada data Balikan Racking.";
-                    colRacking.appendChild(emptyRacking);
+                    colRacking.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Balikan Racking.</p>`;
                 } else {
-                    listRacking.forEach(t => {
-                        colRacking.appendChild(createCardItem(t));
-                    });
+                    listRacking.forEach(t => colRacking.appendChild(createCardItem(t)));
                 }
 
                 gridContainer.appendChild(colOrder);
@@ -510,7 +495,6 @@
                 listEl.appendChild(gridContainer);
 
             } else {
-                // Untuk tab selain receipt (Order, Issue, Other) tampilkan normal ke bawah
                 if (filteredTransactions.length === 0) {
                     listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
                 } else {
@@ -546,12 +530,20 @@
             const sign = isAdd ? '+' : '-';
             
             let detailTipeDisplay = t.tipe;
-            if (t.subTipe) {
-                detailTipeDisplay = `${t.subTipe}`;
-            }
+            if (t.subTipe) detailTipeDisplay = `${t.subTipe}`;
 
-            let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
-            let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
+            let extraInfo = '';
+            if (t.tipe === 'order') {
+                extraInfo = `
+                    <p class="font-bold text-slate-200 mt-1">PO: ${t.ket}</p>
+                    <p class="text-xs text-slate-300">Pengorder: <span class="text-amber-400 font-semibold">${t.pengorder}</span></p>
+                    <p class="text-xs text-slate-300">Vendor: <span class="text-slate-100 font-semibold">${t.vendor}</span></p>
+                `;
+            } else {
+                let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
+                let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
+                extraInfo = `${ketDisplay}${nopolDisplay}`;
+            }
 
             const card = document.createElement('div');
             card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
@@ -561,8 +553,7 @@
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${detailTipeDisplay}</span>
                         <span class="text-[10px] text-slate-400">${t.date}</span>
                     </div>
-                    ${ketDisplay}
-                    ${nopolDisplay}
+                    ${extraInfo}
                 </div>
                 <div class="text-right flex items-center gap-3">
                     <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
