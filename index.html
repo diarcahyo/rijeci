@@ -54,7 +54,7 @@
                 </div>
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order (Sisa)</p>
                         <button onclick="goToRiwayatCategory('order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Order">i</button>
                     </div>
                     <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
@@ -221,13 +221,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v5')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v6')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v5', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v6', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -371,9 +371,12 @@
 
             document.getElementById('active-category-label').innerText = sub;
             const effectEl = document.getElementById('active-effect-label');
-            if(sub === 'receipt' || sub === 'order') {
-                effectEl.innerText = "(Menambah Stok)";
+            if(sub === 'receipt') {
+                effectEl.innerText = "(Menambah Stok / Mengurangi Sisa Order PO)";
                 effectEl.className = "text-emerald-400 font-bold";
+            } else if(sub === 'order') {
+                effectEl.innerText = "(Mencatat Target/Sisa Order - Tidak Menambah Stok)";
+                effectEl.className = "text-amber-400 font-bold";
             } else {
                 effectEl.innerText = "(Mengurangi Stok)";
                 effectEl.className = "text-rose-400 font-bold";
@@ -456,9 +459,32 @@
             document.getElementById('input-begin').value = state.beginning;
 
             let totalReceipt = 0;
-            let totalOrder = 0;
             let totalIssue = 0;
             let totalOther = 0;
+
+            // Hitung sisa qty order berdasarkan penerimaan receipt (Pallet Order)
+            // Buat salinan list order dengan sisa kuantitas awal sama dengan qty-nya
+            let orderMap = {};
+            state.transactions.forEach(t => {
+                if (t.tipe === 'order') {
+                    orderMap[t.ket] = (orderMap[t.ket] || 0) + t.qty;
+                }
+            });
+
+            // Kurangi sisa order jika ada receipt dengan subTipe 'Pallet Order' dan PO yang sama
+            state.transactions.forEach(t => {
+                if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order') {
+                    if (orderMap[t.ket] !== undefined) {
+                        orderMap[t.ket] -= t.qty;
+                        if (orderMap[t.ket] < 0) orderMap[t.ket] = 0;
+                    }
+                }
+            });
+
+            let totalSisaOrder = 0;
+            Object.values(orderMap).forEach(sisa => {
+                totalSisaOrder += sisa;
+            });
 
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
@@ -506,15 +532,15 @@
 
             state.transactions.forEach(t => {
                 if (t.tipe === 'receipt') totalReceipt += t.qty;
-                if (t.tipe === 'order') totalOrder += t.qty;
                 if (t.tipe === 'issue') totalIssue += t.qty;
                 if (t.tipe === 'other') totalOther += t.qty;
             });
 
-            const endingBalance = state.beginning + totalReceipt + totalOrder - totalIssue - totalOther;
+            // Ending Balance hanya dihitung dari Beginning + Receipt - Issue - Other (Order tidak masuk perhitungan stok akhir)
+            const endingBalance = state.beginning + totalReceipt - totalIssue - totalOther;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
-            document.getElementById('val-order').innerText = totalOrder.toLocaleString('id-ID');
+            document.getElementById('val-order').innerText = totalSisaOrder.toLocaleString('id-ID');
             document.getElementById('val-issue').innerText = totalIssue.toLocaleString('id-ID');
             document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
         }
