@@ -179,7 +179,7 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
-                <!-- Sub-Tab Navigasi Riwayat (Kembali Normal 4 Kolom) -->
+                <!-- Sub-Tab Navigasi Riwayat -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
                     <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
                         📥 Receipt
@@ -457,41 +457,67 @@
 
             const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
 
-            if (filteredTransactions.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
-            }
-
-            // Khusus tab 'receipt', kita kelompokkan/pisahkan tampilannya menjadi Pallet Order dan Pallet Balikan Mobil Racking
+            // Khusus tab 'receipt', buat layout 2 kolom (Kiri: Pallet Order, Kanan: Pallet Balikan Mobil Racking)
             if (currentRiwayatFilter === 'receipt') {
                 const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
                 const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
 
-                if (listOrder.length > 0) {
-                    const headerOrder = document.createElement('div');
-                    headerOrder.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/30 px-3 py-1.5 rounded-lg border border-emerald-900/50 mt-2 mb-1";
-                    headerOrder.innerText = "📦 RECEIPT - PALLET ORDER";
-                    listEl.appendChild(headerOrder);
+                const gridContainer = document.createElement('div');
+                gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
 
+                // Kolom Kiri: Pallet Order
+                const colOrder = document.createElement('div');
+                colOrder.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                
+                const headerOrder = document.createElement('div');
+                headerOrder.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center";
+                headerOrder.innerText = "📦 PALLET ORDER";
+                colOrder.appendChild(headerOrder);
+
+                if (listOrder.length === 0) {
+                    const emptyOrder = document.createElement('p');
+                    emptyOrder.className = "text-xs text-slate-500 text-center py-4";
+                    emptyOrder.innerText = "Belum ada data Pallet Order.";
+                    colOrder.appendChild(emptyOrder);
+                } else {
                     listOrder.forEach(t => {
-                        listEl.appendChild(createCardItem(t));
+                        colOrder.appendChild(createCardItem(t));
                     });
                 }
 
-                if (listRacking.length > 0) {
-                    const headerRacking = document.createElement('div');
-                    headerRacking.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/30 px-3 py-1.5 rounded-lg border border-emerald-900/50 mt-4 mb-1";
-                    headerRacking.innerText = "🚛 RECEIPT - PALLET BALIKAN MOBIL RACKING";
-                    listEl.appendChild(headerRacking);
+                // Kolom Kanan: Pallet Balikan Mobil Racking
+                const colRacking = document.createElement('div');
+                colRacking.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                
+                const headerRacking = document.createElement('div');
+                headerRacking.className = "text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center";
+                headerRacking.innerText = "🚛 PALLET BALIKAN RACKING";
+                colRacking.appendChild(headerRacking);
 
+                if (listRacking.length === 0) {
+                    const emptyRacking = document.createElement('p');
+                    emptyRacking.className = "text-xs text-slate-500 text-center py-4";
+                    emptyRacking.innerText = "Belum ada data Balikan Racking.";
+                    colRacking.appendChild(emptyRacking);
+                } else {
                     listRacking.forEach(t => {
+                        colRacking.appendChild(createCardItem(t));
+                    });
+                }
+
+                gridContainer.appendChild(colOrder);
+                gridContainer.appendChild(colRacking);
+                listEl.appendChild(gridContainer);
+
+            } else {
+                // Untuk tab selain receipt (Order, Issue, Other) tampilkan normal ke bawah
+                if (filteredTransactions.length === 0) {
+                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
+                } else {
+                    filteredTransactions.forEach(t => {
                         listEl.appendChild(createCardItem(t));
                     });
                 }
-            } else {
-                // Untuk tab selain receipt (Order, Issue, Other) tampilkan normal
-                filteredTransactions.forEach(t => {
-                    listEl.appendChild(createCardItem(t));
-                });
             }
 
             state.transactions.forEach(t => {
@@ -521,14 +547,14 @@
             
             let detailTipeDisplay = t.tipe;
             if (t.subTipe) {
-                detailTipeDisplay = `${t.tipe} - ${t.subTipe}`;
+                detailTipeDisplay = `${t.subTipe}`;
             }
 
             let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
             let ketDisplay = (t.subTipe === 'Pallet Balikan Mobil Racking') ? '' : `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
 
             const card = document.createElement('div');
-            card.className = "flex justify-between items-center p-3.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm mb-2";
+            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
             card.innerHTML = `
                 <div>
                     <div class="flex items-center gap-2">
@@ -538,7 +564,7 @@
                     ${ketDisplay}
                     ${nopolDisplay}
                 </div>
-                <div class="text-right flex items-center gap-4">
+                <div class="text-right flex items-center gap-3">
                     <span class="font-black text-base ${isAdd ? 'text-emerald-400' : 'text-rose-400'}">${sign}${t.qty.toLocaleString('id-ID')}</span>
                     <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
                 </div>
