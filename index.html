@@ -179,7 +179,7 @@
                         </div>
                     </div>
 
-                    <!-- Input Quantity (Bisa Input atau Dropdown Racking) -->
+                    <!-- Input Quantity -->
                     <div>
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
                         <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
@@ -793,9 +793,9 @@
                     let total = 0;
                     arr.forEach(t => {
                         if (t.ket.includes('Membayar Hutang Pallet')) {
-                            total -= t.qty; // Membayar mengurangi hutang (-)
+                            total -= t.qty; 
                         } else if (t.ket.includes('Hutang Pallet')) {
-                            total += t.qty; // Menambah hutang (+)
+                            total += t.qty; 
                         } else {
                             total += t.qty;
                         }
@@ -807,11 +807,23 @@
                 const totalMt = calculateColumnDebtTotal(listMt);
                 const totalAntarPlan = calculateColumnDebtTotal(listAntarPlan);
 
-                const formatDebtTotalBadge = (val) => {
-                    if (val === 0) return `<span class="text-slate-400">(0)</span>`;
-                    const sign = val > 0 ? `+${val}` : `${val}`;
-                    const color = val > 0 ? 'text-amber-400' : 'text-emerald-400';
-                    return `<span class="${color}">(${sign} pcs)</span>`;
+                // Fungsi pembuat string rincian hutang sesuai permintaan
+                const generateDebtDescriptionHtml = (netTotal, entityName) => {
+                    let hutangPihakKeJayanti = 0;
+                    let hutangJayantiKePihak = 0;
+
+                    if (netTotal < 0) {
+                        hutangJayantiKePihak = Math.abs(netTotal);
+                    } else if (netTotal > 0) {
+                        hutangPihakKeJayanti = netTotal;
+                    }
+
+                    return `
+                        <div class="mt-1.5 space-y-0.5 text-[11px] font-medium border-t border-purple-900/40 pt-1.5 text-center">
+                            <p class="text-slate-300">Hutang Pallet ${entityName} ke Jayanti 2 : <strong class="text-amber-400">${hutangPihakKeJayanti} pcs</strong></p>
+                            <p class="text-slate-300">Hutangan Pallet Jayanti 2 ke ${entityName} : <strong class="text-emerald-400">${hutangJayantiKePihak} pcs</strong></p>
+                        </div>
+                    `;
                 };
 
                 const gridOther = document.createElement('div');
@@ -820,7 +832,12 @@
                 // Kotak MDC
                 const colMdc = document.createElement('div');
                 colMdc.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colMdc.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center flex justify-center items-center gap-1.5"><span>🏢 MDC</span> ${formatDebtTotalBadge(totalMdc)}</div>`;
+                colMdc.innerHTML = `
+                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
+                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🏢 MDC</div>
+                        ${generateDebtDescriptionHtml(totalMdc, 'MDC')}
+                    </div>
+                `;
                 if (listMdc.length === 0) {
                     colMdc.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
                 } else {
@@ -830,7 +847,12 @@
                 // Kotak MT
                 const colMt = document.createElement('div');
                 colMt.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colMt.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center flex justify-center items-center gap-1.5"><span>🚚 MT</span> ${formatDebtTotalBadge(totalMt)}</div>`;
+                colMt.innerHTML = `
+                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
+                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🚚 MT</div>
+                        ${generateDebtDescriptionHtml(totalMt, 'MT')}
+                    </div>
+                `;
                 if (listMt.length === 0) {
                     colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
                 } else {
@@ -840,7 +862,12 @@
                 // Kotak Antar Plan
                 const colAntarPlan = document.createElement('div');
                 colAntarPlan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colAntarPlan.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center flex justify-center items-center gap-1.5"><span>🏭 ANTAR PLAN</span> ${formatDebtTotalBadge(totalAntarPlan)}</div>`;
+                colAntarPlan.innerHTML = `
+                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
+                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🏭 ANTAR PLAN</div>
+                        ${generateDebtDescriptionHtml(totalAntarPlan, 'Antar Plan')}
+                    </div>
+                `;
                 if (listAntarPlan.length === 0) {
                     colAntarPlan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
                 } else {
@@ -967,7 +994,6 @@
             let ketDisplay = `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
             let extraInfo = `${ketDisplay}${nopolDisplay}`;
 
-            // Tampilkan kuantiti aktual yang dibawa jika ada (broughtQty), jika tidak gunakan t.qty
             let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
 
             const card = document.createElement('div');
