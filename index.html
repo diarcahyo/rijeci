@@ -484,7 +484,7 @@
                     nopolFinal = `${nopolPart}${pengirimPart}`;
                     ket = `Balikan Mobil Racking (${qty} pcs)`;
 
-                    // Logika pengecekan: Hanya buatkan catatan hutang/kelebihan jika Nopol dan Pengirim BUKAN manual (artinya dari dropdown)
+                    // Logika pengecekan hutang/kelebihan: Hanya buatkan catatan jika Nopol & Pengirim dari dropdown
                     const isNopolDropdown = !isNopolManual;
                     const isPengirimDropdown = !isPengirimManual;
 
@@ -682,12 +682,17 @@
             document.getElementById('info-modal').classList.add('hidden');
         }
 
-        function getShiftKey(timestamp) {
+        // Fungsi cutoff operasional jam 07:00 pagi hingga 06:59 pagi keesokan harinya
+        function getOperationalDate(timestamp) {
             const date = new Date(timestamp);
             if (date.getHours() < 7) {
                 date.setDate(date.getDate() - 1);
             }
             return date.toISOString().split('T')[0];
+        }
+
+        function getShiftKey(timestamp) {
+            return getOperationalDate(timestamp);
         }
 
         function getOtherBoxLabel(qty) {
@@ -734,6 +739,7 @@
                 const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
                 const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
 
+                // Urutkan balikan racking secara kronologis (dari lama ke baru) untuk menentukan nomor urut harian (1, 2, 3...)
                 let sortedRackingForShift = [...listRacking].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
                 let shiftCounterMap = {};
                 let rackingItemShiftNumbers = {};
@@ -782,7 +788,9 @@
                 if (listRacking.length === 0) {
                     colRacking.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Balikan Racking.</p>`;
                 } else {
-                    listRacking.forEach(t => {
+                    // Tampilkan kembali secara descending (terbaru di atas) dengan tetap membawa nomor urut shift yang tepat
+                    let displaySortedRacking = [...listRacking].sort((a, b) => (b.rawTimestamp || b.id) - (a.rawTimestamp || a.id));
+                    displaySortedRacking.forEach(t => {
                         const shiftNo = rackingItemShiftNumbers[t.id] || 1;
                         colRacking.appendChild(createRackingCardItem(t, shiftNo));
                     });
@@ -898,7 +906,7 @@
                 if (listMdc.length === 0) {
                     colMdc.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
                 } else {
-                    sortedMdc.forEach(t => colMdc.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+                    [...sortedMdc].reverse().forEach(t => colMdc.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 const colMt = document.createElement('div');
@@ -912,7 +920,7 @@
                 if (listMt.length === 0) {
                     colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
                 } else {
-                    sortedMt.forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+                    [...sortedMt].reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 const colAntarPlan = document.createElement('div');
@@ -926,7 +934,7 @@
                 if (listAntarPlan.length === 0) {
                     colAntarPlan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
                 } else {
-                    sortedAntarPlan.forEach(t => colAntarPlan.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+                    [...sortedAntarPlan].reverse().forEach(t => colAntarPlan.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 gridOther.appendChild(colMdc);
@@ -1009,6 +1017,7 @@
                     </div>
                     
                     <div class="flex items-center gap-2 mt-2">
+                        <span class="bg-blue-600 border border-blue-400 text-white font-black text-xs px-2 py-0.5 rounded-md shadow-sm uppercase">${shiftNumber}</span>
                         <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
                     </div>
 
