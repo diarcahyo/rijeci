@@ -118,7 +118,7 @@
                 <!-- Dropdown khusus ketika menu Issue dipilih -->
                 <div id="issue-dropdown-container" class="mb-4 hidden">
                     <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Issue</label>
-                    <select id="issue-sub-type" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                    <select id="issue-sub-type" onchange="onIssueSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
                         <option value="Kebutuhan Produksi">1. Kebutuhan Produksi</option>
                         <option value="Penjualan Patahan Pallet Kayu">2. Penjualan Patahan Pallet Kayu</option>
                     </select>
@@ -252,13 +252,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v21')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v22')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v21', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v22', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -408,9 +408,16 @@
                 labelQty.innerText = "Jumlah Order (pcs)";
             } else if (currentSubmenu === 'issue') {
                 issueDropdownContainer.classList.remove('hidden');
-                document.getElementById('label-keterangan').innerText = "Keterangan Tambahan (Opsional)";
-                inputKet.placeholder = "Contoh: Catatan tambahan pengeluaran...";
-                inputKet.required = false;
+                const issueSub = document.getElementById('issue-sub-type').value;
+                if (issueSub === 'Kebutuhan Produksi') {
+                    ketContainer.classList.add('hidden');
+                    inputKet.required = false;
+                } else {
+                    ketContainer.classList.remove('hidden');
+                    document.getElementById('label-keterangan').innerText = "Keterangan Tambahan (Opsional)";
+                    inputKet.placeholder = "Contoh: Catatan tambahan pengeluaran...";
+                    inputKet.required = false;
+                }
                 labelQty.innerText = "Jumlah (pcs)";
             } else {
                 document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
@@ -421,6 +428,10 @@
         }
 
         function onReceiptSubChange() {
+            updateFormLabels();
+        }
+
+        function onIssueSubChange() {
             updateFormLabels();
         }
 
@@ -557,8 +568,12 @@
                 qty = parseInt(document.getElementById('quantity').value);
             } else if (currentSubmenu === 'issue') {
                 subKategori = document.getElementById('issue-sub-type').value;
-                const userKet = document.getElementById('keterangan').value.trim().toUpperCase();
-                ket = userKet ? `${subKategori} - ${userKet}` : subKategori;
+                if (subKategori === 'Kebutuhan Produksi') {
+                    ket = subKategori;
+                } else {
+                    const userKet = document.getElementById('keterangan').value.trim().toUpperCase();
+                    ket = userKet ? `${subKategori} - ${userKet}` : subKategori;
+                }
                 qty = parseInt(document.getElementById('quantity').value);
             } else {
                 ket = document.getElementById('keterangan').value.toUpperCase();
@@ -1141,7 +1156,7 @@
             const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
 
             let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
-            let ketDisplay = `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
+            let ketDisplay = t.ket && t.ket !== 'Kebutuhan Produksi' ? `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>` : '';
             let extraInfo = `${ketDisplay}${nopolDisplay}`;
 
             let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
@@ -1151,13 +1166,13 @@
             card.innerHTML = `
                 <div class="pr-2">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${t.tipe}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${t.subTipe || t.tipe}</span>
                         <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
                     </div>
                     ${extraInfo}
                 </div>
                 <div class="text-right flex items-center gap-2 shrink-0">
-                    <span class="font-black text-sm md:text-base ${t.tipe === 'other' ? 'text-purple-400' : 'text-rose-400'}">-${Math.abs(displayQty).toLocaleString('id-ID')} pcs</span>
+                    <span class="font-black text-sm md:text-base text-rose-400">-${Math.abs(displayQty).toLocaleString('id-ID')} pcs</span>
                     <button onclick="deleteTx(${t.id})" class="text-slate-400 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded transition">Hapus</button>
                 </div>
             `;
