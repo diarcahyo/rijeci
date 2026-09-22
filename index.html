@@ -888,7 +888,6 @@
                     itemShiftNumbers[t.id] = shiftCounterMap[sKey];
                 });
 
-                // Judul besar DATA PEMINJAMAN PALLET
                 const titleContainer = document.createElement('div');
                 titleContainer.className = "text-center mb-4";
                 titleContainer.innerHTML = `<h3 class="text-base font-black text-purple-400 tracking-wider uppercase">DATA PEMINJAMAN PALLET</h3>`;
@@ -1051,20 +1050,6 @@
 
             const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
 
-            let receiptsHtml = '';
-            if (receiptsForThisPO.length > 0) {
-                receiptsHtml += `<div class="mt-2.5 space-y-1.5 border-t border-slate-700/60 pt-2"><p class="text-[10px] font-bold text-slate-400 uppercase">Kedatangan Mobil:</p>`;
-                receiptsForThisPO.forEach(r => {
-                    receiptsHtml += `
-                        <div class="flex items-center justify-between bg-slate-950/40 p-2 rounded-lg border border-slate-800 text-xs">
-                            <span class="font-bold text-blue-300">No Pol: ${r.nopol || '-'}</span>
-                            <span class="font-bold text-emerald-400">+${r.qty} pcs</span>
-                        </div>
-                    `;
-                });
-                receiptsHtml += `</div>`;
-            }
-
             const card = document.createElement('div');
             card.className = "p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
             card.innerHTML = `
@@ -1088,7 +1073,6 @@
                         <button onclick="deleteTxByPo('${t.ket}')" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
                     </div>
                 </div>
-                ${receiptsHtml}
             `;
             return card;
         }
