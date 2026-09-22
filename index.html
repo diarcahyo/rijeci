@@ -895,6 +895,43 @@
                     });
                 }
 
+            } else if (currentRiwayatFilter === 'issue') {
+                const listPatahan = filteredTransactions.filter(t => t.subTipe === 'Penjualan Patahan Pallet Kayu');
+                const listProduksi = filteredTransactions.filter(t => t.subTipe === 'Kebutuhan Produksi');
+
+                const gridContainer = document.createElement('div');
+                gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+
+                // Kolom Kiri: Penjualan Patahan Pallet Kayu
+                const colPatahan = document.createElement('div');
+                colPatahan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                colPatahan.innerHTML = `<div class="text-xs font-bold text-rose-400 uppercase bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-900/60 mb-2 text-center">PENJUALAN PATAHAN PALLET KAYU</div>`;
+                
+                if (listPatahan.length === 0) {
+                    colPatahan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Penjualan Patahan Pallet Kayu.</p>`;
+                } else {
+                    listPatahan.forEach(t => {
+                        colPatahan.appendChild(createCardItem(t));
+                    });
+                }
+
+                // Kolom Kanan: Kebutuhan Produksi
+                const colProduksi = document.createElement('div');
+                colProduksi.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                colProduksi.innerHTML = `<div class="text-xs font-bold text-rose-400 uppercase bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-900/60 mb-2 text-center">KEBUTUHAN PRODUKSI</div>`;
+                
+                if (listProduksi.length === 0) {
+                    colProduksi.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Kebutuhan Produksi.</p>`;
+                } else {
+                    listProduksi.forEach(t => {
+                        colProduksi.appendChild(createCardItem(t));
+                    });
+                }
+
+                gridContainer.appendChild(colPatahan);
+                gridContainer.appendChild(colProduksi);
+                listEl.appendChild(gridContainer);
+
             } else if (currentRiwayatFilter === 'other') {
                 const listMdc = [];
                 const listMt = [];
