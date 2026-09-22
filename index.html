@@ -243,13 +243,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v18')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v19')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v18', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v19', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -684,8 +684,8 @@
             return date.toISOString().split('T')[0];
         }
 
-        // Helper untuk mendapatkan label kotak pada Riwayat Order (nol / double / angka qty)
-        function getOrderBoxLabel(qty) {
+        // Helper untuk mendapatkan label kotak pada Riwayat Other (nol / double / angka qty)
+        function getOtherBoxLabel(qty) {
             if (qty === 0) return { text: 'nol', bg: 'bg-rose-600 border-rose-400' };
             if (qty > 36) return { text: 'double', bg: 'bg-purple-600 border-purple-400' };
             return { text: qty.toString(), bg: 'bg-blue-600 border-blue-400' };
@@ -863,6 +863,22 @@
                     `;
                 };
 
+                let sortedMdc = [...listMdc].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+                let sortedMt = [...listMt].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+                let sortedAntarPlan = [...listAntarPlan].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+
+                let shiftCounterMap = {};
+                let itemShiftNumbers = {};
+                [...sortedMdc, ...sortedMt, ...sortedAntarPlan].forEach(t => {
+                    const sKey = getShiftKey(t.rawTimestamp || t.id);
+                    if (!shiftCounterMap[sKey]) {
+                        shiftCounterMap[sKey] = 1;
+                    } else {
+                        shiftCounterMap[sKey]++;
+                    }
+                    itemShiftNumbers[t.id] = shiftCounterMap[sKey];
+                });
+
                 const gridOther = document.createElement('div');
                 gridOther.className = "grid grid-cols-1 md:grid-cols-3 gap-4";
 
@@ -877,7 +893,7 @@
                 if (listMdc.length === 0) {
                     colMdc.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
                 } else {
-                    listMdc.forEach(t => colMdc.appendChild(createCardItem(t)));
+                    sortedMdc.forEach(t => colMdc.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 const colMt = document.createElement('div');
@@ -891,7 +907,7 @@
                 if (listMt.length === 0) {
                     colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
                 } else {
-                    listMt.forEach(t => colMt.appendChild(createCardItem(t)));
+                    sortedMt.forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 const colAntarPlan = document.createElement('div');
@@ -905,7 +921,7 @@
                 if (listAntarPlan.length === 0) {
                     colAntarPlan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
                 } else {
-                    listAntarPlan.forEach(t => colAntarPlan.appendChild(createCardItem(t)));
+                    sortedAntarPlan.forEach(t => colAntarPlan.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
                 gridOther.appendChild(colMdc);
@@ -1002,7 +1018,7 @@
             return card;
         }
 
-        // Pembaruan pada Riwayat Order: menampilkan rincian mobil receipt dengan kotak "nol", "double", atau angka qty
+        // Tampilan Riwayat Order dikembalikan seperti semula (tanpa kotak status kedatangan khusus)
         function createGroupedOrderCard(t) {
             let totalReceivedForPO = 0;
             let receiptsForThisPO = [];
@@ -1025,14 +1041,10 @@
             if (receiptsForThisPO.length > 0) {
                 receiptsHtml += `<div class="mt-2.5 space-y-1.5 border-t border-slate-700/60 pt-2"><p class="text-[10px] font-bold text-slate-400 uppercase">Kedatangan Mobil:</p>`;
                 receiptsForThisPO.forEach(r => {
-                    const boxInfo = getOrderBoxLabel(r.qty);
                     const rTime = r.time ? `${r.date}, ${r.time} WIB` : r.date;
                     receiptsHtml += `
                         <div class="flex items-center justify-between bg-slate-950/40 p-2 rounded-lg border border-slate-800 text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="${boxInfo.bg} text-white font-black text-[11px] px-2 py-0.5 rounded-md shadow-sm uppercase">${boxInfo.text}</span>
-                                <span class="font-bold text-blue-300">${r.nopol || '-'}</span>
-                            </div>
+                            <span class="font-bold text-blue-300">No Pol: ${r.nopol || '-'}</span>
                             <span class="font-bold text-emerald-400">+${r.qty} pcs</span>
                         </div>
                     `;
@@ -1064,6 +1076,36 @@
                     </div>
                 </div>
                 ${receiptsHtml}
+            `;
+            return card;
+        }
+
+        // Tampilan khusus Riwayat Other menggunakan kotak status ("nol", "double", atau angka) beserta Nopol
+        function createOtherCardItem(t, shiftNumber) {
+            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
+            let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
+            const boxInfo = getOtherBoxLabel(displayQty);
+
+            const card = document.createElement('div');
+            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-purple-950/60 text-purple-400 border border-purple-800">OTHER</span>
+                        <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="${boxInfo.bg} text-white font-black text-xs px-2 py-0.5 rounded-md shadow-sm uppercase">${boxInfo.text}</span>
+                        <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
+                    </div>
+
+                    <p class="font-bold text-slate-200 mt-1 text-xs">${t.ket}</p>
+                </div>
+                <div class="text-right flex items-center gap-3">
+                    <span class="font-black text-base text-purple-400">${displayQty >= 0 ? '+' : ''}${displayQty.toLocaleString('id-ID')} pcs</span>
+                    <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
+                </div>
             `;
             return card;
         }
