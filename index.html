@@ -40,18 +40,35 @@
             </div>
 
             <!-- Kartu Metrik Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
                     <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
                     <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
                 </div>
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
-                    <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
-                        <button onclick="goToRiwayatCategory('receipt')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
+
+                <!-- Kartu Receipt dengan Submenu PO, MDC, MT di Dashboard -->
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative sm:col-span-1">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt Total</p>
+                        <span class="text-xl font-bold text-emerald-400"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></span>
                     </div>
-                    <p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+                    <!-- Submenu Tombol PO, MDC, MT -->
+                    <div class="grid grid-cols-3 gap-1 pt-2 border-t border-slate-700 text-center">
+                        <button onclick="showDashboardReceiptDetail('po')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
+                            <span class="block text-[9px] text-slate-400 font-bold uppercase">PO</span>
+                            <span id="dash-val-po" class="text-xs font-black text-emerald-400">0</span>
+                        </button>
+                        <button onclick="showDashboardReceiptDetail('mdc')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
+                            <span class="block text-[9px] text-slate-400 font-bold uppercase">MDC</span>
+                            <span id="dash-val-mdc" class="text-xs font-black text-emerald-400">0</span>
+                        </button>
+                        <button onclick="showDashboardReceiptDetail('mt')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
+                            <span class="block text-[9px] text-slate-400 font-bold uppercase">MT</span>
+                            <span id="dash-val-mt" class="text-xs font-black text-emerald-400">0</span>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
                     <div class="flex justify-between items-start">
                         <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
@@ -86,7 +103,6 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
                 
-                <!-- Pilihan Submenu Utama -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
                         <span>📥 Receipt</span>
@@ -106,7 +122,6 @@
                     </button>
                 </div>
 
-                <!-- Dropdown khusus ketika menu Receipt dipilih -->
                 <div id="receipt-dropdown-container" class="mb-4">
                     <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
                     <select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
@@ -115,20 +130,17 @@
                     </select>
                 </div>
 
-                <!-- Form Aktif Berdasarkan Pilihan Kolom -->
                 <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
                     <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
                         <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
                         <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
                     </div>
 
-                    <!-- Input Keterangan / Nomor PO -->
                     <div id="keterangan-container">
                         <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
                         <input type="text" id="keterangan" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                     </div>
 
-                    <!-- Input Khusus Order (Nama Pengorder & Nama Vendor) -->
                     <div id="order-extra-container" class="space-y-4 hidden">
                         <div>
                             <label class="block text-xs font-medium text-slate-300 mb-1">Nama Pengorder</label>
@@ -144,7 +156,6 @@
                         </div>
                     </div>
 
-                    <!-- Input Nomor Polisi -->
                     <div id="nopol-container">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
                         <input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
@@ -179,7 +190,6 @@
                         </div>
                     </div>
 
-                    <!-- Input Quantity -->
                     <div>
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
                         <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
@@ -205,8 +215,7 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
-                <!-- Sub-Tab Navigasi Riwayat Utama -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 font-bold text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
                     <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
                         📥 Receipt
                     </button>
@@ -221,20 +230,6 @@
                     </button>
                 </div>
 
-                <!-- Sub-Menu Khusus di dalam Receipt (PO, MDC, MT) -->
-                <div id="receipt-subnav-container" class="grid grid-cols-3 gap-2 mb-6 font-bold text-xs">
-                    <button onclick="switchReceiptSubTab('po')" id="receipt-sub-po" class="py-2 px-3 rounded-lg border border-emerald-500/50 bg-emerald-900/40 text-emerald-300 transition text-center">
-                        📦 PO
-                    </button>
-                    <button onclick="switchReceiptSubTab('mdc')" id="receipt-sub-mdc" class="py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center">
-                        🏢 MDC
-                    </button>
-                    <button onclick="switchReceiptSubTab('mt')" id="receipt-sub-mt" class="py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center">
-                        🚛 MT
-                    </button>
-                </div>
-
-                <!-- Kontainer Daftar Transaksi per Tab -->
                 <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </div>
@@ -255,7 +250,6 @@
     <script>
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
-        let currentReceiptSubTab = 'po'; // 'po', 'mdc', atau 'mt'
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v20')) || {
             beginning: 100,
@@ -301,27 +295,6 @@
                     }
                 } else {
                     btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1";
-                }
-            });
-
-            const receiptSubnav = document.getElementById('receipt-subnav-container');
-            if (category === 'receipt') {
-                receiptSubnav.classList.remove('hidden');
-            } else {
-                receiptSubnav.classList.add('hidden');
-            }
-
-            render();
-        }
-
-        function switchReceiptSubTab(subTab) {
-            currentReceiptSubTab = subTab;
-            ['po', 'mdc', 'mt'].forEach(st => {
-                const btn = document.getElementById('receipt-sub-' + st);
-                if (st === subTab) {
-                    btn.className = "py-2 px-3 rounded-lg border border-emerald-500/50 bg-emerald-900/40 text-emerald-300 transition text-center";
-                } else {
-                    btn.className = "py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center";
                 }
             });
             render();
@@ -628,110 +601,45 @@
             render();
         }
 
-        function deleteTxByPo(poNumber) {
-            if (confirm(`Hapus seluruh order dan data terkait PO: ${poNumber}?`)) {
-                state.transactions = state.transactions.filter(t => !(t.ket === poNumber));
-                saveData();
-                render();
+        function showDashboardReceiptDetail(type) {
+            const listReceipts = state.transactions.filter(t => t.tipe === 'receipt');
+            let filteredItems = [];
+            let titleText = '';
+
+            if (type === 'po') {
+                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Order');
+                titleText = 'Rincian Receipt: PO (Pallet Order)';
+            } else if (type === 'mdc') {
+                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking' && (t.nopol || '').toUpperCase().includes('MDC'));
+                titleText = 'Rincian Receipt: MDC';
+            } else if (type === 'mt') {
+                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking' && (t.nopol || '').toUpperCase().includes('MT'));
+                titleText = 'Rincian Receipt: MT';
             }
-        }
 
-        function deleteReceiptGroup(poNumber) {
-            if (confirm(`Hapus seluruh data receipt untuk PO: ${poNumber}?`)) {
-                state.transactions = state.transactions.filter(t => !(t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber));
-                saveData();
-                render();
-            }
-        }
+            let totalQty = filteredItems.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
 
-        function showReceiptInfo(poNumber) {
-            const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
-            let totalRec = receipts.reduce((sum, r) => sum + r.qty, 0);
-
-            document.getElementById('modal-title').innerText = `Daftar Nopol Receipt PO: ${poNumber}`;
-            
-            let html = `<p class="text-slate-200 font-semibold mb-3">Total Qty Masuk: <span class="text-emerald-400">${totalRec} pcs</span></p>`;
+            document.getElementById('modal-title').innerText = titleText;
+            let html = `<p class="text-slate-200 font-semibold mb-3">Total Qty: <span class="text-emerald-400">${totalQty} pcs</span></p>`;
             html += `<div class="space-y-1.5">`;
 
-            if (receipts.length === 0) {
-                html += `<p class="text-slate-500 italic">Belum ada data nopol untuk PO ini.</p>`;
+            if (filteredItems.length === 0) {
+                html += `<p class="text-slate-500 italic">Belum ada data receipt untuk kategori ini.</p>`;
             } else {
-                receipts.forEach((r, idx) => {
+                filteredItems.forEach((r, idx) => {
                     const timeDisplay = r.time ? `${r.date}, ${r.time} WIB` : r.date;
+                    const labelInfo = r.ket || r.nopol || '-';
+                    const displayQ = r.broughtQty !== undefined ? r.broughtQty : r.qty;
                     html += `
                         <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
                             <div>
                                 <span class="text-slate-400">#${idx+1} | 🕒 ${timeDisplay}</span>
-                                <p class="font-bold text-blue-300 mt-0.5">No Pol: ${r.nopol || '-'}</p>
+                                <p class="font-bold text-blue-300 mt-0.5">${labelInfo}</p>
                             </div>
-                            <span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs</span>
+                            <span class="font-bold text-emerald-400 text-sm">+${displayQ} pcs</span>
                         </div>
                     `;
                 });
-            }
-            html += `</div>`;
-
-            document.getElementById('modal-body').innerHTML = html;
-            document.getElementById('info-modal').classList.remove('hidden');
-        }
-
-        function showGenericInfoModal(title, items, totalQty) {
-            document.getElementById('modal-title').innerText = title;
-            let html = `<p class="text-slate-200 font-semibold mb-3">Total Keseluruhan Receipt: <span class="text-emerald-400">${totalQty} pcs</span></p>`;
-            html += `<div class="space-y-1.5">`;
-
-            if (items.length === 0) {
-                html += `<p class="text-slate-500 italic">Belum ada data transaksi.</p>`;
-            } else {
-                items.forEach((r, idx) => {
-                    const timeDisplay = r.time ? `${r.date}, ${r.time} WIB` : r.date;
-                    html += `
-                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
-                            <div>
-                                <span class="text-slate-400">#${idx+1} | 🕒 ${timeDisplay}</span>
-                                <p class="font-bold text-blue-300 mt-0.5">${r.ket || r.nopol || '-'}</p>
-                            </div>
-                            <span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs</span>
-                        </div>
-                    `;
-                });
-            }
-            html += `</div>`;
-
-            document.getElementById('modal-body').innerHTML = html;
-            document.getElementById('info-modal').classList.remove('hidden');
-        }
-
-        function showOrderInfo(poNumber) {
-            const orderTx = state.transactions.find(t => t.tipe === 'order' && t.ket === poNumber);
-            const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
-
-            let totalRec = receipts.reduce((sum, r) => sum + r.qty, 0);
-            let targetQty = orderTx ? orderTx.qty : 0;
-
-            document.getElementById('modal-title').innerText = `Info Status PO: ${poNumber}`;
-            
-            let html = `<p class="text-slate-200 font-semibold mb-2">Total Target Order: <span class="text-amber-400">${targetQty} pcs</span></p>`;
-            html += `<p class="text-slate-200 font-semibold mb-3">Total Terealisasi: <span class="text-emerald-400">${totalRec} pcs</span></p>`;
-            html += `<div class="border-t border-slate-700 pt-2"><p class="text-xs font-bold text-slate-400 uppercase mb-2">Daftar Mobil Pengangkut (Receipt):</p>`;
-
-            if (receipts.length === 0) {
-                html += `<p class="text-slate-500 italic">Belum ada mobil yang melakukan receipt untuk PO ini.</p>`;
-            } else {
-                html += `<div class="space-y-1.5">`;
-                receipts.forEach((r, idx) => {
-                    const timeDisplay = r.time ? `${r.date}, ${r.time} WIB` : r.date;
-                    html += `
-                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
-                            <div>
-                                <span class="text-slate-400">#${idx+1} | 🕒 ${timeDisplay}</span>
-                                <p class="font-bold text-blue-300 mt-0.5">No Pol: ${r.nopol || '-'}</p>
-                            </div>
-                            <span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs</span>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
             }
             html += `</div>`;
 
@@ -766,6 +674,10 @@
             let totalIssue = 0;
             let totalOther = 0;
 
+            let countPoReceipt = 0;
+            let countMdcReceipt = 0;
+            let countMtReceipt = 0;
+
             let orderMap = {};
             state.transactions.forEach(t => {
                 if (t.tipe === 'order') {
@@ -774,12 +686,22 @@
             });
 
             state.transactions.forEach(t => {
-                if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order') {
-                    if (orderMap[t.ket] !== undefined) {
-                        orderMap[t.ket] -= t.qty;
-                        if (orderMap[t.ket] < 0) orderMap[t.ket] = 0;
+                if (t.tipe === 'receipt') {
+                    totalReceipt += t.qty;
+                    const qVal = t.broughtQty !== undefined ? t.broughtQty : t.qty;
+                    if (t.subTipe === 'Pallet Order') {
+                        countPoReceipt += qVal;
+                    } else if (t.subTipe === 'Pallet Balikan Mobil Racking') {
+                        const nopolStr = (t.nopol || '').toUpperCase();
+                        if (nopolStr.includes('MDC')) {
+                            countMdcReceipt += qVal;
+                        } else if (nopolStr.includes('MT')) {
+                            countMtReceipt += qVal;
+                        }
                     }
                 }
+                if (t.tipe === 'issue') totalIssue += t.qty;
+                if (t.tipe === 'other') totalOther += t.qty;
             });
 
             let totalSisaOrder = 0;
@@ -787,103 +709,24 @@
                 totalSisaOrder += sisa;
             });
 
+            // Update nilai di submenu dashboard card receipt
+            document.getElementById('dash-val-po').innerText = countPoReceipt;
+            document.getElementById('dash-val-mdc').innerText = countMdcReceipt;
+            document.getElementById('dash-val-mt').innerText = countMtReceipt;
+
             const listEl = document.getElementById('daftar-transaksi');
             listEl.innerHTML = '';
 
             const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
 
             if (currentRiwayatFilter === 'receipt') {
-                const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
-                const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
-
-                // Filter berdasarkan sub-tab PO, MDC, MT yang diklik di dalam receipt
-                if (currentReceiptSubTab === 'po') {
-                    if (listOrder.length === 0) {
-                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat Pallet Order.</p>`;
-                    } else {
-                        let groupedReceiptOrders = {};
-                        listOrder.forEach(t => {
-                            if (!groupedReceiptOrders[t.ket]) {
-                                groupedReceiptOrders[t.ket] = {
-                                    po: t.ket,
-                                    totalQty: 0,
-                                    entries: []
-                                };
-                            }
-                            groupedReceiptOrders[t.ket].totalQty += t.qty;
-                            groupedReceiptOrders[t.ket].entries.push(t);
-                        });
-
-                        // Tombol Info Summary Total PO
-                        let totalPoQty = listOrder.reduce((sum, item) => sum + item.qty, 0);
-                        const summaryCard = document.createElement('div');
-                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
-                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt PO', listOrder, totalPoQty);
-                        summaryCard.innerHTML = `
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan PO</span>
-                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt PO</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-base font-black text-emerald-400">+${totalPoQty} pcs</span>
-                            </div>
-                        `;
-                        listEl.appendChild(summaryCard);
-
-                        Object.values(groupedReceiptOrders).forEach(group => {
-                            listEl.appendChild(createGroupedReceiptCard(group));
-                        });
-                    }
-                } else if (currentReceiptSubTab === 'mdc') {
-                    const listMdcReceipts = listRacking.filter(t => (t.nopol || '').toUpperCase().includes('MDC'));
-                    if (listMdcReceipts.length === 0) {
-                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat receipt MDC.</p>`;
-                    } else {
-                        let totalMdcQty = listMdcReceipts.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
-                        const summaryCard = document.createElement('div');
-                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
-                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt MDC', listMdcReceipts, totalMdcQty);
-                        summaryCard.innerHTML = `
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan MDC</span>
-                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt MDC</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-base font-black text-emerald-400">+${totalMdcQty} pcs</span>
-                            </div>
-                        `;
-                        listEl.appendChild(summaryCard);
-
-                        listMdcReceipts.forEach(t => {
-                            listEl.appendChild(createRackingCardItem(t, 1));
-                        });
-                    }
-                } else if (currentReceiptSubTab === 'mt') {
-                    const listMtReceipts = listRacking.filter(t => (t.nopol || '').toUpperCase().includes('MT'));
-                    if (listMtReceipts.length === 0) {
-                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat receipt MT.</p>`;
-                    } else {
-                        let totalMtQty = listMtReceipts.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
-                        const summaryCard = document.createElement('div');
-                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
-                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt MT', listMtReceipts, totalMtQty);
-                        summaryCard.innerHTML = `
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan MT</span>
-                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt MT</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-base font-black text-emerald-400">+${totalMtQty} pcs</span>
-                            </div>
-                        `;
-                        listEl.appendChild(summaryCard);
-
-                        listMtReceipts.forEach(t => {
-                            listEl.appendChild(createRackingCardItem(t, 1));
-                        });
-                    }
+                if (filteredTransactions.length === 0) {
+                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
+                } else {
+                    filteredTransactions.forEach(t => {
+                        listEl.appendChild(createCardItem(t));
+                    });
                 }
-
             } else if (currentRiwayatFilter === 'order') {
                 let uniqueOrders = {};
                 filteredTransactions.forEach(t => {
@@ -907,7 +750,6 @@
                         listEl.appendChild(createGroupedOrderCard(item));
                     });
                 }
-
             } else if (currentRiwayatFilter === 'other') {
                 const listMdc = [];
                 const listMt = [];
@@ -1009,6 +851,18 @@
                 if (listMt.length === 0) {
                     colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
                 } else {
+                    [...sortedMt].reverse().forEach(t => colMt.reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)))); // fixed logic below
+                }
+                // (Correction on reverse loop for cleanliness)
+                colMt.innerHTML = `
+                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
+                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🚚 MT</div>
+                        ${generateDebtDescriptionHtml(totalMt, 'MT')}
+                    </div>
+                `;
+                if (listMt.length === 0) {
+                    colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
+                } else {
                     [...sortedMt].reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
                 }
 
@@ -1041,12 +895,6 @@
                 }
             }
 
-            state.transactions.forEach(t => {
-                if (t.tipe === 'receipt') totalReceipt += t.qty;
-                if (t.tipe === 'issue') totalIssue += t.qty;
-                if (t.tipe === 'other') totalOther += t.qty;
-            });
-
             const endingBalance = state.beginning + totalReceipt - totalIssue;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
@@ -1055,77 +903,11 @@
             document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
         }
 
-        function createGroupedReceiptCard(group) {
-            const orderTx = state.transactions.find(t => t.tipe === 'order' && t.ket === group.po);
-            let targetQty = orderTx ? orderTx.qty : group.totalQty;
-            let pengorder = orderTx ? orderTx.pengorder : '-';
-            let vendor = orderTx ? orderTx.vendor : '-';
-
-            let receivedRatio = `${group.totalQty}/${targetQty}`;
-            let isCompleted = group.totalQty >= targetQty;
-            let statusBadge = isCompleted 
-                ? `<span class="bg-emerald-950 text-emerald-400 border border-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">ARRIVED</span>` 
-                : `<span class="bg-amber-950 text-amber-400 border border-amber-700 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">PARTIAL</span>`;
-
-            const card = document.createElement('div');
-            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
-            
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-emerald-950/60 text-emerald-400 border border-emerald-800">RECEIPT</span>
-                        ${statusBadge}
-                    </div>
-                    <p class="font-bold text-slate-200 mt-1 flex items-center">
-                        PO: <button onclick="showReceiptInfo('${group.po}')" class="text-blue-400 underline hover:text-blue-300 mx-1">${group.po}</button>
-                        <button onclick="showReceiptInfo('${group.po}')" class="w-4 h-4 rounded-full bg-slate-700 hover:bg-emerald-600 text-slate-200 text-[9px] font-bold inline-flex items-center justify-center transition ml-1" title="Lihat Daftar Nopol & Jam">i</button>
-                    </p>
-                    <p class="text-xs text-slate-300">Pengorder: <span class="text-amber-400 font-semibold">${pengorder}</span></p>
-                    <p class="text-xs text-slate-300">Vendor: <span class="text-slate-100 font-semibold">${vendor}</span></p>
-                    <p class="text-xs text-slate-400 mt-1">Progress Datang: <strong class="text-slate-200">${receivedRatio}</strong> (Sisa: <span class="text-amber-400">${Math.max(0, targetQty - group.totalQty)} pcs</span>)</p>
-                </div>
-                <div class="text-right flex items-center gap-3">
-                    <span class="font-black text-base text-emerald-400">+${group.totalQty.toLocaleString('id-ID')}</span>
-                    <button onclick="deleteReceiptGroup('${group.po}')" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
-                </div>
-            `;
-            return card;
-        }
-
-        function createRackingCardItem(t, shiftNumber) {
-            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
-            let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
-
-            const card = document.createElement('div');
-            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-emerald-950/60 text-emerald-400 border border-emerald-800">RECEIPT</span>
-                        <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
-                    </div>
-
-                    <p class="text-[11px] text-slate-400 mt-1">${t.ket || 'Balikan Racking'}</p>
-                </div>
-                <div class="text-right flex items-center gap-3">
-                    <span class="font-black text-base text-emerald-400">+${displayQty.toLocaleString('id-ID')} pcs</span>
-                    <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
-                </div>
-            `;
-            return card;
-        }
-
         function createGroupedOrderCard(t) {
             let totalReceivedForPO = 0;
-            let receiptsForThisPO = [];
             state.transactions.forEach(tx => {
                 if (tx.tipe === 'receipt' && tx.subTipe === 'Pallet Order' && tx.ket === t.ket) {
                     totalReceivedForPO += tx.qty;
-                    receiptsForThisPO.push(tx);
                 }
             });
 
@@ -1146,18 +928,13 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-amber-950/60 text-amber-400 border border-amber-800">ORDER</span>
                             <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
                         </div>
-                        <p class="font-bold text-slate-200 mt-1 flex items-center">
-                            PO: <button onclick="showOrderInfo('${t.ket}')" class="text-blue-400 underline hover:text-blue-300 mx-1">${t.ket}</button> 
-                            <button onclick="showOrderInfo('${t.ket}')" class="w-4 h-4 rounded-full bg-slate-700 hover:bg-blue-600 text-slate-200 text-[9px] font-bold inline-flex items-center justify-center transition ml-1" title="Info Status Mobil & Qty">i</button>
-                            ${statusBadge}
-                        </p>
+                        <p class="font-bold text-slate-200 mt-1">PO: ${t.ket} ${statusBadge}</p>
                         <p class="text-xs text-slate-300">Pengorder: <span class="text-amber-400 font-semibold">${t.pengorder}</span></p>
                         <p class="text-xs text-slate-300">Vendor: <span class="text-slate-100 font-semibold">${t.vendor}</span></p>
-                        <p class="text-xs text-slate-400 mt-1">Receipt Progress: <strong class="text-slate-200">${receivedRatio}</strong> (Belum di-receipt: <span class="text-amber-400">${Math.max(0, t.totalQty - totalReceivedForPO)} pcs</span>)</p>
+                        <p class="text-xs text-slate-400 mt-1">Receipt Progress: <strong class="text-slate-200">${receivedRatio}</strong></p>
                     </div>
-                    <div class="text-right flex items-center gap-3">
+                    <div class="text-right">
                         <span class="font-black text-base text-amber-400">+${t.totalQty}</span>
-                        <button onclick="deleteTxByPo('${t.ket}')" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
                     </div>
                 </div>
             `;
@@ -1176,11 +953,9 @@
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-purple-950/60 text-purple-400 border border-purple-800">OTHER</span>
                         <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
                     </div>
-
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
                     </div>
-
                     <p class="font-bold text-slate-200 mt-1 text-xs">${t.ket}</p>
                 </div>
                 <div class="text-right flex items-center gap-3">
