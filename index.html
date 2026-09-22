@@ -1,1006 +1,907 @@
+c
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pallet GDFG Jayanti 2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e293b">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Pallet GDFG Jayanti 2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e293b">
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
 
-    <div class="max-w-5xl mx-auto p-4 md:p-6">
-        <!-- Header -->
-        <header class="mb-6 border-b border-slate-800 pb-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
-                    <p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
-                </div>
-                <!-- Navigation Tabs -->
-                <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
-                    <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
-                    <button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
-                    <button onclick="switchTab('riwayat')" id="btn-tab-riwayat" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Riwayat</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Tab Dashboard -->
-        <div id="section-dashboard" class="space-y-6">
-            <!-- Ending Balance Highlight -->
-            <div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
-                <div class="absolute right-4 top-4 opacity-10 text-6xl font-bold">📦</div>
-                <p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
-                <div class="flex items-baseline gap-2 mt-1">
-                    <h2 class="text-4xl font-black text-white" id="val-ending">0</h2>
-                    <span class="text-sm text-slate-400">pcs</span>
-                </div>
-            </div>
-
-            <!-- Kartu Metrik Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
-                    <p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
-                </div>
-
-                <!-- Kartu Receipt dengan Submenu PO, MDC, MT di Dashboard -->
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative sm:col-span-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt Total</p>
-                        <span class="text-xl font-bold text-emerald-400"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></span>
-                    </div>
-                    <!-- Submenu Tombol PO, MDC, MT -->
-                    <div class="grid grid-cols-3 gap-1 pt-2 border-t border-slate-700 text-center">
-                        <button onclick="showDashboardReceiptDetail('po')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
-                            <span class="block text-[9px] text-slate-400 font-bold uppercase">PO</span>
-                            <span id="dash-val-po" class="text-xs font-black text-emerald-400">0</span>
-                        </button>
-                        <button onclick="showDashboardReceiptDetail('mdc')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
-                            <span class="block text-[9px] text-slate-400 font-bold uppercase">MDC</span>
-                            <span id="dash-val-mdc" class="text-xs font-black text-emerald-400">0</span>
-                        </button>
-                        <button onclick="showDashboardReceiptDetail('mt')" class="bg-slate-900 hover:bg-emerald-950 border border-slate-700 hover:border-emerald-500/50 py-1.5 px-1 rounded-lg transition text-left">
-                            <span class="block text-[9px] text-slate-400 font-bold uppercase">MT</span>
-                            <span id="dash-val-mt" class="text-xs font-black text-emerald-400">0</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
-                    <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
-                        <button onclick="goToRiwayatCategory('order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Order">i</button>
-                    </div>
-                    <p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
-                    <div class="flex justify-between items-start">
-                        <p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
-                        <button onclick="goToRiwayatCategory('issue')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Issue">i</button>
-                    </div>
-                    <p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
-                </div>
-            </div>
-
-            <!-- Atur Beginning Balance -->
-            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div>
-                    <h3 class="text-sm font-bold text-slate-200">Atur Stock Awal (Beginning Balance)</h3>
-                    <p class="text-xs text-slate-400">Nilai stock awal dasar perhitungan sistem</p>
-                </div>
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <input type="number" id="input-begin" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
-                    <button onclick="setBeginningBalance()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold rounded-lg transition whitespace-nowrap">Simpan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab Input Transaksi -->
-        <div id="section-transaksi" class="space-y-6 hidden">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
-                <h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
-                        <span>📥 Receipt</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Tambah Stok Masuk</span>
-                    </button>
-                    <button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
-                        <span>📋 Order</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Tambah / Alokasi</span>
-                    </button>
-                    <button type="button" onclick="selectSubmenu('issue')" id="sub-issue" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
-                        <span>📤 Issue</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Kurang Stok Keluar</span>
-                    </button>
-                    <button type="button" onclick="selectSubmenu('other')" id="sub-other" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
-                        <span>⚡ Other</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Penyesuaian Lainnya</span>
-                    </button>
-                </div>
-
-                <div id="receipt-dropdown-container" class="mb-4">
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
-                    <select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
-                        <option value="Pallet Order">1. Pallet Order</option>
-                        <option value="Pallet Balikan Mobil Racking">2. Pallet Balikan Mobil Racking</option>
-                    </select>
-                </div>
-
-                <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
-                    <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
-                        <span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
-                        <span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
-                    </div>
-
-                    <div id="keterangan-container">
-                        <label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
-                        <input type="text" id="keterangan" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                    </div>
-
-                    <div id="order-extra-container" class="space-y-4 hidden">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Nama Pengorder</label>
-                            <select id="order-pengorder" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
-                                <option value="Bpk. Badruzaman/GDFG">Bpk. Badruzaman/GDFG</option>
-                                <option value="Bpk. Sanggar/GDPM">Bpk. Sanggar/GDPM</option>
-                                <option value="Bpk. Trio/GDRM">Bpk. Trio/GDRM</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Nama Vendor</label>
-                            <input type="text" id="order-vendor" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PT. Vendor Pallet" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                        </div>
-                    </div>
-
-                    <div id="nopol-container">
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
-                        <input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                        
-                        <div id="nopol-dropdown-wrapper" class="hidden space-y-2">
-                            <select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
-                                <option value="B 9799 BQA/RA">1. B 9799 BQA/RA</option>
-                                <option value="B 9927 BQA/RA">2. B 9927 BQA/RA</option>
-                                <option value="D 8147 VS">3. D 8147 VS</option>
-                                <option value="A 8403 XM/MJ">4. A 8403 XM/MJ</option>
-                                <option value="B 9888 CW/MJ">5. B 9888 CW/MJ</option>
-                                <option value="A 8255 ZU/OPS">6. A 8255 ZU/OPS</option>
-                                <option value="MANUAL">-- Ketik Manual Lainnya --</option>
-                            </select>
-
-                            <div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
-                                <input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                                <input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
-                            </div>
-                            
-                            <div class="mt-3">
-                                <label class="block text-xs font-medium text-slate-300 mb-1">Pengirim</label>
-                                <select id="pengirim-select" onchange="onPengirimSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
-                                    <option value="/MDC">1. /MDC</option>
-                                    <option value="/MT Balaraja">2. /MT Balaraja</option>
-                                    <option value="/MT Cikupa">3. /MT Cikupa</option>
-                                    <option value="/MT Tambun">4. /MT Tambun</option>
-                                    <option value="MANUAL">-- Ketik Manual Lainnya --</option>
-                                </select>
-                                <input type="text" id="pengirim-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik pengirim manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase hidden" style="text-transform: uppercase;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
-                        <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
-                        
-                        <div id="quantity-dropdown-wrapper" class="space-y-2 hidden">
-                            <select id="quantity-dropdown" onchange="onQuantityDropdownChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
-                                <option value="72">72 pcs (Membayar Hutang)</option>
-                                <option value="36">36 pcs (Standar)</option>
-                                <option value="0">0 pcs (Hutang Pallet)</option>
-                                <option value="MANUAL">-- Ketik Manual Lainnya --</option>
-                            </select>
-                            <input type="number" id="quantity-manual" inputmode="numeric" pattern="[0-9]*" placeholder="Ketik jumlah manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Tab Riwayat Transaksi -->
-        <div id="section-riwayat" class="space-y-4 hidden">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
-                <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
-                    <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
-                        📥 Receipt
-                    </button>
-                    <button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
-                        📋 Order
-                    </button>
-                    <button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
-                        📤 Issue
-                    </button>
-                    <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
-                        ⚡ Other
-                    </button>
-                </div>
-
-                <div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail Info -->
-    <div id="info-modal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 id="modal-title" class="text-sm font-bold text-amber-400 uppercase">Informasi Detail</h3>
-                <button onclick="closeInfoModal()" class="text-slate-400 hover:text-white font-bold text-base px-2">✕</button>
-            </div>
-            <div id="modal-body" class="space-y-2 text-xs text-slate-300 max-h-60 overflow-y-auto pr-1"></div>
-            <button onclick="closeInfoModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
-        </div>
-    </div>
-
-    <script>
-        let currentSubmenu = 'receipt';
-        let currentRiwayatFilter = 'receipt';
-
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v20')) || {
-            beginning: 100,
-            transactions: []
-        };
-
-        function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v20', JSON.stringify(state));
-        }
-
-        function switchTab(tabName) {
-            document.getElementById('section-dashboard').classList.add('hidden');
-            document.getElementById('section-transaksi').classList.add('hidden');
-            document.getElementById('section-riwayat').classList.add('hidden');
-
-            document.getElementById('btn-tab-dashboard').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
-            document.getElementById('btn-tab-transaksi').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
-            document.getElementById('btn-tab-riwayat').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
-
-            document.getElementById('section-' + tabName).classList.remove('hidden');
-            document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
-        }
-
-        function goToRiwayatCategory(category) {
-            switchTab('riwayat');
-            switchRiwayatTab(category);
-        }
-
-        function switchRiwayatTab(category) {
-            currentRiwayatFilter = category;
-            const tabs = ['receipt', 'order', 'issue', 'other'];
-            tabs.forEach(t => {
-                const btn = document.getElementById('riwayat-tab-' + t);
-                if (t === category) {
-                    if (t === 'receipt') {
-                        btn.className = "py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1";
-                    } else if (t === 'order') {
-                        btn.className = "py-2.5 px-3 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 transition text-center flex items-center justify-center gap-1";
-                    } else if (t === 'issue') {
-                        btn.className = "py-2.5 px-3 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 transition text-center flex items-center justify-center gap-1";
-                    } else if (t === 'other') {
-                        btn.className = "py-2.5 px-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 transition text-center flex items-center justify-center gap-1";
-                    }
-                } else {
-                    btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1";
-                }
-            });
-            render();
-        }
-
-        function onNopolSelectChange() {
-            const val = document.getElementById('nopol-select').value;
-            const manualBox = document.getElementById('manual-nopol-ekspedisi-box');
-            const manualNopol = document.getElementById('nopol-dropdown-manual');
-            const manualEkspedisi = document.getElementById('ekspedisi-manual');
-
-            if (val === 'MANUAL') {
-                manualBox.classList.remove('hidden');
-                manualNopol.required = true;
-                manualEkspedisi.required = true;
-                manualNopol.focus();
-            } else {
-                manualBox.classList.add('hidden');
-                manualNopol.required = false;
-                manualEkspedisi.required = false;
-                manualNopol.value = '';
-                manualEkspedisi.value = '';
-            }
-        }
-
-        function onQuantityDropdownChange() {
-            const val = document.getElementById('quantity-dropdown').value;
-            const manualInput = document.getElementById('quantity-manual');
-            if (val === 'MANUAL') {
-                manualInput.classList.remove('hidden');
-                manualInput.required = true;
-                manualInput.focus();
-            } else {
-                manualInput.classList.add('hidden');
-                manualInput.required = false;
-                manualInput.value = '';
-            }
-        }
-
-        function onPengirimSelectChange() {
-            const val = document.getElementById('pengirim-select').value;
-            const manualInput = document.getElementById('pengirim-manual');
-            if (val === 'MANUAL') {
-                manualInput.classList.remove('hidden');
-                manualInput.required = true;
-                manualInput.focus();
-            } else {
-                manualInput.classList.add('hidden');
-                manualInput.required = false;
-                manualInput.value = '';
-            }
-        }
-
-        function updateFormLabels() {
-            const ketContainer = document.getElementById('keterangan-container');
-            const inputKet = document.getElementById('keterangan');
-            const labelQty = document.getElementById('label-quantity');
-            const nopolContainer = document.getElementById('nopol-container');
-            const orderExtraContainer = document.getElementById('order-extra-container');
-            const orderVendorInput = document.getElementById('order-vendor');
-            const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
-            const nopolManualInput = document.getElementById('nopol-manual');
-            const quantityInput = document.getElementById('quantity');
-            const quantityDropdownWrapper = document.getElementById('quantity-dropdown-wrapper');
-            const quantityManualInput = document.getElementById('quantity-manual');
-
-            receiptDropdownContainer.classList.add('hidden');
-            orderExtraContainer.classList.add('hidden');
-            orderVendorInput.required = false;
-            nopolContainer.classList.add('hidden');
-            nopolManualInput.required = false;
-            ketContainer.classList.remove('hidden');
-            quantityInput.classList.remove('hidden');
-            quantityInput.required = true;
-            quantityDropdownWrapper.classList.add('hidden');
-            quantityManualInput.required = false;
-
-            if (currentSubmenu === 'receipt') {
-                receiptDropdownContainer.classList.remove('hidden');
-                nopolContainer.classList.remove('hidden');
-                const subType = document.getElementById('receipt-sub-type').value;
-                if (subType === 'Pallet Balikan Mobil Racking') {
-                    ketContainer.classList.add('hidden');
-                    inputKet.required = false;
-                    nopolManualInput.classList.add('hidden');
-                    nopolManualInput.required = false;
-                    document.getElementById('nopol-dropdown-wrapper').classList.remove('hidden');
-                    
-                    quantityInput.classList.add('hidden');
-                    quantityInput.required = false;
-                    quantityDropdownWrapper.classList.remove('hidden');
-                } else {
-                    ketContainer.classList.remove('hidden');
-                    inputKet.required = true;
-                    inputKet.placeholder = "Contoh: PO-88219";
-                    document.getElementById('nopol-dropdown-wrapper').classList.add('hidden');
-                    nopolManualInput.classList.remove('hidden');
-                    nopolManualInput.required = true;
-                    nopolManualInput.placeholder = "Contoh: B 1234 XYZ";
-                }
-                labelQty.innerText = "Jumlah (pcs)";
-            } else if (currentSubmenu === 'order') {
-                orderExtraContainer.classList.remove('hidden');
-                orderVendorInput.required = true;
-                document.getElementById('label-keterangan').innerText = "Nomor PO";
-                inputKet.placeholder = "Contoh: PO-99210";
-                inputKet.required = true;
-                labelQty.innerText = "Jumlah Order (pcs)";
-            } else {
-                document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
-                inputKet.required = true;
-                inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
-                labelQty.innerText = "Quantity (Palet / Pcs)";
-            }
-        }
-
-        function onReceiptSubChange() {
-            updateFormLabels();
-        }
-
-        function selectSubmenu(sub) {
-            currentSubmenu = sub;
-            ['receipt', 'order', 'issue', 'other'].forEach(s => {
-                const btn = document.getElementById('sub-' + s);
-                if(s === sub) {
-                    btn.className = "p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500";
-                } else {
-                    btn.className = "p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1";
-                }
-            });
-
-            document.getElementById('active-category-label').innerText = sub;
-            const effectEl = document.getElementById('active-effect-label');
-            if(sub === 'receipt') {
-                effectEl.innerText = "(Menambah Stok / Mengurangi Sisa Order PO)";
-                effectEl.className = "text-emerald-400 font-bold";
-            } else if(sub === 'order') {
-                effectEl.innerText = "(Mencatat Target/Sisa Order - Tidak Menambah Stok)";
-                effectEl.className = "text-amber-400 font-bold";
-            } else if(sub === 'other') {
-                effectEl.innerText = "(Penyesuaian Lainnya)";
-                effectEl.className = "text-purple-400 font-bold";
-            } else {
-                effectEl.innerText = "(Mengurangi Stok)";
-                effectEl.className = "text-rose-400 font-bold";
-            }
-
-            updateFormLabels();
-        }
-
-        function setBeginningBalance() {
-            const val = parseInt(document.getElementById('input-begin').value);
-            if (isNaN(val)) return alert('Masukkan angka valid');
-            state.beginning = val;
-            saveData();
-            render();
-            document.getElementById('input-begin').value = '';
-            alert('Beginning balance berhasil diperbarui!');
-        }
-
-        function submitTransaksi(e) {
-            e.preventDefault();
-            
-            let qty = 0;
-            let targetTipe = currentSubmenu;
-            let subKategori = '';
-            let ket = '';
-            let nopolFinal = '';
-            let pengorderVal = '';
-            let vendorVal = '';
-            let rackingExtraLog = null;
-
-            const now = new Date();
-            const displayDateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            const displayTimeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-            if (currentSubmenu === 'receipt') {
-                subKategori = document.getElementById('receipt-sub-type').value;
-                if (subKategori === 'Pallet Balikan Mobil Racking') {
-                    const dropdownVal = document.getElementById('quantity-dropdown').value;
-                    if (dropdownVal === 'MANUAL') {
-                        qty = parseInt(document.getElementById('quantity-manual').value);
-                    } else {
-                        qty = parseInt(dropdownVal);
-                    }
-                    
-                    const selectNopol = document.getElementById('nopol-select').value;
-                    let isNopolManual = (selectNopol === 'MANUAL');
-                    let nopolPart = isNopolManual ? `${document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase()}/${document.getElementById('ekspedisi-manual').value.trim().toUpperCase()}` : selectNopol;
-                    
-                    let selectPengirim = document.getElementById('pengirim-select').value;
-                    let isPengirimManual = (selectPengirim === 'MANUAL');
-                    let pengirimPart = isPengirimManual ? (function(){ let m = document.getElementById('pengirim-manual').value.trim().toUpperCase(); return m.startsWith('/') ? m : '/' + m; })() : selectPengirim;
-                    
-                    nopolFinal = `${nopolPart}${pengirimPart}`;
-                    ket = `Balikan Mobil Racking (${qty} pcs)`;
-
-                    const isNopolDropdown = !isNopolManual;
-                    const isPengirimDropdown = !isPengirimManual;
-
-                    if (isNopolDropdown && isPengirimDropdown) {
-                        if (qty < 36) {
-                            rackingExtraLog = {
-                                tipe: 'other',
-                                ket: `Hutang Pallet (Racking ${nopolFinal})`,
-                                nopol: nopolFinal,
-                                qty: 36 - qty,
-                                broughtQty: qty,
-                                rawTimestamp: now.getTime()
-                            };
-                        } else if (qty > 36) {
-                            rackingExtraLog = {
-                                tipe: 'other',
-                                ket: `Membayar Hutang Pallet (Racking ${nopolFinal})`,
-                                nopol: nopolFinal,
-                                qty: qty - 36,
-                                broughtQty: qty,
-                                rawTimestamp: now.getTime()
-                            };
-                        }
-                    }
-                } else {
-                    ket = document.getElementById('keterangan').value.toUpperCase();
-                    qty = parseInt(document.getElementById('quantity').value);
-                    
-                    const orderItem = state.transactions.find(t => t.tipe === 'order' && t.ket === ket);
-                    if (!orderItem) {
-                        alert('No PO tidak ada di data Order');
-                        return;
-                    }
-
-                    let totalReceivedSoFar = 0;
-                    state.transactions.forEach(t => {
-                        if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === ket) {
-                            totalReceivedSoFar += t.qty;
-                        }
-                    });
-
-                    let sisaOrder = orderItem.qty - totalReceivedSoFar;
-                    if (qty > sisaOrder) {
-                        alert('Kuantiti melebihi sisa order PO');
-                        return;
-                    }
-
-                    nopolFinal = document.getElementById('nopol-manual').value.toUpperCase();
-                }
-            } else if (currentSubmenu === 'order') {
-                ket = document.getElementById('keterangan').value.toUpperCase();
-                pengorderVal = document.getElementById('order-pengorder').value;
-                vendorVal = document.getElementById('order-vendor').value.toUpperCase();
-                qty = parseInt(document.getElementById('quantity').value);
-            } else {
-                ket = document.getElementById('keterangan').value.toUpperCase();
-                qty = parseInt(document.getElementById('quantity').value);
-            }
-
-            const newTx = {
-                id: Date.now(),
-                date: displayDateStr,
-                time: displayTimeStr,
-                rawTimestamp: now.getTime(),
-                tipe: targetTipe,
-                subTipe: subKategori,
-                ket,
-                nopol: nopolFinal,
-                pengorder: pengorderVal,
-                vendor: vendorVal,
-                qty
-            };
-
-            state.transactions.unshift(newTx);
-
-            if (rackingExtraLog) {
-                const extraTx = {
-                    id: Date.now() + 1,
-                    date: displayDateStr,
-                    time: displayTimeStr,
-                    rawTimestamp: rackingExtraLog.rawTimestamp,
-                    tipe: rackingExtraLog.tipe,
-                    subTipe: 'Hutang Racking Log',
-                    ket: rackingExtraLog.ket,
-                    nopol: rackingExtraLog.nopol,
-                    pengorder: '',
-                    vendor: '',
-                    qty: rackingExtraLog.qty,
-                    broughtQty: rackingExtraLog.broughtQty
-                };
-                state.transactions.unshift(extraTx);
-            }
-
-            saveData();
-            render();
-            document.getElementById('transaksi-form').reset();
-            onNopolSelectChange();
-            onPengirimSelectChange();
-            onQuantityDropdownChange();
-            updateFormLabels();
-            switchTab('dashboard');
-        }
-
-        function deleteTx(id) {
-            state.transactions = state.transactions.filter(t => t.id !== id);
-            saveData();
-            render();
-        }
-
-        function showDashboardReceiptDetail(type) {
-            const listReceipts = state.transactions.filter(t => t.tipe === 'receipt');
-            let filteredItems = [];
-            let titleText = '';
-
-            if (type === 'po') {
-                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Order');
-                titleText = 'Rincian Receipt: PO (Pallet Order)';
-            } else if (type === 'mdc') {
-                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking' && (t.nopol || '').toUpperCase().includes('MDC'));
-                titleText = 'Rincian Receipt: MDC';
-            } else if (type === 'mt') {
-                filteredItems = listReceipts.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking' && (t.nopol || '').toUpperCase().includes('MT'));
-                titleText = 'Rincian Receipt: MT';
-            }
-
-            let totalQty = filteredItems.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
-
-            document.getElementById('modal-title').innerText = titleText;
-            let html = `<p class="text-slate-200 font-semibold mb-3">Total Qty: <span class="text-emerald-400">${totalQty} pcs</span></p>`;
-            html += `<div class="space-y-1.5">`;
-
-            if (filteredItems.length === 0) {
-                html += `<p class="text-slate-500 italic">Belum ada data receipt untuk kategori ini.</p>`;
-            } else {
-                filteredItems.forEach((r, idx) => {
-                    const timeDisplay = r.time ? `${r.date}, ${r.time} WIB` : r.date;
-                    const labelInfo = r.ket || r.nopol || '-';
-                    const displayQ = r.broughtQty !== undefined ? r.broughtQty : r.qty;
-                    html += `
-                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
-                            <div>
-                                <span class="text-slate-400">#${idx+1} | 🕒 ${timeDisplay}</span>
-                                <p class="font-bold text-blue-300 mt-0.5">${labelInfo}</p>
-                            </div>
-                            <span class="font-bold text-emerald-400 text-sm">+${displayQ} pcs</span>
-                        </div>
-                    `;
-                });
-            }
-            html += `</div>`;
-
-            document.getElementById('modal-body').innerHTML = html;
-            document.getElementById('info-modal').classList.remove('hidden');
-        }
-
-        function closeInfoModal() {
-            document.getElementById('info-modal').classList.add('hidden');
-        }
-
-        function getOperationalDate(timestamp) {
-            const date = new Date(timestamp);
-            if (date.getHours() < 7) {
-                date.setDate(date.getDate() - 1);
-            }
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function getShiftKey(timestamp) {
-            return getOperationalDate(timestamp);
-        }
-
-        function render() {
-            document.getElementById('val-begin').innerText = state.beginning.toLocaleString('id-ID');
-            document.getElementById('input-begin').value = state.beginning;
-
-            let totalReceipt = 0;
-            let totalIssue = 0;
-            let totalOther = 0;
-
-            let countPoReceipt = 0;
-            let countMdcReceipt = 0;
-            let countMtReceipt = 0;
-
-            let orderMap = {};
-            state.transactions.forEach(t => {
-                if (t.tipe === 'order') {
-                    orderMap[t.ket] = (orderMap[t.ket] || 0) + t.qty;
-                }
-            });
-
-            state.transactions.forEach(t => {
-                if (t.tipe === 'receipt') {
-                    totalReceipt += t.qty;
-                    const qVal = t.broughtQty !== undefined ? t.broughtQty : t.qty;
-                    if (t.subTipe === 'Pallet Order') {
-                        countPoReceipt += qVal;
-                    } else if (t.subTipe === 'Pallet Balikan Mobil Racking') {
-                        const nopolStr = (t.nopol || '').toUpperCase();
-                        if (nopolStr.includes('MDC')) {
-                            countMdcReceipt += qVal;
-                        } else if (nopolStr.includes('MT')) {
-                            countMtReceipt += qVal;
-                        }
-                    }
-                }
-                if (t.tipe === 'issue') totalIssue += t.qty;
-                if (t.tipe === 'other') totalOther += t.qty;
-            });
-
-            let totalSisaOrder = 0;
-            Object.values(orderMap).forEach(sisa => {
-                totalSisaOrder += sisa;
-            });
-
-            // Update nilai di submenu dashboard card receipt
-            document.getElementById('dash-val-po').innerText = countPoReceipt;
-            document.getElementById('dash-val-mdc').innerText = countMdcReceipt;
-            document.getElementById('dash-val-mt').innerText = countMtReceipt;
-
-            const listEl = document.getElementById('daftar-transaksi');
-            listEl.innerHTML = '';
-
-            const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
-
-            if (currentRiwayatFilter === 'receipt') {
-                if (filteredTransactions.length === 0) {
-                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
-                } else {
-                    filteredTransactions.forEach(t => {
-                        listEl.appendChild(createCardItem(t));
-                    });
-                }
-            } else if (currentRiwayatFilter === 'order') {
-                let uniqueOrders = {};
-                filteredTransactions.forEach(t => {
-                    if (!uniqueOrders[t.ket]) {
-                        uniqueOrders[t.ket] = {
-                            ...t,
-                            totalQty: 0,
-                            entries: []
-                        };
-                    }
-                    uniqueOrders[t.ket].totalQty += t.qty;
-                    uniqueOrders[t.ket].entries.push(t);
-                });
-
-                const orderKeys = Object.keys(uniqueOrders);
-                if (orderKeys.length === 0) {
-                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
-                } else {
-                    orderKeys.forEach(poKey => {
-                        const item = uniqueOrders[poKey];
-                        listEl.appendChild(createGroupedOrderCard(item));
-                    });
-                }
-            } else if (currentRiwayatFilter === 'other') {
-                const listMdc = [];
-                const listMt = [];
-                const listAntarPlan = [];
-
-                filteredTransactions.forEach(t => {
-                    const textCheck = (t.nopol + ' ' + t.ket).toUpperCase();
-                    if (textCheck.includes('MDC')) {
-                        listMdc.push(t);
-                    } else if (textCheck.includes('MT')) {
-                        listMt.push(t);
-                    } else {
-                        listAntarPlan.push(t);
-                    }
-                });
-
-                const calculateColumnDebtTotal = (arr) => {
-                    let total = 0;
-                    arr.forEach(t => {
-                        if (t.ket.includes('Membayar Hutang Pallet')) {
-                            total -= t.qty; 
-                        } else if (t.ket.includes('Hutang Pallet')) {
-                            total += t.qty; 
-                        } else {
-                            total += t.qty;
-                        }
-                    });
-                    return total;
-                };
-
-                const totalMdc = calculateColumnDebtTotal(listMdc);
-                const totalMt = calculateColumnDebtTotal(listMt);
-                const totalAntarPlan = calculateColumnDebtTotal(listAntarPlan);
-
-                const generateDebtDescriptionHtml = (netTotal, entityName) => {
-                    let hutangPihakKeJayanti = 0;
-                    let hutangJayantiKePihak = 0;
-
-                    if (netTotal < 0) {
-                        hutangJayantiKePihak = Math.abs(netTotal);
-                    } else if (netTotal > 0) {
-                        hutangPihakKeJayanti = netTotal;
-                    }
-
-                    return `
-                        <div class="mt-1.5 space-y-0.5 text-[11px] font-medium border-t border-purple-900/40 pt-1.5 text-center">
-                            <p class="text-slate-300">${entityName} to Jayanti 2: <strong class="text-amber-400">${hutangPihakKeJayanti} pcs</strong></p>
-                            <p class="text-slate-300">Jayanti 2 to ${entityName}: <strong class="text-emerald-400">${hutangJayantiKePihak} pcs</strong></p>
-                        </div>
-                    `;
-                };
-
-                let sortedMdc = [...listMdc].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
-                let sortedMt = [...listMt].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
-                let sortedAntarPlan = [...listAntarPlan].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
-
-                let shiftCounterMap = {};
-                let itemShiftNumbers = {};
-                [...sortedMdc, ...sortedMt, ...sortedAntarPlan].forEach(t => {
-                    const sKey = getShiftKey(t.rawTimestamp || t.id);
-                    if (!shiftCounterMap[sKey]) {
-                        shiftCounterMap[sKey] = 1;
-                    } else {
-                        shiftCounterMap[sKey]++;
-                    }
-                    itemShiftNumbers[t.id] = shiftCounterMap[sKey];
-                });
-
-                const titleContainer = document.createElement('div');
-                titleContainer.className = "text-center mb-4";
-                titleContainer.innerHTML = `<h3 class="text-base font-black text-purple-400 tracking-wider uppercase">DATA PEMINJAMAN PALLET</h3>`;
-                listEl.appendChild(titleContainer);
-
-                const gridOther = document.createElement('div');
-                gridOther.className = "grid grid-cols-1 md:grid-cols-3 gap-4";
-
-                const colMdc = document.createElement('div');
-                colMdc.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colMdc.innerHTML = `
-                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
-                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🏢 MDC</div>
-                        ${generateDebtDescriptionHtml(totalMdc, 'MDC')}
-                    </div>
-                `;
-                if (listMdc.length === 0) {
-                    colMdc.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
-                } else {
-                    [...sortedMdc].reverse().forEach(t => colMdc.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
-                }
-
-                const colMt = document.createElement('div');
-                colMt.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colMt.innerHTML = `
-                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
-                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🚚 MT</div>
-                        ${generateDebtDescriptionHtml(totalMt, 'MT')}
-                    </div>
-                `;
-                if (listMt.length === 0) {
-                    colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
-                } else {
-                    [...sortedMt].reverse().forEach(t => colMt.reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)))); // fixed logic below
-                }
-                // (Correction on reverse loop for cleanliness)
-                colMt.innerHTML = `
-                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
-                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🚚 MT</div>
-                        ${generateDebtDescriptionHtml(totalMt, 'MT')}
-                    </div>
-                `;
-                if (listMt.length === 0) {
-                    colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
-                } else {
-                    [...sortedMt].reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
-                }
-
-                const colAntarPlan = document.createElement('div');
-                colAntarPlan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colAntarPlan.innerHTML = `
-                    <div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2">
-                        <div class="text-xs font-bold text-purple-400 uppercase text-center">🏭 ANTAR PLAN</div>
-                        ${generateDebtDescriptionHtml(totalAntarPlan, 'Antar Plan')}
-                    </div>
-                `;
-                if (listAntarPlan.length === 0) {
-                    colAntarPlan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
-                } else {
-                    [...sortedAntarPlan].reverse().forEach(t => colAntarPlan.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
-                }
-
-                gridOther.appendChild(colMdc);
-                gridOther.appendChild(colMt);
-                gridOther.appendChild(colAntarPlan);
-                listEl.appendChild(gridOther);
-
-            } else {
-                if (filteredTransactions.length === 0) {
-                    listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
-                } else {
-                    filteredTransactions.forEach(t => {
-                        listEl.appendChild(createCardItem(t));
-                    });
-                }
-            }
-
-            const endingBalance = state.beginning + totalReceipt - totalIssue;
-
-            document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
-            document.getElementById('val-order').innerText = totalSisaOrder.toLocaleString('id-ID');
-            document.getElementById('val-issue').innerText = totalIssue.toLocaleString('id-ID');
-            document.getElementById('val-ending').innerText = endingBalance.toLocaleString('id-ID');
-        }
-
-        function createGroupedOrderCard(t) {
-            let totalReceivedForPO = 0;
-            state.transactions.forEach(tx => {
-                if (tx.tipe === 'receipt' && tx.subTipe === 'Pallet Order' && tx.ket === t.ket) {
-                    totalReceivedForPO += tx.qty;
-                }
-            });
-
-            let receivedRatio = `${totalReceivedForPO}/${t.totalQty}`;
-            let isCompleted = totalReceivedForPO >= t.totalQty;
-            let statusBadge = isCompleted 
-                ? `<span class="bg-emerald-950 text-emerald-400 border border-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">ARRIVED</span>` 
-                : `<span class="bg-amber-950 text-amber-400 border border-amber-700 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">WAITING</span>`;
-
-            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
-
-            const card = document.createElement('div');
-            card.className = "p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
-            card.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-amber-950/60 text-amber-400 border border-amber-800">ORDER</span>
-                            <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
-                        </div>
-                        <p class="font-bold text-slate-200 mt-1">PO: ${t.ket} ${statusBadge}</p>
-                        <p class="text-xs text-slate-300">Pengorder: <span class="text-amber-400 font-semibold">${t.pengorder}</span></p>
-                        <p class="text-xs text-slate-300">Vendor: <span class="text-slate-100 font-semibold">${t.vendor}</span></p>
-                        <p class="text-xs text-slate-400 mt-1">Receipt Progress: <strong class="text-slate-200">${receivedRatio}</strong></p>
-                    </div>
-                    <div class="text-right">
-                        <span class="font-black text-base text-amber-400">+${t.totalQty}</span>
-                    </div>
-                </div>
-            `;
-            return card;
-        }
-
-        function createOtherCardItem(t, shiftNumber) {
-            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
-            let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
-
-            const card = document.createElement('div');
-            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase bg-purple-950/60 text-purple-400 border border-purple-800">OTHER</span>
-                        <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
-                    </div>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
-                    </div>
-                    <p class="font-bold text-slate-200 mt-1 text-xs">${t.ket}</p>
-                </div>
-                <div class="text-right flex items-center gap-3">
-                    <span class="font-black text-base text-purple-400">${displayQty >= 0 ? '+' : ''}${displayQty.toLocaleString('id-ID')} pcs</span>
-                    <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
-                </div>
-            `;
-            return card;
-        }
-
-        function createCardItem(t) {
-            let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
-            if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
-            else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
-            else if (t.tipe === 'issue') badgeColor = 'bg-rose-950/60 text-rose-400 border border-rose-800';
-            else if (t.tipe === 'other') badgeColor = 'bg-purple-950/60 text-purple-400 border border-purple-800';
-
-            const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
-
-            let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
-            let ketDisplay = `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>`;
-            let extraInfo = `${ketDisplay}${nopolDisplay}`;
-
-            let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
-
-            const card = document.createElement('div');
-            card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
-            card.innerHTML = `
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase ${badgeColor}">${t.tipe}</span>
-                        <span class="text-[10px] text-slate-400">🕒 ${timeDisplay}</span>
-                    </div>
-                    ${extraInfo}
-                </div>
-                <div class="text-right flex items-center gap-3">
-                    <span class="font-black text-base ${t.tipe === 'other' ? 'text-purple-400' : 'text-emerald-400'}">${displayQty >= 0 ? '+' : ''}${displayQty.toLocaleString('id-ID')} pcs</span>
-                    <button onclick="deleteTx(${t.id})" class="text-slate-500 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 rounded">Hapus</button>
-                </div>
-            `;
-            return card;
-        }
-
-        render();
-        selectSubmenu('receipt'); 
-    </script>
-</body>
-</html>
+<div class="max-w-5xl mx-auto p-4 md:p-6">
+<!-- Header -->
+<header class="mb-6 border-b border-slate-800 pb-4">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="text-xl md:text-2xl font-black tracking-wider text-amber-400">PALLET INVENTORY</h1>
+<p class="text-xs text-slate-400">Warehouse Finished Good Jayanti 2</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
+<button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg bg-blue-600 text-white transition">Dashboard</button>
+<button onclick="switchTab('transaksi')" id="btn-tab-transaksi" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Input Transaksi</button>
+<button onclick="switchTab('riwayat')" id="btn-tab-riwayat" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition">Riwayat</button>
+</div>
+</div>
+</header>
+
+<!-- Tab Dashboard -->
+<div id="section-dashboard" class="space-y-6">
+<!-- Ending Balance Highlight -->
+<div class="bg-gradient-to-r from-blue-900/60 to-slate-800 p-6 rounded-2xl border border-blue-500/30 shadow-xl relative overflow-hidden">
+<div class="absolute right-4 top-4 opacity-10 text-6xl font-bold">📦</div>
+<p class="text-xs text-blue-300 font-semibold tracking-wider uppercase">ENDING BALANCE (STOK AKHIR)</p>
+<div class="flex items-baseline gap-2 mt-1">
+<h2 class="text-4xl font-black text-white" id="val-ending">0</h2>
+<span class="text-sm text-slate-400">pcs</span>
+</div>
+</div>
+
+<!-- Kartu Metrik Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+<p class="text-[10px] text-slate-400 font-semibold uppercase">Beginning</p>
+<p class="text-xl font-bold text-slate-100 mt-1"><span id="val-begin">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+</div>
+<div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+<div class="flex justify-between items-start">
+<p class="text-[10px] text-emerald-400 font-semibold uppercase">Receipt</p>
+<button onclick="goToRiwayatCategory('receipt')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-emerald-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Receipt">i</button>
+</div>
+<p class="text-xl font-bold text-emerald-400 mt-1"><span id="val-receipt">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+</div>
+<div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+<div class="flex justify-between items-start">
+<p class="text-[10px] text-amber-400 font-semibold uppercase">Order</p>
+<button onclick="goToRiwayatCategory('order')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-amber-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Order">i</button>
+</div>
+<p class="text-xl font-bold text-amber-400 mt-1"><span id="val-order">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+</div>
+<div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 relative">
+<div class="flex justify-between items-start">
+<p class="text-[10px] text-rose-400 font-semibold uppercase">Issue</p>
+<button onclick="goToRiwayatCategory('issue')" class="w-5 h-5 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white text-slate-300 text-[10px] font-bold flex items-center justify-center transition" title="Lihat Riwayat Issue">i</button>
+</div>
+<p class="text-xl font-bold text-rose-400 mt-1"><span id="val-issue">0</span> <span class="text-xs text-slate-400">pcs</span></p>
+</div>
+</div>
+
+<!-- Atur Beginning Balance -->
+<div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-3">
+<div>
+<h3 class="text-sm font-bold text-slate-200">Atur Stock Awal (Beginning Balance)</h3>
+<p class="text-xs text-slate-400">Nilai stock awal dasar perhitungan sistem</p>
+</div>
+<div class="flex gap-2 w-full sm:w-auto">
+<input type="number" id="input-begin" inputmode="numeric" pattern="[0-9]*" placeholder="Jumlah Stock Awal" class="bg-slate-900 border border-slate-700 p-2 text-sm rounded-lg outline-none focus:border-blue-500 text-white w-full sm:w-40">
+<button onclick="setBeginningBalance()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 text-sm font-bold rounded-lg transition whitespace-nowrap">Simpan</button>
+</div>
+</div>
+</div>
+
+<!-- Tab Input Transaksi -->
+<div id="section-transaksi" class="space-y-6 hidden">
+<div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+<h2 class="text-lg font-bold text-slate-200 mb-4">Input Menu Transaksi Terpisah</h2>
+
+<!-- Pilihan Submenu Utama -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+<button type="button" onclick="selectSubmenu('receipt')" id="sub-receipt" class="p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500">
+<span>📥 Receipt</span>
+<span class="text-[10px] text-slate-400 font-normal">Tambah Stok Masuk</span>
+</button>
+<button type="button" onclick="selectSubmenu('order')" id="sub-order" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+<span>📋 Order</span>
+<span class="text-[10px] text-slate-400 font-normal">Tambah / Alokasi</span>
+</button>
+<button type="button" onclick="selectSubmenu('issue')" id="sub-issue" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+<span>📤 Issue</span>
+<span class="text-[10px] text-slate-400 font-normal">Kurang Stok Keluar</span>
+</button>
+<button type="button" onclick="selectSubmenu('other')" id="sub-other" class="p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1">
+<span>⚡ Other</span>
+<span class="text-[10px] text-slate-400 font-normal">Penyesuaian Lainnya</span>
+</button>
+</div>
+
+<!-- Dropdown khusus ketika menu Receipt dipilih -->
+<div id="receipt-dropdown-container" class="mb-4">
+<label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Receipt</label>
+<select id="receipt-sub-type" onchange="onReceiptSubChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+<option value="Pallet Order">1. Pallet Order</option>
+<option value="Pallet Balikan Mobil Racking">2. Pallet Balikan Mobil Racking</option>
+</select>
+</div>
+
+<!-- Form Aktif Berdasarkan Pilihan Kolom -->
+<form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
+<div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
+<span>Kategori Aktif Dipilih: <strong id="active-category-label" class="uppercase text-amber-400">RECEIPT</strong></span>
+<span id="active-effect-label" class="text-emerald-400 font-bold">(Menambah Stok)</span>
+</div>
+
+<!-- Input Keterangan / Nomor PO -->
+<div id="keterangan-container">
+<label id="label-keterangan" class="block text-xs font-medium text-slate-300 mb-1">Nomor PO</label>
+<input type="text" id="keterangan" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PO-88219" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+</div>
+
+<!-- Input Khusus Order (Nama Pengorder & Nama Vendor) -->
+<div id="order-extra-container" class="space-y-4 hidden">
+<div>
+<label class="block text-xs font-medium text-slate-300 mb-1">Nama Pengorder</label>
+<select id="order-pengorder" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+<option value="Bpk. Badruzaman/GDFG">Bpk. Badruzaman/GDFG</option>
+<option value="Bpk. Sanggar/GDPM">Bpk. Sanggar/GDPM</option>
+<option value="Bpk. Trio/GDRM">Bpk. Trio/GDRM</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-300 mb-1">Nama Vendor</label>
+<input type="text" id="order-vendor" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: PT. Vendor Pallet" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+</div>
+</div>
+
+<!-- Input Nomor Polisi -->
+<div id="nopol-container">
+<label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
+<input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+
+<div id="nopol-dropdown-wrapper" class="hidden space-y-2">
+<select id="nopol-select" onchange="onNopolSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+<option value="B 9799 BQA/RA">1. B 9799 BQA/RA</option>
+<option value="B 9927 BQA/RA">2. B 9927 BQA/RA</option>
+<option value="D 8147 VS">3. D 8147 VS</option>
+<option value="A 8403 XM/MJ">4. A 8403 XM/MJ</option>
+<option value="B 9888 CW/MJ">5. B 9888 CW/MJ</option>
+<option value="A 8255 ZU/OPS">6. A 8255 ZU/OPS</option>
+<option value="MANUAL">-- Ketik Manual Lainnya --</option>
+</select>
+
+<div id="manual-nopol-ekspedisi-box" class="space-y-2 hidden">
+<input type="text" id="nopol-dropdown-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nomor polisi manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+<input type="text" id="ekspedisi-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik nama ekspedisi..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
+</div>
+
+<div class="mt-3">
+<label class="block text-xs font-medium text-slate-300 mb-1">Pengirim</label>
+<select id="pengirim-select" onchange="onPengirimSelectChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white mb-2">
+<option value="/MDC">1. /MDC</option>
+<option value="/MT Balaraja">2. /MT Balaraja</option>
+<option value="/MT Cikupa">3. /MT Cikupa</option>
+<option value="/MT Tambun">4. /MT Tambun</option>
+<option value="MANUAL">-- Ketik Manual Lainnya --</option>
+</select>
+<input type="text" id="pengirim-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Ketik pengirim manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase hidden" style="text-transform: uppercase;">
+</div>
+</div>
+</div>
+
+<!-- Input Quantity -->
+<div>
+<label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
+<input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+
+<div id="quantity-dropdown-wrapper" class="space-y-2 hidden">
+<select id="quantity-dropdown" onchange="onQuantityDropdownChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+<option value="72">72 pcs (Membayar Hutang)</option>
+<option value="36">36 pcs (Standar)</option>
+<option value="0">0 pcs (Hutang Pallet)</option>
+<option value="MANUAL">-- Ketik Manual Lainnya --</option>
+</select>
+<input type="number" id="quantity-manual" inputmode="numeric" pattern="[0-9]*" placeholder="Ketik jumlah manual..." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white hidden">
+</div>
+</div>
+
+<button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition shadow-lg">Simpan Transaksi</button>
+</form>
+</div>
+</div>
+
+<!-- Tab Riwayat Transaksi -->
+<div id="section-riwayat" class="space-y-4 hidden">
+<div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+<h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
+
+<!-- Sub-Tab Navigasi Riwayat -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
+<button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
+📥 Receipt
+</button>
+<button onclick="switchRiwayatTab('order')" id="riwayat-tab-order" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+📋 Order
+</button>
+<button onclick="switchRiwayatTab('issue')" id="riwayat-tab-issue" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+📤 Issue
+</button>
+<button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
+⚡ Other
+</button>
+</div>
+
+<!-- Kontainer Daftar Transaksi per Tab -->
+<div id="daftar-transaksi" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"></div>
+</div>
+</div>
+</div>
+
+<!-- Modal Detail Info -->
+<div id="info-modal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4">
+<div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
+<div class="flex justify-between items-center border-b border-slate-700 pb-3">
+<h3 id="modal-title" class="text-sm font-bold text-amber-400 uppercase">Informasi Detail</h3>
+<button onclick="closeInfoModal()" class="text-slate-400 hover:text-white font-bold text-base px-2">✕</button>
+</div>
+<div id="modal-body" class="space-y-2 text-xs text-slate-300 max-h-60 overflow-y-auto pr-1"></div>
+<button onclick="closeInfoModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-xl font-bold text-xs transition">Tutup</button>
+</div>
+</div>
+
+<script>
+let currentSubmenu = 'receipt';
+let currentRiwayatFilter = 'receipt';
+
+let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v20')) || {
+beginning: 100,
+transactions: []
+};
+
+function saveData() {
+localStorage.setItem('pallet_state_jayanti2_v20', JSON.stringify(state));
+}
+
+function switchTab(tabName) {
+document.getElementById('section-dashboard').classList.add('hidden');
+document.getElementById('section-transaksi').classList.add('hidden');
+document.getElementById('section-riwayat').classList.add('hidden');
+
+document.getElementById('btn-tab-dashboard').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+document.getElementById('btn-tab-transaksi').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+document.getElementById('btn-tab-riwayat').className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700 transition";
+
+document.getElementById('section-' + tabName).classList.remove('hidden');
+document.getElementById('btn-tab-' + tabName).className = "px-4 py-2 rounded-lg bg-blue-600 text-white transition";
+}
+
+function goToRiwayatCategory(category) {
+switchTab('riwayat');
+switchRiwayatTab(category);
+}
+
+function switchRiwayatTab(category) {
+currentRiwayatFilter = category;
+const tabs = ['receipt', 'order', 'issue', 'other'];
+tabs.forEach(t => {
+const btn = document.getElementById('riwayat-tab-' + t);
+if (t === category) {
+if (t === 'receipt') {
+btn.className = "py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1";
+} else if (t === 'order') {
+btn.className = "py-2.5 px-3 rounded-xl border border-amber-500/50 bg-amber-950/40 text-amber-400 transition text-center flex items-center justify-center gap-1";
+} else if (t === 'issue') {
+btn.className = "py-2.5 px-3 rounded-xl border border-rose-500/50 bg-rose-950/40 text-rose-400 transition text-center flex items-center justify-center gap-1";
+} else if (t === 'other') {
+btn.className = "py-2.5 px-3 rounded-xl border border-purple-500/50 bg-purple-950/40 text-purple-400 transition text-center flex items-center justify-center gap-1";
+}
+} else {
+btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1";
+}
+});
+render();
+}
+
+function onNopolSelectChange() {
+const val = document.getElementById('nopol-select').value;
+const manualBox = document.getElementById('manual-nopol-ekspedisi-box');
+const manualNopol = document.getElementById('nopol-dropdown-manual');
+const manualEkspedisi = document.getElementById('ekspedisi-manual');
+
+if (val === 'MANUAL') {
+manualBox.classList.remove('hidden');
+manualNopol.required = true;
+manualEkspedisi.required = true;
+manualNopol.focus();
+} else {
+manualBox.classList.add('hidden');
+manualNopol.required = false;
+manualEkspedisi.required = false;
+manualNopol.value = '';
+manualEkspedisi.value = '';
+}
+}
+
+function onQuantityDropdownChange() {
+const val = document.getElementById('quantity-dropdown').value;
+const manualInput = document.getElementById('quantity-manual');
+if (val === 'MANUAL') {
+manualInput.classList.remove('hidden');
+manualInput.required = true;
+manualInput.focus();
+} else {
+manualInput.classList.add('hidden');
+manualInput.required = false;
+manualInput.value = '';
+}
+}
+
+function onPengirimSelectChange() {
+const val = document.getElementById('pengirim-select').value;
+const manualInput = document.getElementById('pengirim-manual');
+if (val === 'MANUAL') {
+manualInput.classList.remove('hidden');
+manualInput.required = true;
+manualInput.focus();
+} else {
+manualInput.classList.add('hidden');
+manualInput.required = false;
+manualInput.value = '';
+}
+}
+
+function updateFormLabels() {
+const ketContainer = document.getElementById('keterangan-container');
+const inputKet = document.getElementById('keterangan');
+const labelQty = document.getElementById('label-quantity');
+const nopolContainer = document.getElementById('nopol-container');
+const orderExtraContainer = document.getElementById('order-extra-container');
+const orderVendorInput = document.getElementById('order-vendor');
+const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+const nopolManualInput = document.getElementById('nopol-manual');
+const quantityInput = document.getElementById('quantity');
+const quantityDropdownWrapper = document.getElementById('quantity-dropdown-wrapper');
+const quantityManualInput = document.getElementById('quantity-manual');
+
+receiptDropdownContainer.classList.add('hidden');
+orderExtraContainer.classList.add('hidden');
+orderVendorInput.required = false;
+nopolContainer.classList.add('hidden');
+nopolManualInput.required = false;
+ketContainer.classList.remove('hidden');
+quantityInput.classList.remove('hidden');
+quantityInput.required = true;
+quantityDropdownWrapper.classList.add('hidden');
+quantityManualInput.required = false;
+
+if (currentSubmenu === 'receipt') {
+receiptDropdownContainer.classList.remove('hidden');
+nopolContainer.classList.remove('hidden');
+const subType = document.getElementById('receipt-sub-type').value;
+if (subType === 'Pallet Balikan Mobil Racking') {
+ketContainer.classList.add('hidden');
+inputKet.required = false;
+nopolManualInput.classList.add('hidden');
+nopolManualInput.required = false;
+document.getElementById('nopol-dropdown-wrapper').classList.remove('hidden');
+
+quantityInput.classList.add('hidden');
+quantityInput.required = false;
+quantityDropdownWrapper.classList.remove('hidden');
+} else {
+ketContainer.classList.remove('hidden');
+inputKet.required = true;
+inputKet.placeholder = "Contoh: PO-88219";
+document.getElementById('nopol-dropdown-wrapper').classList.add('hidden');
+nopolManualInput.classList.remove('hidden');
+nopolManualInput.required = true;
+nopolManualInput.placeholder = "Contoh: B 1234 XYZ";
+}
+labelQty.innerText = "Jumlah (pcs)";
+} else if (currentSubmenu === 'order') {
+orderExtraContainer.classList.remove('hidden');
+orderVendorInput.required = true;
+document.getElementById('label-keterangan').innerText = "Nomor PO";
+inputKet.placeholder = "Contoh: PO-99210";
+inputKet.required = true;
+labelQty.innerText = "Jumlah Order (pcs)";
+} else {
+document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
+inputKet.required = true;
+inputKet.placeholder = "Contoh: PO-88219 / Keterangan Muat";
+labelQty.innerText = "Quantity (Palet / Pcs)";
+}
+}
+
+function onReceiptSubChange() {
+updateFormLabels();
+}
+
+function selectSubmenu(sub) {
+currentSubmenu = sub;
+['receipt', 'order', 'issue', 'other'].forEach(s => {
+const btn = document.getElementById('sub-' + s);
+if(s === sub) {
+btn.className = "p-4 rounded-xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 font-bold text-sm transition flex flex-col items-center gap-1 ring-2 ring-emerald-500";
+} else {
+btn.className = "p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-bold text-sm transition flex flex-col items-center gap-1";
+}
+});
+
+document.getElementById('active-category-label').innerText = sub;
+const effectEl = document.getElementById('active-effect-label');
+if(sub === 'receipt') {
+effectEl.innerText = "(Menambah Stok / Mengurangi Sisa Order PO)";
+effectEl.className = "text-emerald-400 font-bold";
+} else if(sub === 'order') {
+effectEl.innerText = "(Mencatat Target/Sisa Order - Tidak Menambah Stok)";
+effectEl.className = "text-amber-400 font-bold";
+} else if(sub === 'other') {
+effectEl.innerText = "(Penyesuaian Lainnya)";
+effectEl.className = "text-purple-400 font-bold";
+} else {
+effectEl.innerText = "(Mengurangi Stok)";
+effectEl.className = "text-rose-400 font-bold";
+}
+
+updateFormLabels();
+}
+
+function setBeginningBalance() {
+const val = parseInt(document.getElementById('input-begin').value);
+if (isNaN(val)) return alert('Masukkan angka valid');
+state.beginning = val;
+saveData();
+render();
+document.getElementById('input-begin').value = '';
+alert('Beginning balance berhasil diperbarui!');
+}
+
+function submitTransaksi(e) {
+e.preventDefault();
+
+let qty = 0;
+let targetTipe = currentSubmenu;
+let subKategori = '';
+let ket = '';
+let nopolFinal = '';
+let pengorderVal = '';
+let vendorVal = '';
+let rackingExtraLog = null;
+
+const now = new Date();
+const displayDateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+const displayTimeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+if (currentSubmenu === 'receipt') {
+subKategori = document.getElementById('receipt-sub-type').value;
+if (subKategori === 'Pallet Balikan Mobil Racking') {
+const dropdownVal = document.getElementById('quantity-dropdown').value;
+if (dropdownVal === 'MANUAL') {
+qty = parseInt(document.getElementById('quantity-manual').value);
+} else {
+qty = parseInt(dropdownVal);
+}
+
+const selectNopol = document.getElementById('nopol-select').value;
+let isNopolManual = (selectNopol === 'MANUAL');
+let nopolPart = isNopolManual ? ${document.getElementById('nopol-dropdown-manual').value.trim().toUpperCase()}/${document.getElementById('ekspedisi-manual').value.trim().toUpperCase()} : selectNopol;
+
+let selectPengirim = document.getElementById('pengirim-select').value;
+let isPengirimManual = (selectPengirim === 'MANUAL');
+let pengirimPart = isPengirimManual ? (function(){ let m = document.getElementById('pengirim-manual').value.trim().toUpperCase(); return m.startsWith('/') ? m : '/' + m; })() : selectPengirim;
+
+nopolFinal = ${nopolPart}${pengirimPart};
+ket = Balikan Mobil Racking (${qty} pcs)`;
+
+const isNopolDropdown = !isNopolManual;
+const isPengirimDropdown = !isPengirimManual;
+
+if (isNopolDropdown && isPengirimDropdown) {
+if (qty < 36) {
+rackingExtraLog = {
+tipe: 'other',
+ket: Hutang Pallet (Racking${nopolFinal}), nopol: nopolFinal, qty: 36 - qty, broughtQty: qty, rawTimestamp: now.getTime() }; } else if (qty &gt; 36) { rackingExtraLog = { tipe: 'other', ket:Membayar Hutang Pallet (Racking ${nopolFinal}),
+nopol: nopolFinal,
+qty: qty - 36,
+broughtQty: qty,
+rawTimestamp: now.getTime()
+};
+}
+}
+} else {
+ket = document.getElementById('keterangan').value.toUpperCase();
+qty = parseInt(document.getElementById('quantity').value);
+
+const orderItem = state.transactions.find(t => t.tipe === 'order' && t.ket === ket);
+if (!orderItem) {
+alert('No PO tidak ada di data Order');
+return;
+}
+
+let totalReceivedSoFar = 0;
+state.transactions.forEach(t => {
+if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === ket) {
+totalReceivedSoFar += t.qty;
+}
+});
+
+let sisaOrder = orderItem.qty - totalReceivedSoFar;
+if (qty > sisaOrder) {
+alert('Kuantiti melebihi sisa order PO');
+return;
+}
+
+nopolFinal = document.getElementById('nopol-manual').value.toUpperCase();
+}
+} else if (currentSubmenu === 'order') {
+ket = document.getElementById('keterangan').value.toUpperCase();
+pengorderVal = document.getElementById('order-pengorder').value;
+vendorVal = document.getElementById('order-vendor').value.toUpperCase();
+qty = parseInt(document.getElementById('quantity').value);
+} else {
+ket = document.getElementById('keterangan').value.toUpperCase();
+qty = parseInt(document.getElementById('quantity').value);
+}
+
+const newTx = {
+id: Date.now(),
+date: displayDateStr,
+time: displayTimeStr,
+rawTimestamp: now.getTime(),
+tipe: targetTipe,
+subTipe: subKategori,
+ket,
+nopol: nopolFinal,
+pengorder: pengorderVal,
+vendor: vendorVal,
+qty
+};
+
+state.transactions.unshift(newTx);
+
+if (rackingExtraLog) {
+const extraTx = {
+id: Date.now() + 1,
+date: displayDateStr,
+time: displayTimeStr,
+rawTimestamp: rackingExtraLog.rawTimestamp,
+tipe: rackingExtraLog.tipe,
+subTipe: 'Hutang Racking Log',
+ket: rackingExtraLog.ket,
+nopol: rackingExtraLog.nopol,
+pengorder: '',
+vendor: '',
+qty: rackingExtraLog.qty,
+broughtQty: rackingExtraLog.broughtQty
+};
+state.transactions.unshift(extraTx);
+}
+
+saveData();
+render();
+document.getElementById('transaksi-form').reset();
+onNopolSelectChange();
+onPengirimSelectChange();
+onQuantityDropdownChange();
+updateFormLabels();
+switchTab('dashboard');
+}
+
+function deleteTx(id) {
+state.transactions = state.transactions.filter(t => t.id !== id);
+saveData();
+render();
+}
+
+function deleteTxByPo(poNumber) {
+if (confirm(Hapus seluruh order dan data terkait PO:${poNumber}?`)) {
+state.transactions = state.transactions.filter(t => !(t.ket === poNumber));
+saveData();
+render();
+}
+}
+
+function deleteReceiptGroup(poNumber) {
+if (confirm(Hapus seluruh data receipt untuk PO: ${poNumber}?`)) {
+state.transactions = state.transactions.filter(t => !(t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber));
+saveData();
+render();
+}
+}
+
+function showReceiptInfo(poNumber) {
+const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
+let totalRec = receipts.reduce((sum, r) => sum + r.qty, 0);
+
+document.getElementById('modal-title').innerText = Daftar Nopol Receipt PO:${poNumber}`;
+
+let html = <p class="text-slate-200 font-semibold mb-3"&gt;Total Qty Masuk: &lt;span class="text-emerald-400"&gt;${totalRec} pcs</span></p>; html +=
+`;
+
+if (receipts.length === 0) {
+html += <p class="text-slate-500 italic"&gt;Belum ada data nopol untuk PO ini.&lt;/p>;
+} else {
+receipts.forEach((r, idx) => {
+const timeDisplay = r.time ? ``${r.date}, latex
+{r.time} WIB` : r.date; html += ` &lt;div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs"&gt; &lt;div&gt; &lt;span class="text-slate-400"&gt;#
+
+{idx+1} | 🕒  {r.nopol || '-'}</p>
+</div>
+<span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs&lt;/span&gt; &lt;/div&gt;;
+});
+}
+html += </div>;
+
+document.getElementById('modal-body').innerHTML = html;
+document.getElementById('info-modal').classList.remove('hidden');
+}
+
+function showOrderInfo(poNumber) {
+const orderTx = state.transactions.find(t => t.tipe === 'order' && t.ket === poNumber);
+const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
+
+let totalRec = receipts.reduce((sum, r) => sum + r.qty, 0);
+let targetQty = orderTx ? orderTx.qty : 0;
+
+document.getElementById('modal-title').innerText = Info Status PO:${poNumber}`;
+
+let html = <p class="text-slate-200 font-semibold mb-2"&gt;Total Target Order: &lt;span class="text-amber-400"&gt;${targetQty} pcs</span></p>; html +=<p class="text-slate-200 font-semibold mb-3">Total Terealisasi: <span class="text-emerald-400">${totalRec} pcs&lt;/span&gt;&lt;/p>;
+html += <div class="border-t border-slate-700 pt-2"&gt;&lt;p class="text-xs font-bold text-slate-400 uppercase mb-2"&gt;Daftar Mobil Pengangkut (Receipt):&lt;/p>;
+
+if (receipts.length === 0) {
+html += <p class="text-slate-500 italic"&gt;Belum ada mobil yang melakukan receipt untuk PO ini.&lt;/p>;
+} else {
+html += <div class="space-y-1.5">;
+receipts.forEach((r, idx) => {
+const timeDisplay = r.time ? ${r.date}, ${r.time} WIB : r.date;
+html += &lt;div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs"&gt; &lt;div&gt; &lt;span class="text-slate-400"&gt;#${idx+1} | 🕒 ${timeDisplay}&lt;/span&gt; &lt;p class="font-bold text-blue-300 mt-0.5"&gt;No Pol: ${r.nopol || '-'}</p>
+</div>
+<span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs&lt;/span&gt; &lt;/div&gt;;
+});
+html += </div>;
+}
+html += </div>;
+
+document.getElementById('modal-body').innerHTML = html;
+document.getElementById('info-modal').classList.remove('hidden');
+}
+
+function closeInfoModal() {
+document.getElementById('info-modal').classList.add('hidden');
+}
+
+function getOperationalDate(timestamp) {
+const date = new Date(timestamp);
+if (date.getHours() < 7) {
+date.setDate(date.getDate() - 1);
+}
+const y = date.getFullYear();
+const m = String(date.getMonth() + 1).padStart(2, '0');
+const d = String(date.getDate()).padStart(2, '0');
+return ${y}-${m}-${d}`;
+}
+
+function getShiftKey(timestamp) {
+return getOperationalDate(timestamp);
+}
+
+function getOtherBoxLabel(qty) {
+if (qty === 0) return { text: 'nol', bg: 'bg-rose-600 border-rose-400' };
+if (qty > 36) return { text: 'double', bg: 'bg-purple-600 border-purple-400' };
+return { text: qty.toString(), bg: 'bg-blue-600 border-blue-400' };
+}
+
+function render() {
+document.getElementById('val-begin').innerText = state.beginning.toLocaleString('id-ID');
+document.getElementById('input-begin').value = state.beginning;
+
+let totalReceipt = 0;
+let totalIssue = 0;
+let totalOther = 0;
+
+let orderMap = {};
+state.transactions.forEach(t => {
+if (t.tipe === 'order') {
+orderMap[t.ket] = (orderMap[t.ket] || 0) + t.qty;
+}
+});
+
+state.transactions.forEach(t => {
+if (t.tipe === 'receipt' && t.subTipe === 'Pallet Order') {
+if (orderMap[t.ket] !== undefined) {
+orderMap[t.ket] -= t.qty;
+if (orderMap[t.ket] < 0) orderMap[t.ket] = 0;
+}
+}
+});
+
+let totalSisaOrder = 0;
+Object.values(orderMap).forEach(sisa => {
+totalSisaOrder += sisa;
+});
+
+const listEl = document.getElementById('daftar-transaksi');
+listEl.innerHTML = '';
+
+const filteredTransactions = state.transactions.filter(t => t.tipe === currentRiwayatFilter);
+
+if (currentRiwayatFilter === 'receipt') {
+const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
+const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
+
+let sortedRackingForShift = [...listRacking].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+let shiftCounterMap = {};
+let rackingItemShiftNumbers = {};
+
+sortedRackingForShift.forEach(t => {
+const sKey = getShiftKey(t.rawTimestamp || t.id);
+if (!shiftCounterMap[sKey]) {
+shiftCounterMap[sKey] = 1;
+} else {
+shiftCounterMap[sKey]++;
+}
+rackingItemShiftNumbers[t.id] = shiftCounterMap[sKey];
+});
+
+const gridContainer = document.createElement('div');
+gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+
+const colOrder = document.createElement('div');
+colOrder.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+colOrder.innerHTML = <div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center"&gt;📦 PALLET ORDER&lt;/div>;
+
+if (listOrder.length === 0) {
+colOrder.innerHTML += <p class="text-xs text-slate-500 text-center py-4"&gt;Belum ada data Pallet Order.&lt;/p>;
+} else {
+let groupedReceiptOrders = {};
+listOrder.forEach(t => {
+if (!groupedReceiptOrders[t.ket]) {
+groupedReceiptOrders[t.ket] = {
+po: t.ket,
+totalQty: 0,
+entries: []
+};
+}
+groupedReceiptOrders[t.ket].totalQty += t.qty;
+groupedReceiptOrders[t.ket].entries.push(t);
+});
+
+Object.values(groupedReceiptOrders).forEach(group => {
+colOrder.appendChild(createGroupedReceiptCard(group));
+});
+}
+
+const colRacking = document.createElement('div');
+colRacking.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+colRacking.innerHTML = <div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center"&gt;🚛 PALLET BALIKAN RACKING&lt;/div>;
+if (listRacking.length === 0) {
+colRacking.innerHTML += <p class="text-xs text-slate-500 text-center py-4"&gt;Belum ada data Balikan Racking.&lt;/p>;
+} else {
+let displaySortedRacking = [...listRacking].sort((a, b) => (b.rawTimestamp || b.id) - (a.rawTimestamp || a.id));
+displaySortedRacking.forEach(t => {
+const shiftNo = rackingItemShiftNumbers[t.id] || 1;
+colRacking.appendChild(createRackingCardItem(t, shiftNo));
+});
+}
+
+gridContainer.appendChild(colOrder);
+gridContainer.appendChild(colRacking);
+listEl.appendChild(gridContainer);
+
+} else if (currentRiwayatFilter === 'order') {
+let uniqueOrders = {};
+filteredTransactions.forEach(t => {
+if (!uniqueOrders[t.ket]) {
+uniqueOrders[t.ket] = {
+...t,
+totalQty: 0,
+entries: []
+};
+}
+uniqueOrders[t.ket].totalQty += t.qty;
+uniqueOrders[t.ket].entries.push(t);
+});
+
+const orderKeys = Object.keys(uniqueOrders);
+if (orderKeys.length === 0) {
+listEl.innerHTML = <p class="text-xs text-slate-400 text-center py-6"&gt;Belum ada riwayat transaksi untuk kategori ini.&lt;/p>;
+} else {
+orderKeys.forEach(poKey => {
+const item = uniqueOrders[poKey];
+listEl.appendChild(createGroupedOrderCard(item));
+});
+}
+
+} else if (currentRiwayatFilter === 'other') {
+const listMdc = [];
+const listMt = [];
+const listAntarPlan = [];
+
+filteredTransactions.forEach(t => {
+const textCheck = (t.nopol + ' ' + t.ket).toUpperCase();
+if (textCheck.includes('MDC')) {
+listMdc.push(t);
+} else if (textCheck.includes('MT')) {
+listMt.push(t);
+} else {
+listAntarPlan.push(t);
+}
+});
+
+const calculateColumnDebtTotal = (arr) => {
+let total = 0;
+arr.forEach(t => {
+if (t.ket.includes('Membayar Hutang Pallet')) {
+total -= t.qty;
+} else if (t.ket.includes('Hutang Pallet')) {
+total += t.qty;
+} else {
+total += t.qty;
+}
+});
+return total;
+};
+
+const totalMdc = calculateColumnDebtTotal(listMdc);
+const totalMt = calculateColumnDebtTotal(listMt);
+const totalAntarPlan = calculateColumnDebtTotal(listAntarPlan);
+
+const generateDebtDescriptionHtml = (netTotal, entityName) => {
+let hutangPihakKeJayanti = 0;
+let hutangJayantiKePihak = 0;
+
+if (netTotal < 0) {
+hutangJayantiKePihak = Math.abs(netTotal);
+} else if (netTotal > 0) {
+hutangPihakKeJayanti = netTotal;
+}
+
+return &lt;div class="mt-1.5 space-y-0.5 text-[11px] font-medium border-t border-purple-900/40 pt-1.5 text-center"&gt; &lt;p class="text-slate-300"&gt;${entityName} to Jayanti 2: <strong class="text-amber-400"> {entityName}: <strong class="text-emerald-400">${hutangJayantiKePihak} pcs&lt;/strong&gt;&lt;/p&gt; &lt;/div&gt;;
+};
+
+let sortedMdc = [...listMdc].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+let sortedMt = [...listMt].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+let sortedAntarPlan = [...listAntarPlan].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
+
+let shiftCounterMap = {};
+let itemShiftNumbers = {};
+[...sortedMdc, ...sortedMt, ...sortedAntarPlan].forEach(t => {
+const sKey = getShiftKey(t.rawTimestamp || t.id);
+if (!shiftCounterMap[sKey]) {
+shiftCounterMap[sKey] = 1;
+} else {
+shiftCounterMap[sKey]++;
+}
+itemShiftNumbers[t.id] = shiftCounterMap[sKey];
+});
+
+const titleContainer = document.createElement('div');
+titleContainer.className = "text-center mb-4";
+titleContainer.innerHTML = <h3 class="text-base font-black text-purple-400 tracking-wider uppercase"&gt;DATA PEMINJAMAN PALLET&lt;/h3>;
+listEl.appendChild(titleContainer);
+
+const gridOther = document.createElement('div');
+gridOther.className = "grid grid-cols-1 md:grid-cols-3 gap-4";
+
+const colMdc = document.createElement('div');
+colMdc.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+colMdc.innerHTML = &lt;div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2"&gt; &lt;div class="text-xs font-bold text-purple-400 uppercase text-center"&gt;🏢 MDC&lt;/div&gt;${generateDebtDescriptionHtml(totalMdc, 'MDC')}
+</div>
+; if (listMdc.length === 0) { colMdc.innerHTML +=<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
+} else {
+[...sortedMdc].reverse().forEach(t => colMdc.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+}
+
+const colMt = document.createElement('div');
+colMt.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+colMt.innerHTML = &lt;div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2"&gt; &lt;div class="text-xs font-bold text-purple-400 uppercase text-center"&gt;🚚 MT&lt;/div&gt; ${generateDebtDescriptionHtml(totalMt, 'MT')}
+</div>
+; if (listMt.length === 0) { colMt.innerHTML +=<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
+} else {
+[...sortedMt].reverse().forEach(t => colMt.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+}
+
+const colAntarPlan = document.createElement('div');
+colAntarPlan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+colAntarPlan.innerHTML = &lt;div class="bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2"&gt; &lt;div class="text-xs font-bold text-purple-400 uppercase text-center"&gt;🏭 ANTAR PLAN&lt;/div&gt;${generateDebtDescriptionHtml(totalAntarPlan, 'Antar Plan')}
+</div>
+; if (listAntarPlan.length === 0) { colAntarPlan.innerHTML +=<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
+} else {
+[...sortedAntarPlan].reverse().forEach(t => colAntarPlan.appendChild(createOtherCardItem(t, itemShiftNumbers[t.id] || 1)));
+}
+
+gridOther.appendChild(colMdc);
+gridOther.appendChild(colMt);
+gridOther.appendChild(colAnta
