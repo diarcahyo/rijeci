@@ -115,6 +115,15 @@
                     </select>
                 </div>
 
+                <!-- Dropdown khusus ketika menu Issue dipilih -->
+                <div id="issue-dropdown-container" class="mb-4 hidden">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Pilih Jenis Issue</label>
+                    <select id="issue-sub-type" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
+                        <option value="Kebutuhan Produksi">1. Kebutuhan Produksi</option>
+                        <option value="Penjualan Patahan Pallet Kayu">2. Penjualan Patahan Pallet Kayu</option>
+                    </select>
+                </div>
+
                 <!-- Form Aktif Berdasarkan Pilihan Kolom -->
                 <form id="transaksi-form" onsubmit="submitTransaksi(event)" class="space-y-4 border-t border-slate-700 pt-4">
                     <div class="p-3 bg-blue-950/40 border border-blue-900/50 rounded-xl text-xs text-blue-300 flex justify-between items-center">
@@ -145,7 +154,7 @@
                     </div>
 
                     <!-- Input Nomor Polisi -->
-                    <div id="nopol-container">
+                    <div id="nopol-container" class="hidden">
                         <label class="block text-xs font-medium text-slate-300 mb-1">Nomor Polisi (No Pol)</label>
                         <input type="text" id="nopol-manual" autocapitalize="characters" oninput="this.value = this.value.toUpperCase()" placeholder="Contoh: B 1234 XYZ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white uppercase" style="text-transform: uppercase;">
                         
@@ -243,13 +252,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v20')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v21')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v20', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v21', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -348,12 +357,14 @@
             const orderExtraContainer = document.getElementById('order-extra-container');
             const orderVendorInput = document.getElementById('order-vendor');
             const receiptDropdownContainer = document.getElementById('receipt-dropdown-container');
+            const issueDropdownContainer = document.getElementById('issue-dropdown-container');
             const nopolManualInput = document.getElementById('nopol-manual');
             const quantityInput = document.getElementById('quantity');
             const quantityDropdownWrapper = document.getElementById('quantity-dropdown-wrapper');
             const quantityManualInput = document.getElementById('quantity-manual');
 
             receiptDropdownContainer.classList.add('hidden');
+            issueDropdownContainer.classList.add('hidden');
             orderExtraContainer.classList.add('hidden');
             orderVendorInput.required = false;
             nopolContainer.classList.add('hidden');
@@ -395,6 +406,12 @@
                 inputKet.placeholder = "Contoh: PO-99210";
                 inputKet.required = true;
                 labelQty.innerText = "Jumlah Order (pcs)";
+            } else if (currentSubmenu === 'issue') {
+                issueDropdownContainer.classList.remove('hidden');
+                document.getElementById('label-keterangan').innerText = "Keterangan Tambahan (Opsional)";
+                inputKet.placeholder = "Contoh: Catatan tambahan pengeluaran...";
+                inputKet.required = false;
+                labelQty.innerText = "Jumlah (pcs)";
             } else {
                 document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
                 inputKet.required = true;
@@ -537,6 +554,11 @@
                 ket = document.getElementById('keterangan').value.toUpperCase();
                 pengorderVal = document.getElementById('order-pengorder').value;
                 vendorVal = document.getElementById('order-vendor').value.toUpperCase();
+                qty = parseInt(document.getElementById('quantity').value);
+            } else if (currentSubmenu === 'issue') {
+                subKategori = document.getElementById('issue-sub-type').value;
+                const userKet = document.getElementById('keterangan').value.trim().toUpperCase();
+                ket = userKet ? `${subKategori} - ${userKet}` : subKategori;
                 qty = parseInt(document.getElementById('quantity').value);
             } else {
                 ket = document.getElementById('keterangan').value.toUpperCase();
@@ -1135,7 +1157,7 @@
                     ${extraInfo}
                 </div>
                 <div class="text-right flex items-center gap-2 shrink-0">
-                    <span class="font-black text-sm md:text-base ${t.tipe === 'other' ? 'text-purple-400' : 'text-emerald-400'}">${displayQty >= 0 ? '+' : ''}${displayQty.toLocaleString('id-ID')} pcs</span>
+                    <span class="font-black text-sm md:text-base ${t.tipe === 'other' ? 'text-purple-400' : 'text-rose-400'}">-${Math.abs(displayQty).toLocaleString('id-ID')} pcs</span>
                     <button onclick="deleteTx(${t.id})" class="text-slate-400 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded transition">Hapus</button>
                 </div>
             `;
