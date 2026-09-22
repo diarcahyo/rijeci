@@ -205,8 +205,8 @@
             <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
                 <h2 class="text-lg font-bold text-slate-200 mb-4">Riwayat Seluruh Transaksi</h2>
                 
-                <!-- Sub-Tab Navigasi Riwayat -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 font-bold text-xs">
+                <!-- Sub-Tab Navigasi Riwayat Utama -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 font-bold text-xs">
                     <button onclick="switchRiwayatTab('receipt')" id="riwayat-tab-receipt" class="py-2.5 px-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-400 transition text-center flex items-center justify-center gap-1">
                         📥 Receipt
                     </button>
@@ -218,6 +218,19 @@
                     </button>
                     <button onclick="switchRiwayatTab('other')" id="riwayat-tab-other" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1">
                         ⚡ Other
+                    </button>
+                </div>
+
+                <!-- Sub-Menu Khusus di dalam Receipt (PO, MDC, MT) -->
+                <div id="receipt-subnav-container" class="grid grid-cols-3 gap-2 mb-6 font-bold text-xs">
+                    <button onclick="switchReceiptSubTab('po')" id="receipt-sub-po" class="py-2 px-3 rounded-lg border border-emerald-500/50 bg-emerald-900/40 text-emerald-300 transition text-center">
+                        📦 PO
+                    </button>
+                    <button onclick="switchReceiptSubTab('mdc')" id="receipt-sub-mdc" class="py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center">
+                        🏢 MDC
+                    </button>
+                    <button onclick="switchReceiptSubTab('mt')" id="receipt-sub-mt" class="py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center">
+                        🚛 MT
                     </button>
                 </div>
 
@@ -242,6 +255,7 @@
     <script>
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
+        let currentReceiptSubTab = 'po'; // 'po', 'mdc', atau 'mt'
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v20')) || {
             beginning: 100,
@@ -287,6 +301,27 @@
                     }
                 } else {
                     btn.className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition text-center flex items-center justify-center gap-1";
+                }
+            });
+
+            const receiptSubnav = document.getElementById('receipt-subnav-container');
+            if (category === 'receipt') {
+                receiptSubnav.classList.remove('hidden');
+            } else {
+                receiptSubnav.classList.add('hidden');
+            }
+
+            render();
+        }
+
+        function switchReceiptSubTab(subTab) {
+            currentReceiptSubTab = subTab;
+            ['po', 'mdc', 'mt'].forEach(st => {
+                const btn = document.getElementById('receipt-sub-' + st);
+                if (st === subTab) {
+                    btn.className = "py-2 px-3 rounded-lg border border-emerald-500/50 bg-emerald-900/40 text-emerald-300 transition text-center";
+                } else {
+                    btn.className = "py-2 px-3 rounded-lg border border-slate-700 bg-slate-900 text-slate-400 transition text-center";
                 }
             });
             render();
@@ -640,6 +675,33 @@
             document.getElementById('info-modal').classList.remove('hidden');
         }
 
+        function showGenericInfoModal(title, items, totalQty) {
+            document.getElementById('modal-title').innerText = title;
+            let html = `<p class="text-slate-200 font-semibold mb-3">Total Keseluruhan Receipt: <span class="text-emerald-400">${totalQty} pcs</span></p>`;
+            html += `<div class="space-y-1.5">`;
+
+            if (items.length === 0) {
+                html += `<p class="text-slate-500 italic">Belum ada data transaksi.</p>`;
+            } else {
+                items.forEach((r, idx) => {
+                    const timeDisplay = r.time ? `${r.date}, ${r.time} WIB` : r.date;
+                    html += `
+                        <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
+                            <div>
+                                <span class="text-slate-400">#${idx+1} | 🕒 ${timeDisplay}</span>
+                                <p class="font-bold text-blue-300 mt-0.5">${r.ket || r.nopol || '-'}</p>
+                            </div>
+                            <span class="font-bold text-emerald-400 text-sm">+${r.qty} pcs</span>
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>`;
+
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('info-modal').classList.remove('hidden');
+        }
+
         function showOrderInfo(poNumber) {
             const orderTx = state.transactions.find(t => t.tipe === 'order' && t.ket === poNumber);
             const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
@@ -696,12 +758,6 @@
             return getOperationalDate(timestamp);
         }
 
-        function getOtherBoxLabel(qty) {
-            if (qty === 0) return { text: 'nol', bg: 'bg-rose-600 border-rose-400' };
-            if (qty > 36) return { text: 'double', bg: 'bg-purple-600 border-purple-400' };
-            return { text: qty.toString(), bg: 'bg-blue-600 border-blue-400' };
-        }
-
         function render() {
             document.getElementById('val-begin').innerText = state.beginning.toLocaleString('id-ID');
             document.getElementById('input-begin').value = state.beginning;
@@ -740,64 +796,93 @@
                 const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
                 const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
 
-                let sortedRackingForShift = [...listRacking].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
-                let shiftCounterMap = {};
-                let rackingItemShiftNumbers = {};
-
-                sortedRackingForShift.forEach(t => {
-                    const sKey = getShiftKey(t.rawTimestamp || t.id);
-                    if (!shiftCounterMap[sKey]) {
-                        shiftCounterMap[sKey] = 1;
+                // Filter berdasarkan sub-tab PO, MDC, MT yang diklik di dalam receipt
+                if (currentReceiptSubTab === 'po') {
+                    if (listOrder.length === 0) {
+                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat Pallet Order.</p>`;
                     } else {
-                        shiftCounterMap[sKey]++;
+                        let groupedReceiptOrders = {};
+                        listOrder.forEach(t => {
+                            if (!groupedReceiptOrders[t.ket]) {
+                                groupedReceiptOrders[t.ket] = {
+                                    po: t.ket,
+                                    totalQty: 0,
+                                    entries: []
+                                };
+                            }
+                            groupedReceiptOrders[t.ket].totalQty += t.qty;
+                            groupedReceiptOrders[t.ket].entries.push(t);
+                        });
+
+                        // Tombol Info Summary Total PO
+                        let totalPoQty = listOrder.reduce((sum, item) => sum + item.qty, 0);
+                        const summaryCard = document.createElement('div');
+                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
+                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt PO', listOrder, totalPoQty);
+                        summaryCard.innerHTML = `
+                            <div>
+                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan PO</span>
+                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt PO</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-base font-black text-emerald-400">+${totalPoQty} pcs</span>
+                            </div>
+                        `;
+                        listEl.appendChild(summaryCard);
+
+                        Object.values(groupedReceiptOrders).forEach(group => {
+                            listEl.appendChild(createGroupedReceiptCard(group));
+                        });
                     }
-                    rackingItemShiftNumbers[t.id] = shiftCounterMap[sKey];
-                });
+                } else if (currentReceiptSubTab === 'mdc') {
+                    const listMdcReceipts = listRacking.filter(t => (t.nopol || '').toUpperCase().includes('MDC'));
+                    if (listMdcReceipts.length === 0) {
+                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat receipt MDC.</p>`;
+                    } else {
+                        let totalMdcQty = listMdcReceipts.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
+                        const summaryCard = document.createElement('div');
+                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
+                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt MDC', listMdcReceipts, totalMdcQty);
+                        summaryCard.innerHTML = `
+                            <div>
+                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan MDC</span>
+                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt MDC</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-base font-black text-emerald-400">+${totalMdcQty} pcs</span>
+                            </div>
+                        `;
+                        listEl.appendChild(summaryCard);
 
-                const gridContainer = document.createElement('div');
-                gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+                        listMdcReceipts.forEach(t => {
+                            listEl.appendChild(createRackingCardItem(t, 1));
+                        });
+                    }
+                } else if (currentReceiptSubTab === 'mt') {
+                    const listMtReceipts = listRacking.filter(t => (t.nopol || '').toUpperCase().includes('MT'));
+                    if (listMtReceipts.length === 0) {
+                        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat receipt MT.</p>`;
+                    } else {
+                        let totalMtQty = listMtReceipts.reduce((sum, item) => sum + (item.broughtQty || item.qty), 0);
+                        const summaryCard = document.createElement('div');
+                        summaryCard.className = "bg-slate-900 p-3.5 rounded-xl border border-emerald-500/40 flex justify-between items-center mb-3 cursor-pointer hover:bg-slate-800 transition";
+                        summaryCard.onclick = () => showGenericInfoModal('Rincian Total Receipt MT', listMtReceipts, totalMtQty);
+                        summaryCard.innerHTML = `
+                            <div>
+                                <span class="text-[10px] text-emerald-400 font-bold uppercase">Ringkasan MT</span>
+                                <p class="text-sm font-bold text-slate-200">Klik untuk melihat seluruh rincian receipt MT</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-base font-black text-emerald-400">+${totalMtQty} pcs</span>
+                            </div>
+                        `;
+                        listEl.appendChild(summaryCard);
 
-                const colOrder = document.createElement('div');
-                colOrder.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colOrder.innerHTML = `<div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center">📦 PALLET ORDER</div>`;
-                
-                if (listOrder.length === 0) {
-                    colOrder.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Pallet Order.</p>`;
-                } else {
-                    let groupedReceiptOrders = {};
-                    listOrder.forEach(t => {
-                        if (!groupedReceiptOrders[t.ket]) {
-                            groupedReceiptOrders[t.ket] = {
-                                po: t.ket,
-                                totalQty: 0,
-                                entries: []
-                            };
-                        }
-                        groupedReceiptOrders[t.ket].totalQty += t.qty;
-                        groupedReceiptOrders[t.ket].entries.push(t);
-                    });
-
-                    Object.values(groupedReceiptOrders).forEach(group => {
-                        colOrder.appendChild(createGroupedReceiptCard(group));
-                    });
+                        listMtReceipts.forEach(t => {
+                            listEl.appendChild(createRackingCardItem(t, 1));
+                        });
+                    }
                 }
-
-                const colRacking = document.createElement('div');
-                colRacking.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
-                colRacking.innerHTML = `<div class="text-xs font-bold text-emerald-400 uppercase bg-emerald-950/40 px-3 py-2 rounded-lg border border-emerald-900/60 mb-2 text-center">🚛 PALLET BALIKAN RACKING</div>`;
-                if (listRacking.length === 0) {
-                    colRacking.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Balikan Racking.</p>`;
-                } else {
-                    let displaySortedRacking = [...listRacking].sort((a, b) => (b.rawTimestamp || b.id) - (a.rawTimestamp || a.id));
-                    displaySortedRacking.forEach(t => {
-                        const shiftNo = rackingItemShiftNumbers[t.id] || 1;
-                        colRacking.appendChild(createRackingCardItem(t, shiftNo));
-                    });
-                }
-
-                gridContainer.appendChild(colOrder);
-                gridContainer.appendChild(colRacking);
-                listEl.appendChild(gridContainer);
 
             } else if (currentRiwayatFilter === 'order') {
                 let uniqueOrders = {};
@@ -1021,11 +1106,10 @@
                     </div>
                     
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="bg-blue-600 border border-blue-400 text-white font-black text-xs px-2 py-0.5 rounded-md shadow-sm uppercase">${shiftNumber}</span>
                         <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
                     </div>
 
-                    <p class="text-[11px] text-slate-400 mt-1">Balikan Mobil Racking (${displayQty} pcs)</p>
+                    <p class="text-[11px] text-slate-400 mt-1">${t.ket || 'Balikan Racking'}</p>
                 </div>
                 <div class="text-right flex items-center gap-3">
                     <span class="font-black text-base text-emerald-400">+${displayQty.toLocaleString('id-ID')} pcs</span>
@@ -1083,7 +1167,6 @@
         function createOtherCardItem(t, shiftNumber) {
             const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
             let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
-            const boxInfo = getOtherBoxLabel(displayQty);
 
             const card = document.createElement('div');
             card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
@@ -1095,7 +1178,6 @@
                     </div>
 
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="${boxInfo.bg} text-white font-black text-xs px-2 py-0.5 rounded-md shadow-sm uppercase">${boxInfo.text}</span>
                         <span class="text-sm font-bold text-blue-300">${t.nopol || '-'}</span>
                     </div>
 
