@@ -457,7 +457,7 @@
             let nopolFinal = '';
             let pengorderVal = '';
             let vendorVal = '';
-            let rackingExtraLog = null; // Menyimpan info tambahan untuk tab Other jika rancing <36 atau >36
+            let rackingExtraLog = null;
 
             if (currentSubmenu === 'receipt') {
                 subKategori = document.getElementById('receipt-sub-type').value;
@@ -477,7 +477,6 @@
 
                     ket = `Balikan Mobil Racking (${qty} pcs)`;
 
-                    // Logika pengecekan hutang/membayar hutang untuk Racking
                     if (qty < 36) {
                         rackingExtraLog = {
                             tipe: 'other',
@@ -547,7 +546,6 @@
 
             state.transactions.unshift(newTx);
 
-            // Jika ada extra log untuk other (hutang/membayar hutang racking), masukkan ke array transactions juga
             if (rackingExtraLog) {
                 const extraTx = {
                     id: Date.now() + 1,
@@ -771,6 +769,61 @@
                     });
                 }
 
+            } else if (currentRiwayatFilter === 'other') {
+                // Pemisahan 3 kotak: MDC, MT, dan Antar Plan
+                const listMdc = [];
+                const listMt = [];
+                const listAntarPlan = [];
+
+                filteredTransactions.forEach(t => {
+                    const textCheck = (t.nopol + ' ' + t.ket).toUpperCase();
+                    if (textCheck.includes('MDC')) {
+                        listMdc.push(t);
+                    } else if (textCheck.includes('MT')) {
+                        listMt.push(t);
+                    } else {
+                        listAntarPlan.push(t);
+                    }
+                });
+
+                const gridOther = document.createElement('div');
+                gridOther.className = "grid grid-cols-1 md:grid-cols-3 gap-4";
+
+                // Kotak MDC
+                const colMdc = document.createElement('div');
+                colMdc.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                colMdc.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center">🏢 MDC</div>`;
+                if (listMdc.length === 0) {
+                    colMdc.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MDC.</p>`;
+                } else {
+                    listMdc.forEach(t => colMdc.appendChild(createCardItem(t)));
+                }
+
+                // Kotak MT
+                const colMt = document.createElement('div');
+                colMt.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                colMt.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center">🚚 MT</div>`;
+                if (listMt.length === 0) {
+                    colMt.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data MT.</p>`;
+                } else {
+                    listMt.forEach(t => colMt.appendChild(createCardItem(t)));
+                }
+
+                // Kotak Antar Plan
+                const colAntarPlan = document.createElement('div');
+                colAntarPlan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
+                colAntarPlan.innerHTML = `<div class="text-xs font-bold text-purple-400 uppercase bg-purple-950/40 px-3 py-2 rounded-lg border border-purple-900/60 mb-2 text-center">🏭 ANTAR PLAN</div>`;
+                if (listAntarPlan.length === 0) {
+                    colAntarPlan.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Antar Plan.</p>`;
+                } else {
+                    listAntarPlan.forEach(t => colAntarPlan.appendChild(createCardItem(t)));
+                }
+
+                gridOther.appendChild(colMdc);
+                gridOther.appendChild(colMt);
+                gridOther.appendChild(colAntarPlan);
+                listEl.appendChild(gridOther);
+
             } else {
                 if (filteredTransactions.length === 0) {
                     listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada riwayat transaksi untuk kategori ini.</p>`;
@@ -787,7 +840,7 @@
                 if (t.tipe === 'other') totalOther += t.qty;
             });
 
-            const endingBalance = state.beginning + totalReceipt - totalIssue; // Other tidak mengurangi/menambah ending balance secara langsung kecuali murni penyesuaian jika diperlukan, atau ikuti logika sebelumnya (other tidak mengurangi ending balance secara finansial stok fisik kecuali issue/receipt).
+            const endingBalance = state.beginning + totalReceipt - totalIssue;
 
             document.getElementById('val-receipt').innerText = totalReceipt.toLocaleString('id-ID');
             document.getElementById('val-order').innerText = totalSisaOrder.toLocaleString('id-ID');
@@ -874,7 +927,6 @@
         }
 
         function createCardItem(t) {
-            const isAdd = (t.tipe === 'receipt' || t.tipe === 'order');
             let badgeColor = 'bg-blue-900/50 text-blue-300 border border-blue-700';
             if (t.tipe === 'receipt') badgeColor = 'bg-emerald-950/60 text-emerald-400 border border-emerald-800';
             else if (t.tipe === 'order') badgeColor = 'bg-amber-950/60 text-amber-400 border border-amber-800';
