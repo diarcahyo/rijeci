@@ -191,7 +191,12 @@
                     <!-- Input Quantity -->
                     <div>
                         <label id="label-quantity" class="block text-xs font-medium text-slate-300 mb-1">Jumlah (pcs)</label>
-                        <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                        <div class="relative">
+                            <input type="number" id="quantity" inputmode="numeric" pattern="[0-9]*" placeholder="0" oninput="onQuantityInputLive()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white" required>
+                            <div id="patahan-conversion-hint" class="hidden absolute right-3 top-3 text-xs text-amber-400 font-semibold bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
+                                = <span id="hint-pcs-val">0</span> pcs pallet
+                            </div>
+                        </div>
                         
                         <div id="quantity-dropdown-wrapper" class="space-y-2 hidden">
                             <select id="quantity-dropdown" onchange="onQuantityDropdownChange()" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm outline-none focus:border-blue-500 text-white">
@@ -252,13 +257,13 @@
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
 
-        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v22')) || {
+        let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v23')) || {
             beginning: 100,
             transactions: []
         };
 
         function saveData() {
-            localStorage.setItem('pallet_state_jayanti2_v22', JSON.stringify(state));
+            localStorage.setItem('pallet_state_jayanti2_v23', JSON.stringify(state));
         }
 
         function switchTab(tabName) {
@@ -349,6 +354,17 @@
             }
         }
 
+        function onQuantityInputLive() {
+            if (currentSubmenu === 'issue') {
+                const issueSub = document.getElementById('issue-sub-type').value;
+                if (issueSub === 'Penjualan Patahan Pallet Kayu') {
+                    const kgVal = parseFloat(document.getElementById('quantity').value) || 0;
+                    const calculatedPcs = Math.ceil(kgVal / 25);
+                    document.getElementById('hint-pcs-val').innerText = calculatedPcs;
+                }
+            }
+        }
+
         function updateFormLabels() {
             const ketContainer = document.getElementById('keterangan-container');
             const inputKet = document.getElementById('keterangan');
@@ -362,6 +378,7 @@
             const quantityInput = document.getElementById('quantity');
             const quantityDropdownWrapper = document.getElementById('quantity-dropdown-wrapper');
             const quantityManualInput = document.getElementById('quantity-manual');
+            const hintContainer = document.getElementById('patahan-conversion-hint');
 
             receiptDropdownContainer.classList.add('hidden');
             issueDropdownContainer.classList.add('hidden');
@@ -374,6 +391,7 @@
             quantityInput.required = true;
             quantityDropdownWrapper.classList.add('hidden');
             quantityManualInput.required = false;
+            hintContainer.classList.add('hidden');
 
             if (currentSubmenu === 'receipt') {
                 receiptDropdownContainer.classList.remove('hidden');
@@ -412,13 +430,22 @@
                 if (issueSub === 'Kebutuhan Produksi') {
                     ketContainer.classList.add('hidden');
                     inputKet.required = false;
+                    labelQty.innerText = "Jumlah (pcs)";
+                } else if (issueSub === 'Penjualan Patahan Pallet Kayu') {
+                    ketContainer.classList.remove('hidden');
+                    document.getElementById('label-keterangan').innerText = "Nomor Polisi (No Pol)";
+                    inputKet.placeholder = "Contoh: B 1234 XYZ";
+                    inputKet.required = true;
+                    labelQty.innerText = "Jumlah (kg)";
+                    hintContainer.classList.remove('hidden');
+                    onQuantityInputLive();
                 } else {
                     ketContainer.classList.remove('hidden');
                     document.getElementById('label-keterangan').innerText = "Keterangan Tambahan (Opsional)";
                     inputKet.placeholder = "Contoh: Catatan tambahan pengeluaran...";
                     inputKet.required = false;
+                    labelQty.innerText = "Jumlah (pcs)";
                 }
-                labelQty.innerText = "Jumlah (pcs)";
             } else {
                 document.getElementById('label-keterangan').innerText = "Keterangan / Nomor PO";
                 inputKet.required = true;
@@ -479,6 +506,7 @@
             e.preventDefault();
             
             let qty = 0;
+            let rawInputKg = undefined;
             let targetTipe = currentSubmenu;
             let subKategori = '';
             let ket = '';
@@ -570,11 +598,17 @@
                 subKategori = document.getElementById('issue-sub-type').value;
                 if (subKategori === 'Kebutuhan Produksi') {
                     ket = subKategori;
+                    qty = parseInt(document.getElementById('quantity').value);
+                } else if (subKategori === 'Penjualan Patahan Pallet Kayu') {
+                    nopolFinal = document.getElementById('keterangan').value.toUpperCase();
+                    rawInputKg = parseFloat(document.getElementById('quantity').value) || 0;
+                    qty = Math.ceil(rawInputKg / 25);
+                    ket = subKategori;
                 } else {
                     const userKet = document.getElementById('keterangan').value.trim().toUpperCase();
                     ket = userKet ? `${subKategori} - ${userKet}` : subKategori;
+                    qty = parseInt(document.getElementById('quantity').value);
                 }
-                qty = parseInt(document.getElementById('quantity').value);
             } else {
                 ket = document.getElementById('keterangan').value.toUpperCase();
                 qty = parseInt(document.getElementById('quantity').value);
@@ -591,7 +625,8 @@
                 nopol: nopolFinal,
                 pengorder: pengorderVal,
                 vendor: vendorVal,
-                qty
+                qty,
+                rawInputKg
             };
 
             state.transactions.unshift(newTx);
@@ -1155,11 +1190,20 @@
 
             const timeDisplay = t.time ? `${t.date}, ${t.time} WIB` : t.date;
 
-            let nopolDisplay = t.nopol ? `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>` : '';
-            let ketDisplay = t.ket && t.ket !== 'Kebutuhan Produksi' ? `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>` : '';
+            let nopolDisplay = '';
+            if (t.subTipe === 'Penjualan Patahan Pallet Kayu') {
+                nopolDisplay = `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol || '-'}</span>`;
+            } else if (t.nopol) {
+                nopolDisplay = `<br><span class="text-xs text-blue-300 font-semibold">No Pol: ${t.nopol}</span>`;
+            }
+
+            let ketDisplay = (t.ket && t.ket !== 'Kebutuhan Produksi' && t.subTipe !== 'Penjualan Patahan Pallet Kayu') ? `<p class="font-bold text-slate-200 mt-1">${t.ket}</p>` : '';
             let extraInfo = `${ketDisplay}${nopolDisplay}`;
 
-            let displayQty = (t.broughtQty !== undefined) ? t.broughtQty : t.qty;
+            let displayQtyText = `-${Math.abs(t.qty).toLocaleString('id-ID')} pcs`;
+            if (t.subTipe === 'Penjualan Patahan Pallet Kayu' && t.rawInputKg !== undefined) {
+                displayQtyText = `-${Math.abs(t.qty).toLocaleString('id-ID')} pcs <span class="block text-[10px] text-slate-400 font-normal">(${t.rawInputKg} kg)</span>`;
+            }
 
             const card = document.createElement('div');
             card.className = "flex justify-between items-center p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm mb-2";
@@ -1172,7 +1216,7 @@
                     ${extraInfo}
                 </div>
                 <div class="text-right flex items-center gap-2 shrink-0">
-                    <span class="font-black text-sm md:text-base text-rose-400">-${Math.abs(displayQty).toLocaleString('id-ID')} pcs</span>
+                    <span class="font-black text-sm md:text-base text-rose-400">${displayQtyText}</span>
                     <button onclick="deleteTx(${t.id})" class="text-slate-400 hover:text-rose-400 font-bold px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded transition">Hapus</button>
                 </div>
             `;
