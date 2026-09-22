@@ -484,7 +484,6 @@
                     nopolFinal = `${nopolPart}${pengirimPart}`;
                     ket = `Balikan Mobil Racking (${qty} pcs)`;
 
-                    // Logika pengecekan hutang/kelebihan: Hanya buatkan catatan jika Nopol & Pengirim dari dropdown
                     const isNopolDropdown = !isNopolManual;
                     const isPengirimDropdown = !isPengirimManual;
 
@@ -682,7 +681,6 @@
             document.getElementById('info-modal').classList.add('hidden');
         }
 
-        // Fungsi cutoff operasional jam 07:00 pagi hingga 06:59 pagi keesokan harinya
         function getOperationalDate(timestamp) {
             const date = new Date(timestamp);
             if (date.getHours() < 7) {
@@ -739,7 +737,6 @@
                 const listOrder = filteredTransactions.filter(t => t.subTipe === 'Pallet Order');
                 const listRacking = filteredTransactions.filter(t => t.subTipe === 'Pallet Balikan Mobil Racking');
 
-                // Urutkan balikan racking secara kronologis (dari lama ke baru) untuk menentukan nomor urut harian (1, 2, 3...)
                 let sortedRackingForShift = [...listRacking].sort((a, b) => (a.rawTimestamp || a.id) - (b.rawTimestamp || b.id));
                 let shiftCounterMap = {};
                 let rackingItemShiftNumbers = {};
@@ -788,7 +785,6 @@
                 if (listRacking.length === 0) {
                     colRacking.innerHTML += `<p class="text-xs text-slate-500 text-center py-4">Belum ada data Balikan Racking.</p>`;
                 } else {
-                    // Tampilkan kembali secara descending (terbaru di atas) dengan tetap membawa nomor urut shift yang tepat
                     let displaySortedRacking = [...listRacking].sort((a, b) => (b.rawTimestamp || b.id) - (a.rawTimestamp || a.id));
                     displaySortedRacking.forEach(t => {
                         const shiftNo = rackingItemShiftNumbers[t.id] || 1;
@@ -870,8 +866,8 @@
 
                     return `
                         <div class="mt-1.5 space-y-0.5 text-[11px] font-medium border-t border-purple-900/40 pt-1.5 text-center">
-                            <p class="text-slate-300">Hutang Pallet ${entityName} ke Jayanti 2 : <strong class="text-amber-400">${hutangPihakKeJayanti} pcs</strong></p>
-                            <p class="text-slate-300">Hutangan Pallet Jayanti 2 ke ${entityName} : <strong class="text-emerald-400">${hutangJayantiKePihak} pcs</strong></p>
+                            <p class="text-slate-300">${entityName} to Jayanti 2: <strong class="text-amber-400">${hutangPihakKeJayanti} pcs</strong></p>
+                            <p class="text-slate-300">Jayanti 2 to ${entityName}: <strong class="text-emerald-400">${hutangJayantiKePihak} pcs</strong></p>
                         </div>
                     `;
                 };
@@ -891,6 +887,12 @@
                     }
                     itemShiftNumbers[t.id] = shiftCounterMap[sKey];
                 });
+
+                // Judul besar DATA PEMINJAMAN PALLET
+                const titleContainer = document.createElement('div');
+                titleContainer.className = "text-center mb-4";
+                titleContainer.innerHTML = `<h3 class="text-base font-black text-purple-400 tracking-wider uppercase">DATA PEMINJAMAN PALLET</h3>`;
+                listEl.appendChild(titleContainer);
 
                 const gridOther = document.createElement('div');
                 gridOther.className = "grid grid-cols-1 md:grid-cols-3 gap-4";
