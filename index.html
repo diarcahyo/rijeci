@@ -651,8 +651,8 @@
 
             saveData();
 
-            // --- KODE FETCH OTOMATIS KE GOOGLE SHEETS ---
-            fetch("https://script.google.com/macros/s/AKfycbza9Slm4C_HDmg97wr9cAxX3FHUfCYJqmHyN-Ki69-DIlkwyYXj2WhPJM6_BHPhe8Kf/exec", {
+            // --- KODE FETCH OTOMATIS KE GOOGLE SHEETS TERBARU ---
+            fetch("https://script.google.com/macros/s/AKfycbyYi2P6dDoceGe_jISJ6uceiieE1fdwyfD93INF97xPZefv6sc6pDK29WQvUPrggYfc/exec", {
                 method: "POST",
                 mode: "no-cors",
                 headers: {
@@ -660,7 +660,7 @@
                 },
                 body: JSON.stringify(newTx)
             });
-            // ---------------------------------------------
+            // ----------------------------------------------------
 
             render();
             document.getElementById('transaksi-form').reset();
