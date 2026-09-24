@@ -650,6 +650,18 @@
             }
 
             saveData();
+
+            // --- KODE FETCH OTOMATIS KE GOOGLE SHEETS ---
+            fetch("https://script.google.com/macros/s/AKfycbza9Slm4C_HDmg97wr9cAxX3FHUfCYJqmHyN-Ki69-DIlkwyYXj2WhPJM6_BHPhe8Kf/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newTx)
+            });
+            // ---------------------------------------------
+
             render();
             document.getElementById('transaksi-form').reset();
             onNopolSelectChange();
