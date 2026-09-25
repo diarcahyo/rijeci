@@ -256,6 +256,7 @@
     <script>
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYi2P6dDoceGe_jISJ6uceiieE1fdwyfD93INF97xPZefv6sc6pDK29WQvUPrggYfc/exec";
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v23')) || {
             beginning: 100,
@@ -264,6 +265,25 @@
 
         function saveData() {
             localStorage.setItem('pallet_state_jayanti2_v23', JSON.stringify(state));
+        }
+
+        // Fungsi Sinkronisasi Dua Arah (Mengambil Data dari Google Sheets)
+        function fetchTransactionsFromServer() {
+            fetch(WEB_APP_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && Array.isArray(data.transactions)) {
+                        state.transactions = data.transactions;
+                        if (data.beginning !== undefined && data.beginning !== null) {
+                            state.beginning = data.beginning;
+                        }
+                        saveData();
+                        render();
+                    }
+                })
+                .catch(error => {
+                    console.error('Gagal mengambil data dari server:', error);
+                });
         }
 
         function switchTab(tabName) {
@@ -651,8 +671,8 @@
 
             saveData();
 
-            // --- KODE FETCH OTOMATIS KE GOOGLE SHEETS TERBARU ---
-            fetch("https://script.google.com/macros/s/AKfycbyYi2P6dDoceGe_jISJ6uceiieE1fdwyfD93INF97xPZefv6sc6pDK29WQvUPrggYfc/exec", {
+            // --- KIRIM DATA KE GOOGLE SHEETS (SINKRONISASI DUA ARAH) ---
+            fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: {
@@ -914,7 +934,6 @@
                 const gridContainer = document.createElement('div');
                 gridContainer.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
 
-                // Kolom Kiri: Penjualan Patahan Pallet Kayu
                 const colPatahan = document.createElement('div');
                 colPatahan.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
                 colPatahan.innerHTML = `<div class="text-xs font-bold text-rose-400 uppercase bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-900/60 mb-2 text-center">PENJUALAN PATAHAN PALLET KAYU</div>`;
@@ -927,7 +946,6 @@
                     });
                 }
 
-                // Kolom Kanan: Kebutuhan Produksi
                 const colProduksi = document.createElement('div');
                 colProduksi.className = "space-y-3 bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/60";
                 colProduksi.innerHTML = `<div class="text-xs font-bold text-rose-400 uppercase bg-rose-950/40 px-3 py-2 rounded-lg border border-rose-900/60 mb-2 text-center">KEBUTUHAN PRODUKSI</div>`;
@@ -1274,6 +1292,9 @@
 
         render();
         selectSubmenu('receipt'); 
+        
+        // Panggil fungsi sinkronisasi server saat pertama kali halaman dimuat
+        fetchTransactionsFromServer();
     </script>
 </body>
 </html>
