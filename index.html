@@ -256,7 +256,7 @@
     <script>
         let currentSubmenu = 'receipt';
         let currentRiwayatFilter = 'receipt';
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyYi2P6dDoceGe_jISJ6uceiieE1fdwyfD93INF97xPZefv6sc6pDK29WQvUPrggYfc/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz3MVWXePr8P4-19z8tacY1peeSYyTMc49bDMpj9h4QH9MExOn5hS79RgSd1UEqnAlDsA/exec";
 
         let state = JSON.parse(localStorage.getItem('pallet_state_jayanti2_v23')) || {
             beginning: 100,
@@ -272,8 +272,23 @@
             fetch(WEB_APP_URL)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && Array.isArray(data.transactions)) {
-                        state.transactions = data.transactions;
+                    if (data) {
+                        // Mendukung format objek sheet atau array langsung
+                        let allTransactions = [];
+                        if (Array.isArray(data.transactions)) {
+                            allTransactions = data.transactions;
+                        } else {
+                            // Jika data berupa objek dari seluruh sheet, gabungkan transaksi jika ada
+                            Object.keys(data).forEach(sheetName => {
+                                if (Array.isArray(data[sheetName])) {
+                                    // Anda bisa menyesuaikan mapping jika struktur sheet Anda langsung berupa data transaksi
+                                }
+                            });
+                        }
+                        
+                        if (data.transactions && Array.isArray(data.transactions)) {
+                            state.transactions = data.transactions;
+                        }
                         if (data.beginning !== undefined && data.beginning !== null) {
                             state.beginning = data.beginning;
                         }
@@ -671,7 +686,7 @@
 
             saveData();
 
-            // --- KIRIM DATA KE GOOGLE SHEETS (SINKRONISASI DUA ARAH) ---
+            // Kirim data baru ke server (Spreadsheet)
             fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -680,7 +695,6 @@
                 },
                 body: JSON.stringify(newTx)
             });
-            // ----------------------------------------------------
 
             render();
             document.getElementById('transaksi-form').reset();
@@ -691,10 +705,25 @@
             switchTab('dashboard');
         }
 
+        // --- FUNGSI HAPUS YANG TERHUBUNG KE GOOGLE APPS SCRIPT ---
         function deleteTx(id) {
+            // 1. Hapus dari state lokal web
             state.transactions = state.transactions.filter(t => t.id !== id);
             saveData();
             render();
+
+            // 2. Kirim perintah hapus ke Google Spreadsheet via POST
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    action: 'delete',
+                    targetId: id
+                })
+            });
         }
 
         function deleteTxByPo(poNumber) {
@@ -702,6 +731,13 @@
                 state.transactions = state.transactions.filter(t => !(t.ket === poNumber));
                 saveData();
                 render();
+
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: 'delete', targetId: poNumber })
+                });
             }
         }
 
@@ -710,8 +746,16 @@
                 state.transactions = state.transactions.filter(t => !(t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber));
                 saveData();
                 render();
+
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: 'delete', targetId: poNumber })
+                });
             }
         }
+        // ---------------------------------------------------------
 
         function showReceiptInfo(poNumber) {
             const receipts = state.transactions.filter(t => t.tipe === 'receipt' && t.subTipe === 'Pallet Order' && t.ket === poNumber);
