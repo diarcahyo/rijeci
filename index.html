@@ -273,19 +273,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data) {
-                        // Mendukung format objek sheet atau array langsung
-                        let allTransactions = [];
-                        if (Array.isArray(data.transactions)) {
-                            allTransactions = data.transactions;
-                        } else {
-                            // Jika data berupa objek dari seluruh sheet, gabungkan transaksi jika ada
-                            Object.keys(data).forEach(sheetName => {
-                                if (Array.isArray(data[sheetName])) {
-                                    // Anda bisa menyesuaikan mapping jika struktur sheet Anda langsung berupa data transaksi
-                                }
-                            });
-                        }
-                        
                         if (data.transactions && Array.isArray(data.transactions)) {
                             state.transactions = data.transactions;
                         }
@@ -534,6 +521,15 @@
             saveData();
             render();
             document.getElementById('input-begin').value = '';
+            
+            // Sinkronisasi beginning balance ke server/spreadsheet
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: 'setBeginning', beginning: val })
+            });
+
             alert('Beginning balance berhasil diperbarui!');
         }
 
@@ -682,6 +678,14 @@
                     broughtQty: rackingExtraLog.broughtQty
                 };
                 state.transactions.unshift(extraTx);
+                
+                // Kirim extra log juga ke server
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(extraTx)
+                });
             }
 
             saveData();
@@ -707,22 +711,15 @@
 
         // --- FUNGSI HAPUS YANG TERHUBUNG KE GOOGLE APPS SCRIPT ---
         function deleteTx(id) {
-            // 1. Hapus dari state lokal web
             state.transactions = state.transactions.filter(t => t.id !== id);
             saveData();
             render();
 
-            // 2. Kirim perintah hapus ke Google Spreadsheet via POST
             fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    action: 'delete',
-                    targetId: id
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: 'delete', targetId: id })
             });
         }
 
@@ -1337,8 +1334,9 @@
         render();
         selectSubmenu('receipt'); 
         
-        // Panggil fungsi sinkronisasi server saat pertama kali halaman dimuat
+        // Panggil fungsi sinkronisasi server saat pertama kali halaman dimuat, dan jalankan polling otomatis setiap 5 detik agar sinkronisasi dari Spreadsheet ke Web berjalan lancar
         fetchTransactionsFromServer();
+        setInterval(fetchTransactionsFromServer, 5000);
     </script>
 </body>
 </html>
